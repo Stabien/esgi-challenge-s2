@@ -1,0 +1,46 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+  
+  mongo:
+    image: mongo:jammy
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes: 
+      - mongo-data:/data/db
+
+  back:
+    build: ./back
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./back:/home/app
+    depends_on:
+      - postgres
+      - mongo
+
+  front-admin:
+    build: ./front-admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front-admin:/home/app
+
+volumes:
+  pg-data:
+    driver: local
+  mongo-data:
+    driver: local
