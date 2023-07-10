@@ -49,7 +49,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-npm-v3-${{ hashFiles('yarn.lock') }}
       - name: 🧪 Run Unit Tests
-        working-directory: ./back
+        # working-directory: ./back
         run: yarn test:unit:ci
         # env:
         #   NEXT_PUBLIC_FBASE_API_KEY: "${{ secrets.NEXT_PUBLIC_DEV_FBASE_API_KEY }}"
