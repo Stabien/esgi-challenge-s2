@@ -9,8 +9,8 @@ jobs:
     name: 📦 Base Back
     runs-on: ubuntu-latest
     steps:
-      - name: 📂 Change directory
-        run: cd ./back
+      # - name: 📂 Change directory
+      #   run: cd ./back
       - name: ✨ Checkout
         uses: actions/checkout@v3
       - run: echo ${{ github.ref_name }} develop
