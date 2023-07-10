@@ -10,9 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ✨ Checkout
-        working-directory: ./back
         uses: actions/checkout@v3
-
+        working-directory: ./back
       - run: echo ${{ github.ref_name }} develop
       - name: 🧶 Install Yarn
         uses: actions/setup-node@v3
