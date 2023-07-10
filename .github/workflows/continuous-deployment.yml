@@ -6,10 +6,11 @@ on:
       - "main"
 jobs:
   base:
-    name: 📦 Base
+    name: 📦 Base Back
     runs-on: ubuntu-latest
     steps:
       - name: ✨ Checkout
+        working-directory: ./back
         uses: actions/checkout@v3
 
       - run: echo ${{ github.ref_name }} develop
@@ -25,6 +26,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-npm-v3-${{ hashFiles('yarn.lock') }}
       - name: 📦 Install Dependencies
+        working-directory: ./back
         if: steps.cache-primes.outputs.cache-hit != 'true'
         run: yarn install
   unit-test:
