@@ -3,3 +3,7 @@
 
 @tailwind components;
 @tailwind utilities;
+
+input {
+  @apply bg-transparent border-b-2 border-palette-gray-400;
+}
