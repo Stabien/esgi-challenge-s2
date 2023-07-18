@@ -1,4 +1,5 @@
-const sequelize = require('../config/db')
+const sequelize = require('../config/sequelize')
+const mongoConnection = require('../config/mongoose')
 const { DataTypes } = require('sequelize')
 
 /**

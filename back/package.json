@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "moduleFileExtensions": [
     "js",
     "mjs"
@@ -28,6 +27,7 @@
     "express": "^4.18.1",
     "jest": "^29.6.1",
     "jsonwebtoken": "^8.5.1",
+    "mongoose": "^7.3.4",
     "nodemailer": "^6.9.1",
     "nodemon": "^2.0.19",
     "pg": "^8.7.3",
