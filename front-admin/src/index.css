@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: border-box;
+}
+
 input {
   @apply bg-transparent border rounded bg-palette-input-100 border-palette-input-100 focus:bg-transparent outline-none p-2;
 }

@@ -1,13 +1,15 @@
 <script setup>
 // import { RouterLink } from 'vue-router'
-import IconCommunity from './icons/IconCommunity.vue'
 import Link from '@/components/ui/Link.vue'
+import { getLogo } from '@/utils'
+
+getLogo()
 </script>
 
 <template>
   <header class="flex items-center justify-between px-4">
-    <div class="h-8 w-8 bg-red-400 flex items-center justify-center">
-      <IconCommunity />
+    <div class="flex items-center justify-center">
+      <img class="h-24 w-24" :src="getLogo()" alt="" srcset="" />
     </div>
     <nav class="flex gap-4">
       <Link class="dark:text-gray-200" to="/">Home</Link>
