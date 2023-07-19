@@ -32,7 +32,7 @@ exports.authentication = async (req, res) => {
         return res.status(404).json({ error: 'User not found' })
       }
 
-      const { uuid, firstname, lastname, role } = user
+      const { uuid, firstname, lastname } = user
       const token = jwt.sign({ uuid }, process.env.JWT_KEY)
 
       return res.status(200).json({
@@ -41,7 +41,6 @@ exports.authentication = async (req, res) => {
           email: user.email,
           firstname,
           lastname,
-          role,
           token,
         },
       })
@@ -75,7 +74,6 @@ exports.registration = async (req, res) => {
       password: hashedPassword,
       firstname,
       lastname,
-      role: 'User',
     })
     await newUser.save()
 

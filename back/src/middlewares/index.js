@@ -29,11 +29,7 @@ const verifyUserToken = (req) => {
   return response
 }
 
-exports.checkUserModel = (
-  req,
-  res,
-  next,
-) => {
+exports.checkUserModel = (req, res, next) => {
   const { email: emailRule, password: passwordRule } = userRules
   const { email, password } = req.body
 
@@ -56,11 +52,7 @@ exports.isParamUuid = (req, res, next) => {
 /**
  * Verify only token format.
  */
-exports.checkUserTokenFormat = (
-  req,
-  res,
-  next,
-) => {
+exports.checkUserTokenFormat = (req, res, next) => {
   const token = verifyUserToken(req)
 
   if (token !== null) {
@@ -74,11 +66,7 @@ exports.checkUserTokenFormat = (
 /**
  * Verify token format and user uuid.
  */
-exports.checkUserTokenUuid = (
-  req,
-  res,
-  next,
-) => {
+exports.checkUserTokenUuid = (req, res, next) => {
   const token = verifyUserToken(req)
   const paramName = Object.keys(req.params)[0]
 

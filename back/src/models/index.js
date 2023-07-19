@@ -47,10 +47,6 @@ exports.User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    role: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
   },
   {
     timestamps: false,
