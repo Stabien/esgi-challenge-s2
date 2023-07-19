@@ -8,7 +8,6 @@ module.exports = {
         cobalt: { 400: '#6562E4', 500: '#3B37DD' },
         'soft-black': '#191B1C',
         'soft-white': '#F2F2F2',
-        'soft-gray': 'var(--small-title)',
         palette: {
           'green-light': '#E5FFE5',
           green: '#07e037',
@@ -36,7 +35,7 @@ module.exports = {
             800: '#333333',
             900: '#191919'
           },
-          'input-select': {
+          input: {
             100: '#f5f5f5',
             200: '#252525'
           }
