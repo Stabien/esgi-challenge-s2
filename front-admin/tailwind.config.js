@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 module.exports = {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
@@ -8,7 +9,7 @@ module.exports = {
         cobalt: { 400: '#6562E4', 500: '#3B37DD' },
         'soft-black': '#191B1C',
         'soft-white': '#F2F2F2',
-        'soft-gray': 'var(--small-title)',
+        orange: '#FD5530',
         palette: {
           'green-light': '#E5FFE5',
           green: '#07e037',
@@ -36,7 +37,7 @@ module.exports = {
             800: '#333333',
             900: '#191919'
           },
-          'input-select': {
+          input: {
             100: '#f5f5f5',
             200: '#252525'
           }
@@ -70,6 +71,9 @@ module.exports = {
         slideDownAndFade: 'slideDownAndFade 300ms cubic-bezier(0.16, 0, 0.13, 1)',
         slideRightAndFade: 'slideRightAndFade 300ms cubic-bezier(0.16, 0, 0.13, 1)',
         slideLeftAndFade: 'slideLeftAndFade 300ms cubic-bezier(0.16, 0, 0.13, 1)'
+      },
+      fontFamily: {
+        gridular: ['Gridular']
       }
     }
   },

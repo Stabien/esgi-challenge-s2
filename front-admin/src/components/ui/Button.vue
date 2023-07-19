@@ -37,7 +37,7 @@ const buttonVariants = cva(
 </script>
 
 <template>
-  <button :class="cn(buttonVariants({ variant, size, className }))">
+  <button :class="cn(buttonVariants({ variant, size }))">
     <slot></slot>
   </button>
 </template>
