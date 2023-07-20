@@ -13,7 +13,7 @@ export const getLogo = () => {
     localStorage.setItem('logoNumber', 1)
   }
   const currentLogo = localStorage.getItem('logoNumber')
-  return `eyes/eyes${currentLogo}.svg`
+  return `/eyes/eyes${currentLogo}.svg`
 }
 export const setLogo = () => {
   const randomNumber = randomInt(1, numberOfLogo)

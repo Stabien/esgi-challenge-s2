@@ -8,5 +8,4 @@ import { setLogo } from '@/utils'
 setLogo()
 
 const app = createApp(App)
-
 app.use(router).mount('#app')

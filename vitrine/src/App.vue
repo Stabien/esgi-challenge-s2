@@ -22,11 +22,11 @@ window.addEventListener('mousemove', (e) => {
   if (e.clientY < window.innerHeight - 16 / 2) mouseY.value = e.clientY
 })
 document.addEventListener('mouseenter', () => {
-  console.log('je suis dedans')
+  // console.log('je suis dedans')
   visibility.value = 'visible'
 })
 document.addEventListener('mouseout', () => {
-  console.log('je suis dehors')
+  // console.log('je suis dehors')
   // visibility.value = 'hidden'
 })
 </script>
