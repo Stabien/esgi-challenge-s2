@@ -1,85 +1,42 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
+import Layout from '@/components/Layout.vue'
+import { getLogo } from '@/utils'
+import { ref } from 'vue'
+// Change FavIcon
+var link = document.querySelector("link[rel~='icon']")
+if (!link) {
+  link = document.createElement('link')
+  link.rel = 'icon'
+  document.head.appendChild(link)
+}
+link.href = getLogo()
+
+//Custom cursor
+const mouseX = ref(0)
+const visibility = ref(0)
+const mouseY = ref(0)
+
+window.addEventListener('mousemove', (e) => {
+  if (e.clientX < window.innerWidth - 16 / 2) mouseX.value = e.clientX
+  if (e.clientY < window.innerHeight - 16 / 2) mouseY.value = e.clientY
+})
+document.addEventListener('mouseenter', () => {
+  console.log('je suis dedans')
+  visibility.value = 'visible'
+})
+document.addEventListener('mouseout', () => {
+  console.log('je suis dehors')
+  // visibility.value = 'hidden'
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <Layout v-if="$route.meta.layout !== 'none'" />
+  <RouterView class="pt-24" />
+  <span
+    ref="cursor"
+    :style="{ left: mouseX + 'px', top: mouseY + 'px', visibility: visibility }"
+    class="absolute origin-center h-4 w-4 bg-palette-primary-500 mix-blend-difference invert rounded-full opacity-60 pointer-events-none"
+  ></span>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
