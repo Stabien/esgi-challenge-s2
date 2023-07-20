@@ -14,6 +14,7 @@ getLogo()
       </Link>
     </div>
     <nav class="flex gap-4">
+      <Link class="dark:text-gray-200" to="/blog">Blog</Link>
       <Link class="dark:text-gray-200" to="/about">About</Link>
       <Link class="dark:text-gray-200" to="/login">Login</Link>
     </nav>

@@ -2,8 +2,6 @@
 import SquareImg from '@/components/SquareImg.vue'
 import { urlImg } from '@/utils/constant'
 import { getRandomItem } from '@/utils'
-
-getRandomItem
 </script>
 
 <template>
@@ -14,9 +12,4 @@ getRandomItem
       <span class="uppercase w-min font-bold text-[8rem] ml-56 font-gridular">WRLD</span>
     </section>
   </main>
-  <!-- <h1
-    class="h-screen font-sans font-black uppercase text-palette-primary-500 text-[4rem] text-center w-4/6 mx-auto"
-  >
-    The search engine for creative people
-  </h1> -->
 </template>
