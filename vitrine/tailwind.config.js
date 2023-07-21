@@ -75,6 +75,9 @@ module.exports = {
       },
       fontFamily: {
         gridular: ['Gridular']
+      },
+      gridTemplateColumns: {
+        '1/3': '1fr 2fr'
       }
     }
   },

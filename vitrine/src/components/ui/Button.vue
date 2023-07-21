@@ -20,7 +20,8 @@ const buttonVariants = cva(
           'bg-palette-gray-100 text-palette-gray-900 hover:bg-palette-gray-200 dark:bg-palette-gray-800 dark:text-palette-gray-300',
         ghost:
           'bg-transparent text-palette-primary-500 hover:bg-palette-primary-50 dark:hover:bg-palette-gray-900 dark:text-palette-primary-400 data-[state=open]:bg-transparent dark:data-[state=open]:bg-transparent',
-        link: 'bg-transparent dark:bg-transparent underline-offset-4 hover:underline text-palette-gray-900 dark:text-soft-white hover:bg-transparent dark:hover:bg-transparent'
+        link: 'bg-transparent dark:bg-transparent underline-offset-4 hover:underline text-palette-gray-900  hover:bg-transparent dark:hover:bg-transparent',
+        empty: ''
       },
       size: {
         default: 'py-2 px-4 text-md',

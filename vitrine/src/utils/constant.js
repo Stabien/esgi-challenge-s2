@@ -58,3 +58,9 @@ export const blogArray = [
     resume: 'From Akira to Fashion Icon: Exploring the Evolution and Impact of Akiracore Aesthetic'
   }
 ]
+export const teamList = [
+  { name: 'Raphael', role: 'Front-end' },
+  { name: 'Melvin', role: 'Front-end' },
+  { name: 'Herve', role: 'Back-end' },
+  { name: 'Bastien', role: 'Back-end' }
+]

@@ -32,6 +32,11 @@ const router = createRouter({
       component: () => import('@/views/LoginView.vue')
     },
     {
+      path: '/join',
+      name: 'join',
+      component: () => import('@/views/RegisterView.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
       meta: {

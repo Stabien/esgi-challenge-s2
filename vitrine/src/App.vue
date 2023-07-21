@@ -14,12 +14,13 @@ link.href = getLogo()
 
 //Custom cursor
 const mouseX = ref(0)
-const visibility = ref(0)
 const mouseY = ref(0)
+const visibility = ref(0)
 
 window.addEventListener('mousemove', (e) => {
   if (e.clientX < window.innerWidth - 16 / 2) mouseX.value = e.clientX
   if (e.clientY < window.innerHeight - 16 / 2) mouseY.value = e.clientY
+  //clientY clientX
 })
 document.addEventListener('mouseenter', () => {
   // console.log('je suis dedans')
@@ -37,6 +38,6 @@ document.addEventListener('mouseout', () => {
   <span
     ref="cursor"
     :style="{ left: mouseX + 'px', top: mouseY + 'px', visibility: visibility }"
-    class="absolute origin-center h-4 w-4 bg-palette-primary-500 mix-blend-difference invert rounded-full opacity-60 pointer-events-none"
+    class="fixed origin-center h-4 w-4 bg-palette-primary-500 mix-blend-difference invert rounded-full opacity-60 pointer-events-none"
   ></span>
 </template>

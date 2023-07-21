@@ -8,19 +8,20 @@ getLogo()
 </script>
 
 <template>
-  <SwitchDarkMode :style="{ zIndex: 100 }" class="absolute bottom-5 right-5 z-50" />
+  <SwitchDarkMode :style="{ zIndex: 100 }" class="fixed bottom-5 right-5 z-50" />
   <header
-    class="w-full fixed top-0 flex items-center justify-between p-4 z-50 mix-blend-difference invert text-soft-black"
+    class="mix-blend-difference invert w-full fixed top-0 flex items-center justify-between p-4 z-50 text-soft-black"
   >
-    <div class="flex text-black items-center justify-center">
-      <Link to="/">
+    <div class="flex items-center justify-center">
+      <Link variant="link" to="/">
         <img class="h-10" :src="getLogo()" alt="" srcset="" />
       </Link>
     </div>
     <nav class="flex gap-4">
-      <Link to="/blog">Blog</Link>
-      <Link to="/about">About</Link>
-      <Link to="/login">Login</Link>
+      <Link variant="link" to="/blog">Blog</Link>
+      <Link variant="link" to="/about">About</Link>
+      <Link variant="outline" class="dark:invert" to="/login">Login</Link>
+      <Link variant="default" class="dark:invert" to="/join">Join</Link>
     </nav>
   </header>
 </template>

@@ -17,7 +17,7 @@ import Link from '@/components/ui/Link.vue'
       <article class="dark:text-palette-gray-200 text-3xl text-center font-bold">
         Oops, the page doesn't exist
       </article>
-      <Link to="/" class=""> Back to home </Link>
+      <Link variant="link" to="/"> Back to home </Link>
     </section>
   </main>
 </template>
