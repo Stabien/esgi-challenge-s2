@@ -2,7 +2,8 @@
 module.exports = {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: ['class', '[data-mode="dark"]'],
+
   theme: {
     extend: {
       colors: {
@@ -74,6 +75,9 @@ module.exports = {
       },
       fontFamily: {
         gridular: ['Gridular']
+      },
+      gridTemplateColumns: {
+        '1/3': '1fr 2fr'
       }
     }
   },

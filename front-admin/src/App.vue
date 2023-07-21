@@ -37,6 +37,6 @@ document.addEventListener('mouseout', () => {
   <span
     ref="cursor"
     :style="{ left: mouseX + 'px', top: mouseY + 'px', visibility: visibility }"
-    class="absolute origin-center h-4 w-4 bg-palette-primary-500 mix-blend-difference invert rounded-full opacity-60 pointer-events-none"
+    class="fixed origin-center h-4 w-4 bg-palette-primary-500 mix-blend-difference invert rounded-full opacity-60 pointer-events-none"
   ></span>
 </template>
