@@ -100,7 +100,7 @@ jobs:
         run: yarn --cwd ./front-admin add cypress # Installez Cypress localement dans le dossier "front-admin"
 
       - name: 🖼 Cypress Tests
-        run: cd front-admin && yarn dev &&yarn cypress run
+        run: cd front-admin && yarn serve && yarn cypress run
         timeout-minutes: 10
         # with:
         #   config-file: cypress.config.js
