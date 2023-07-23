@@ -7,8 +7,12 @@ const { user, setIsLogged } = inject('user');
 <template>
   <main>
     <section class="flex gap-8 flex-col w-min mx-auto">
-      <span class="uppercase w-min font-bold text-[8rem] text-soft-black">Tracking</span>
-      <span class="uppercase w-min font-bold text-[8rem] ml-56 font-gridular">world</span>
+      <h1>
+        <span data-cy="tracking" class="uppercase w-min font-bold text-[8rem] text-soft-black"
+          >Tracking</span
+        >
+        <span class="uppercase w-min font-bold text-[8rem] ml-56 font-gridular">world</span>
+      </h1>
     </section>
     <Button @click="() => console.log(user)">log</Button>
     <Button @click="setIsLogged(!user.isLogged)">Test</Button>
