@@ -20,7 +20,6 @@ html {
   display: none;
 }
 * {
-  cursor: none !important;
   box-sizing: border-box;
 }
 .origin-center {
