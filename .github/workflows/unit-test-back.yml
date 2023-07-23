@@ -103,8 +103,8 @@ jobs:
         uses: cypress-io/github-action@v5
         timeout-minutes: 10
         with:
-          config-file: cypress.config.js
-          start: "yarn serve"
+          config-file: front-admin/cypress.config.js
+          start: "yarn --cwd front-admin dev"
           browser: chrome
           headed: false
           record: false
