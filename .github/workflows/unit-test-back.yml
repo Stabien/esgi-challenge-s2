@@ -83,12 +83,12 @@ jobs:
       - name: ✨ Checkout
         uses: actions/checkout@v3
 
-      - name: 🧶 Install Yarn
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-          cache: "yarn"
-          cache-dependency-path: "./front-admin/yarn.lock"
+      # - name: 🧶 Install Yarn
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: "16"
+      #     cache: "yarn"
+      #     cache-dependency-path: "./front-admin/yarn.lock"
 
       - name: 📦 Install Dependencies
         run: yarn --cwd ./front-admin install # Installez les dépendances du projet dans le dossier "front-admin"
@@ -109,4 +109,3 @@ jobs:
           headed: false
           record: false
           env: true
-        # run: yarn --cwd ./front-admin cypress run # Exécutez les tests E2E avec Cypress dans le dossier "front-admin"
