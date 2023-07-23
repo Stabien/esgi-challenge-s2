@@ -99,11 +99,11 @@ jobs:
       - name: 📦 Install Cypress binaries
         run: npx cypress install
       - name: 🖼 Cypress Tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v5
         timeout-minutes: 10
         with:
           config-file: front-admin/cypress.config.ts
-          start: "yarn --cwd ./front-admin serve"
+          start: "yarn --cwd ./front-admin dev"
           browser: chrome
           headless: true
           record: false
