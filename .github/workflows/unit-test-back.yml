@@ -103,7 +103,8 @@ jobs:
         timeout-minutes: 10
         with:
           config-file: front-admin/cypress.config.ts
-          start: "yarn --cwd ./front-admin dev"
+          working-directory: ./front-admin # Specify the working directory here
+          start: "yarn dev" # Use "yarn dev" since the working directory is already set
           browser: chrome
           headless: true
           record: false
