@@ -108,3 +108,4 @@ jobs:
           browser: chrome
           headed: false
           record: false
+          skip-install: true
