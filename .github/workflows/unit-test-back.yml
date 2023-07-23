@@ -102,4 +102,11 @@ jobs:
       - name: 🖼 Cypress Tests
         uses: cypress-io/github-action@v5
         timeout-minutes: 10
-        run: yarn --cwd ./front-admin cypress run # Exécutez les tests E2E avec Cypress dans le dossier "front-admin"
+        with:
+          config-file: cypress.config.js
+          start: "yarn serve"
+          browser: chrome
+          headed: false
+          record: false
+          env: true
+        # run: yarn --cwd ./front-admin cypress run # Exécutez les tests E2E avec Cypress dans le dossier "front-admin"
