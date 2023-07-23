@@ -5,8 +5,8 @@ on:
       - "master"
       - "main"
 jobs:
-  base-back:
-    name: 📦 Base Back
+  build-back:
+    name: 📦 Build Back
     runs-on: ubuntu-latest
     steps:
       - name: ✨ Checkout
@@ -22,17 +22,18 @@ jobs:
         uses: actions/cache@v3
         id: cache-primes
         with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-v3-${{ hashFiles('yarn.lock') }}
+          path: back/node_modules
+          key: ${{ runner.os }}-npm-v3-${{ hashFiles('back/yarn.lock') }}
       - name: 📦 Install Dependencies
         if: steps.cache-primes.outputs.cache-hit != 'true'
-        run: yarn install
+        run: yarn --cwd ./back install
+
   unit-test:
     name: "🧪 Unit Tests"
     if: contains(github.event.head_commit.message, '(no unit-test)') != true
     runs-on: ubuntu-latest
     needs:
-      - base-back
+      - build-back
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v3
@@ -46,11 +47,8 @@ jobs:
       - name: 📦 Cache Dependencies
         uses: actions/cache@v3
         with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-v3-${{ hashFiles('yarn.lock') }}
+          path: back/node_modules
+          key: ${{ runner.os }}-npm-v3-${{ hashFiles('back/yarn.lock') }}
       - name: 🧪 Run Unit Tests
-        # working-directory: ./back
+        working-directory: ./back
         run: yarn test:unit:ci
-        # env:
-        #   NEXT_PUBLIC_FBASE_API_KEY: "${{ secrets.NEXT_PUBLIC_DEV_FBASE_API_KEY }}"
-        #   NEXT_PUBLIC_FBASE_PROJECT_ID: "pusher-292200"
