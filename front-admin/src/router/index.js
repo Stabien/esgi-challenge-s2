@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +21,11 @@ const router = createRouter({
       component: () => import('@/views/RegisterView.vue')
     },
     {
+      path: '/make-a-demand',
+      name: 'make-a-demand',
+      component: () => import('@/views/DemandView.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
       meta: {
@@ -29,6 +34,6 @@ const router = createRouter({
       component: () => import('@/views/404.vue')
     }
   ]
-})
+});
 
-export default router
+export default router;

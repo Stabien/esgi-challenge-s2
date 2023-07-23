@@ -1,10 +1,12 @@
 <script setup>
 // import { RouterLink } from 'vue-router'
-import Link from '@/components/ui/Link.vue'
-import { getLogo } from '@/utils'
-import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue'
+import Link from '@/components/ui/Link.vue';
+import { inject } from 'vue';
+import { getLogo } from '@/utils';
+import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
 
-getLogo()
+getLogo();
+const { user, setIsLogged } = inject('user');
 </script>
 
 <template>
@@ -18,8 +20,11 @@ getLogo()
       </Link>
     </div>
     <nav class="flex gap-4">
-      <Link variant="outline" class="dark:invert" to="/login">Login</Link>
-      <Link variant="default" class="dark:invert" to="/join">Join</Link>
+      <Link v-if="!user.isLogged" variant="outline" class="dark:invert" to="/login">Login</Link>
+      <Link v-if="!user.isLogged" variant="default" class="dark:invert" to="/join">Join</Link>
+      <Link v-if="user.isLogged" variant="default" class="dark:invert" to="/join"
+        >Make a demand</Link
+      >
     </nav>
   </header>
 </template>
