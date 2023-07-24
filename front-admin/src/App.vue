@@ -1,4 +1,5 @@
 <script setup>
+import { userStatusVisitor } from '@/utils/userConstant';
 import { RouterView } from 'vue-router';
 import Layout from '@/components/Layout.vue';
 import { getLogo } from '@/utils';
@@ -13,15 +14,19 @@ if (!link) {
 }
 link.href = getLogo();
 
-const user = ref({ isLogged: true });
+const user = ref({ isLogged: true, status: userStatusVisitor });
 
 const setIsLogged = (isLogged) => {
   user.value.isLogged = isLogged;
 };
+const setStatus = (status) => {
+  user.value.status = status;
+};
 
 provide('user', {
   user,
-  setIsLogged
+  setIsLogged,
+  setStatus
 });
 </script>
 

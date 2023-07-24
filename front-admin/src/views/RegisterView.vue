@@ -1,6 +1,19 @@
 <script setup>
-import RegisterWithPassword from '@/components/RegisterWithPassword.vue'
-import { randomInt } from '@/utils'
+import RegisterWithPassword from '@/components/RegisterWithPassword.vue';
+import { randomInt } from '@/utils';
+
+import { inject, watch } from 'vue';
+import { useRouter } from 'vue-router';
+
+const { user } = inject('user');
+const router = useRouter();
+const redirect = () => {
+  if (user.value.isLogged) router.push('/');
+};
+redirect();
+watch(user.value, () => {
+  redirect();
+});
 </script>
 
 <template>
@@ -13,7 +26,7 @@ import { randomInt } from '@/utils'
       alt="join Image"
       class="h-full md:block hidden pt-0 object-cover"
     />
-    <section class="pt-24 flex mx-auto items-start h-full md:w-4/6 w-[28rem] place-items-center">
+    <section class="pt-24 mx-auto h-full md:w-4/6 w-[28rem] place-items-center">
       <RegisterWithPassword />
     </section>
   </main>
