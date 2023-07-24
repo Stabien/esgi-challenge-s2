@@ -10,7 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
-  
+
   mongo:
     image: mongo:jammy
     restart: always
@@ -19,7 +19,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes: 
+    volumes:
       - mongo-data:/data/db
 
   back:
@@ -38,6 +38,13 @@ services:
       - "3000:3000"
     volumes:
       - ./front-admin:/home/app
+
+  vitrine:
+    build: ./vitrine
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./vitrine:/home/app
 
 volumes:
   pg-data:
