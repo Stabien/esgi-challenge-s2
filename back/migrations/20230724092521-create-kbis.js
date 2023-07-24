@@ -1,9 +1,9 @@
 'use strict'
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable(
-      'Kbis',
+  up(queryInterface, Sequelize) {
+    return queryInterface.createTable(
+      'kbis',
       {
         uuid: {
           type: Sequelize.DataTypes.UUID,
@@ -22,14 +22,29 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
         },
+        created_at: {
+          type: Sequelize.DataTypes.DATE,
+          allowNull: true,
+          defaultValue: Sequelize.DataTypes.NOW
+        },
+        updated_at: {
+          type: Sequelize.DataTypes.DATE,
+          allowNull: true,
+          defaultValue: Sequelize.DataTypes.NOW
+        },
+        user_uuid: {
+          type: Sequelize.DataTypes.UUID,
+          defaultValue: Sequelize.DataTypes.UUIDV4,
+          allowNull: false,
+        }
       },
       {
-        timestamps: true,
         underscored: true,
+        timestamps: true
       },
     )
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Kbis')
+  down(queryInterface, Sequelize) {
+    return queryInterface.dropTable('kbis')
   },
 }

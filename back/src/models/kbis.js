@@ -19,7 +19,7 @@ exports.userRules = {
  * Sequelize models
  */
 module.exports = sequelize.define(
-  'Kbis',
+  'kbis',
   {
     uuid: {
       type: Sequelize.DataTypes.UUID,
@@ -38,9 +38,26 @@ module.exports = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    createdAt: {
+      type: Sequelize.DataTypes.DATE,
+      allowNull: true,
+      defaultValue: Sequelize.DataTypes.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DataTypes.DATE,
+      allowNull: true,
+      defaultValue: Sequelize.DataTypes.NOW,
+    },
+    userUuid: {
+      type: Sequelize.DataTypes.UUID,
+      defaultValue: Sequelize.DataTypes.UUIDV4,
+      allowNull: false,
+      references: 'kbis',
+      referencesKey: 'uuid',
+    }
   },
   {
-    timestamps: true,
     underscored: true,
+    timestamps: true,
   },
 )

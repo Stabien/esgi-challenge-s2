@@ -20,7 +20,7 @@ exports.userRules = {
  * Sequelize models
  */
 const Users = sequelize.define(
-  'Users',
+  'users',
   {
     uuid: {
       type: Sequelize.DataTypes.UUID,
@@ -63,13 +63,13 @@ const Users = sequelize.define(
       type: Sequelize.DataTypes.UUID,
       defaultValue: Sequelize.DataTypes.UUIDV4,
       allowNull: false,
-      references: 'Kbis',
-      referencesKey: 'Uuid',
+      references: 'kbis',
+      referencesKey: 'uuid',
     },
   },
   {
-    timestamps: true,
     underscored: true,
+    timestamps: false,
   },
 )
 

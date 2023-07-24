@@ -2,9 +2,9 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable(
-      'Users',
+  up(queryInterface, Sequelize) {
+    return queryInterface.createTable(
+      'users',
       {
         uuid: {
           type: Sequelize.DataTypes.UUID,
@@ -31,7 +31,7 @@ module.exports = {
           type: Sequelize.DataTypes.STRING,
           allowNull: false,
         },
-        societyName: {
+        society_name: {
           type: Sequelize.DataTypes.STRING,
           allowNull: false,
         },
@@ -43,20 +43,19 @@ module.exports = {
           type: Sequelize.DataTypes.ENUM('REJECTED', 'PENDING', 'VALIDATED'),
           allowNull: false,
         },
-        kbisUuid: {
+        kbis_uuid: {
           type: Sequelize.DataTypes.UUID,
           defaultValue: Sequelize.DataTypes.UUIDV4,
           allowNull: false,
         },
       },
       {
-        timestamps: true,
         underscored: true,
       },
     )
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('users')
+  down(queryInterface, Sequelize) {
+    return queryInterface.dropTable('users')
   },
 }

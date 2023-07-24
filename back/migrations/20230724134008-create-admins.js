@@ -1,9 +1,9 @@
 'use strict'
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable(
-      'Admins',
+  up(queryInterface, Sequelize) {
+    return queryInterface.createTable(
+      'admins',
       {
         uuid: {
           type: Sequelize.DataTypes.UUID,
@@ -18,12 +18,11 @@ module.exports = {
         },
       },
       {
-        timestamps: true,
         underscored: true,
       },
     )
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Admins')
+  down(queryInterface, Sequelize) {
+    return queryInterface.dropTable('admins')
   },
 }
