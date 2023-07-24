@@ -78,6 +78,9 @@ module.exports = {
       },
       gridTemplateColumns: {
         '1/3': '1fr 2fr'
+      },
+      zIndex: {
+        100: '100'
       }
     }
   },
@@ -85,4 +88,4 @@ module.exports = {
     extend: {}
   },
   plugins: []
-}
+};
