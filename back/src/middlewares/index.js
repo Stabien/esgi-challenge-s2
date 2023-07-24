@@ -73,9 +73,9 @@ exports.checkUserTokenUuid = (req, res, next) => {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  if (token.uuid === req.params[paramName]) {
-    return next()
-  } else {
+  if (token.uuid !== req.params[paramName]) {
     return res.status(401).json({ error: 'Not authorized' })
   }
+
+  return next()
 }

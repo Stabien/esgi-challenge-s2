@@ -53,7 +53,7 @@ exports.authentication = async (req, res) => {
 }
 
 exports.registration = async (req, res) => {
-  const { email, password, confirmPassword, firstname, lastname } = req.body
+  const { email, password, confirmPassword, firstname, lastname, societyName, url, kbis } = req.body
 
   if (password !== confirmPassword) {
     return res.status(422).json({ error: "Passwords don't match" })
@@ -72,6 +72,9 @@ exports.registration = async (req, res) => {
       uuid,
       email,
       password: hashedPassword,
+      societyName,
+      url,
+      kbis,
       firstname,
       lastname,
     })
