@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { config } = require('dotenv')
-const { regexUuid, userRules } = require('../models')
+const { regexUuid, userRules } = require('../models/users')
 
 config()
 
@@ -15,16 +15,11 @@ const verifyUserToken = (req) => {
   let response
 
   if (token !== undefined) {
-    jwt.verify(
-      token.split(' ')[1],
-      SECRET_KEY,
-      { algorithms: ['HS256'] },
-      (error, decoded) => {
-        if (error === null) {
-          response = decoded
-        }
-      },
-    )
+    jwt.verify(token.split(' ')[1], SECRET_KEY, { algorithms: ['HS256'] }, (error, decoded) => {
+      if (error === null) {
+        response = decoded
+      }
+    })
   }
   return response
 }
@@ -56,7 +51,7 @@ exports.checkUserTokenFormat = (req, res, next) => {
   const token = verifyUserToken(req)
 
   if (token !== null) {
-    res.locals.userUuid = (token).uuid
+    res.locals.userUuid = token.uuid
     return next()
   } else {
     return res.status(401).json({ error: 'Invalid token' })
@@ -78,7 +73,7 @@ exports.checkUserTokenUuid = (req, res, next) => {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  if ((token).uuid === req.params[paramName]) {
+  if (token.uuid === req.params[paramName]) {
     return next()
   } else {
     return res.status(401).json({ error: 'Not authorized' })

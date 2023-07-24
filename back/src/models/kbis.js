@@ -1,6 +1,5 @@
 const sequelize = require('../config/sequelize')
-const mongoConnection = require('../config/mongoose')
-const { DataTypes } = require('sequelize')
+const Sequelize = require('sequelize')
 
 /**
  * Entity rules
@@ -19,37 +18,29 @@ exports.userRules = {
 /**
  * Sequelize models
  */
-exports.User = sequelize.define(
-  'User',
+module.exports = sequelize.define(
+  'Kbis',
   {
     uuid: {
-      type: DataTypes.UUID,
+      type: Sequelize.DataTypes.UUID,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: Sequelize.DataTypes.UUIDV4,
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
-      },
-    },
-    password: {
-      type: DataTypes.STRING,
+    type: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
-    firstname: {
-      type: DataTypes.STRING,
+    name: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
-    lastname: {
-      type: DataTypes.STRING,
+    path: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
     underscored: true,
   },
 )
