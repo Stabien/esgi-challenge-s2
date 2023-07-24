@@ -1,12 +1,14 @@
 <script setup>
-import LoginWithPassword from '@/components/LoginWithPassword.vue';
 import { inject, watch } from 'vue';
+import { userStatusAdmin } from '@/utils/userConstant';
+
 import { useRouter } from 'vue-router';
 
 const { user } = inject('user');
 const router = useRouter();
 const redirect = () => {
-  if (user.value.isLogged) router.push('/');
+  console.log(user.value.status);
+  if (user.value.status !== userStatusAdmin) router.push('/404');
 };
 redirect();
 watch(user.value, () => {
@@ -15,7 +17,5 @@ watch(user.value, () => {
 </script>
 
 <template>
-  <main class="mx-auto flex h-full w-[28rem] place-items-center overflow-y-hidden">
-    <LoginWithPassword />
-  </main>
+  <div>Admin</div>
 </template>

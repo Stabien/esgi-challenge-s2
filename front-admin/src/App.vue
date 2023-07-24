@@ -19,10 +19,14 @@ const user = ref({ isLogged: true, status: userStatusVisitor });
 const setIsLogged = (isLogged) => {
   user.value.isLogged = isLogged;
 };
+const setStatus = (status) => {
+  user.value.status = status;
+};
 
 provide('user', {
   user,
-  setIsLogged
+  setIsLogged,
+  setStatus
 });
 </script>
 

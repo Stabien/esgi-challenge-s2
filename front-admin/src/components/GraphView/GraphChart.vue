@@ -4,10 +4,23 @@ import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
 
 import { defineProps } from 'vue';
 import { DoughnutChart, BarChart, ScatterChart } from 'vue-chart-3';
+import { inject, watch } from 'vue';
+import { userStatusWebmaster } from '@/utils/userConstant';
 
+import { useRouter } from 'vue-router';
+
+const { user } = inject('user');
+const router = useRouter();
+const redirect = () => {
+  console.log(user.value.status);
+  if (user.value.status !== userStatusWebmaster) router.push('/404');
+};
+redirect();
+watch(user.value, () => {
+  redirect();
+});
 const props = defineProps(['type']);
 
-console.log(props.type);
 const testData = {
   labels: [
     'visitePage1',
