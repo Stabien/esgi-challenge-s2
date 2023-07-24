@@ -21,6 +21,11 @@ const router = createRouter({
       component: () => import('@/views/RegisterView.vue')
     },
     {
+      path: '/graph',
+      name: 'graph',
+      component: () => import('@/views/GraphView.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
       meta: {

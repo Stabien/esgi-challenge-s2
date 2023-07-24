@@ -6,25 +6,27 @@ defineEmits(['update:modelValue']);
 </script>
 
 <template>
-  <label :for="props.label"
-    >{{ props.label }}
-    <span v-if="props.required" class="text-palette-primary-500">*</span>
-  </label>
+  <div class="flex flex-col w-full gap-2" :style="{ gridArea: props.label }">
+    <label :for="props.label"
+      >{{ props.label }}
+      <span v-if="props.required" class="text-palette-primary-500">*</span>
+    </label>
 
-  <input
-    v-if="props.type !== 'file'"
-    :required="props.required"
-    :type="props.type"
-    :id="props.label"
-    :value="modelValue"
-    @input="$emit('update:modelValue', $event.target.value)"
-  />
-  <input
-    v-else
-    :required="props.required"
-    accept="application/pdf"
-    :type="props.type"
-    :id="props.label"
-    @change="(event) => console.log(event)"
-  />
+    <input
+      v-if="props.type !== 'file'"
+      :required="props.required"
+      :type="props.type"
+      :id="props.label"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
+    />
+    <input
+      v-else
+      :required="props.required"
+      accept="application/pdf"
+      :type="props.type"
+      :id="props.label"
+      @change="(event) => console.log(event)"
+    />
+  </div>
 </template>

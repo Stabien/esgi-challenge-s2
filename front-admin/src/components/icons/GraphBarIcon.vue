@@ -1,0 +1,12 @@
+<template>
+  <svg
+    fill="currentColor"
+    width="800px"
+    height="800px"
+    viewBox="0 0 22 22"
+    xmlns="http://www.w3.org/2000/svg"
+    id="memory-chart-bar"
+  >
+    <path d="M2 2H4V18H20V20H2V2M6 16V8H10V16H6M11 16V4H15V16H11M16 16V11H20V16H16Z" />
+  </svg>
+</template>
