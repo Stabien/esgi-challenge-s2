@@ -14,7 +14,7 @@ if (!link) {
 }
 link.href = getLogo();
 
-const user = ref({ isLogged: true, status: userStatusVisitor });
+const user = ref({ isLogged: false, status: userStatusVisitor });
 
 const setIsLogged = (isLogged) => {
   user.value.isLogged = isLogged;

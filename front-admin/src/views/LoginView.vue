@@ -16,6 +16,6 @@ watch(user.value, () => {
 
 <template>
   <main class="mx-auto flex h-full w-[28rem] place-items-center overflow-y-hidden">
-    <LoginWithPassword />
+    <LoginWithPassword :isAdmin="router.currentRoute.value.path === '/login-admin'" />
   </main>
 </template>
