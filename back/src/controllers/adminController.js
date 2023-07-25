@@ -23,7 +23,7 @@ exports.authentication = async (req, res) => {
     }
 
     const { uuid } = admin
-    const token = jwt.sign({ uuid }, process.env.JWT_KEY)
+    const token = jwt.sign({ uuid, isAdmin: true }, process.env.JWT_KEY)
 
     return res.status(200).json({
       admin: {

@@ -26,11 +26,7 @@ exports.getUserByUuid = async (req, res) => {
 exports.authentication = async (req, res) => {
   const { email, password } = req.body
   try {
-    console.log(req.body)
-    console.log(email)
-    console.log(password)
     const user = await Users.findOne({ where: { email } })
-    console.log(user)
     if (user === null) {
       return res.status(404).json({ error: 'User not found' })
     }
@@ -39,7 +35,7 @@ exports.authentication = async (req, res) => {
     }
 
     const { uuid, firstname, lastname } = user
-    const token = jwt.sign({ uuid }, process.env.JWT_KEY)
+    const token = jwt.sign({ uuid, isAdmin: false }, process.env.JWT_KEY)
 
     return res.status(200).json({
       user: {
