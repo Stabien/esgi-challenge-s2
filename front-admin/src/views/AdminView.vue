@@ -6,9 +6,13 @@ import RequestRow from '@/components/AdminView/RequestRow.vue';
 import { requestList } from '@/utils/requestConstants';
 const { user } = inject('user');
 const router = useRouter();
+
 const redirect = () => {
   console.log(user.value.status);
-  if (user.value.status !== userStatusAdmin) router.push('/404');
+  if (user.value.status !== userStatusAdmin) {
+    console.log(router);
+    // router.push('/404');
+  }
 };
 redirect();
 watch(user.value, () => {

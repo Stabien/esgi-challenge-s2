@@ -3,6 +3,8 @@ import { defineProps } from 'vue';
 import { REJECTED, VALIDATED, PENDING } from '@/utils/requestConstants';
 import PendingIcon from '@/components/icons/PendingIcon.vue';
 import CheckIcon from '@/components/icons/CheckIcon.vue';
+import ArrowLeft from '@/components/icons/ArrowLeft.vue';
+import Link from '@/components/ui/Link.vue';
 import RefusedIcon from '@/components/icons/RefusedIcon.vue';
 
 defineProps(['request']);
@@ -38,7 +40,9 @@ defineProps(['request']);
     <div :style="{ gridArea: 'email' }">{{ request.email }}</div>
     <div :style="{ gridArea: 'url' }">{{ request.url }}</div>
     <div :style="{ gridArea: 'arrow' }">
-      {{ request.id }}
+      <Link :to="`/request/${request.id}`">
+        <ArrowLeft transform="rotate(180)" />
+      </Link>
     </div>
   </article>
 </template>

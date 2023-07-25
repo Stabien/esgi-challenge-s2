@@ -2,18 +2,52 @@
 import { ref } from 'vue';
 import Button from '@/components/ui/Button.vue';
 import Input from '@/components/ui/Input.vue';
+import { useToast } from 'vue-toastification';
+import { errorHandler } from '@/utils';
+const toast = useToast();
 
 const form = ref({
   email: '',
   password: '',
+  confirmPassword: '',
   firstname: '',
   lastname: '',
   society: '',
   url: ''
 });
+const kbis = ref();
 
-const sub = () => {
-  console.log(form.value);
+const register = () => {
+  var formData = new FormData();
+  formData.append('email', form.value.email);
+  formData.append('password', form.value.password);
+  formData.append('confirmPassword', form.value.confirmPassword);
+  formData.append('societyName', form.value.society);
+  formData.append('url', form.value.url);
+  formData.append('firstname', form.value.firstname);
+  formData.append('lastname', form.value.lastname);
+  formData.append('kbis', kbis.value);
+
+  var requestOptions = {
+    method: 'POST',
+    body: formData,
+    redirect: 'follow'
+  };
+
+  fetch('http://localhost:4000/api/user/registration', requestOptions)
+    .then((response) => {
+      console.log('response');
+      response.text();
+    })
+    .then((result) => {
+      console.log('result');
+      console.log();
+      toast.error(errorHandler(result));
+    })
+    .catch((error) => {
+      toast.error(errorHandler(error));
+      console.log('error', error);
+    });
 };
 </script>
 
@@ -26,24 +60,26 @@ const sub = () => {
   <form
     :style="{
       gridTemplateAreas: `'Email Email'
-    'Password Password'
-    'Firstname Lastname'
-    'Society Url'
-    'Kbis Kbis'
+      'Firstname Lastname'
+      'Society Url'
+      'Kbis Kbis'
+      'Password Password'
+      'Confirm_password Confirm_password'
     'button button'
   `
     }"
     @submit.prevent="onSubmit"
     class="grid grid-cols-2 gap-4 w-full"
   >
-    <Input type="email" required="true" label="Email" v-model="form.email" />
-    <Input type="password" required="true" label="Password" v-model="form.password" />
+    <Input type="email" label="Email" v-model="form.email" />
     <Input type="text" label="Firstname" v-model="form.firstName" />
     <Input type="text" label="Lastname" v-model="form.lastname" />
-    <Input type="text" label="Society" required="true" v-model="form.society" />
-    <Input type="text" label="Url" required="true" v-model="form.url" />
-    <Input type="file" label="Kbis" />
+    <Input type="text" label="Society" v-model="form.society" />
+    <Input type="text" label="Url" v-model="form.url" />
+    <Input type="file" label="Kbis" @change="(event) => (kbis = event.target.files[0])" />
+    <Input type="password" label="Password" v-model="form.password" />
+    <Input type="password" label="Confirm_password" v-model="form.confirmPassword" />
 
-    <Button :style="{ gridArea: 'button' }" type="submit" @click="sub">Join</Button>
+    <Button :style="{ gridArea: 'button' }" type="submit" @click="register">Join</Button>
   </form>
 </template>

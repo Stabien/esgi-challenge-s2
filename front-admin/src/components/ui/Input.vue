@@ -8,7 +8,7 @@ defineEmits(['update:modelValue']);
 <template>
   <div class="flex flex-col w-full gap-2" :style="{ gridArea: props.label }">
     <label :for="props.label"
-      >{{ props.label }}
+      >{{ props.label.replace('_', ' ') }}
       <span v-if="props.required" class="text-palette-primary-500">*</span>
     </label>
 
