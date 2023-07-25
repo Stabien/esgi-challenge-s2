@@ -121,10 +121,17 @@ jobs:
     needs:
       - end-to-end-test
     steps:
-      - name: Checkout
+      - name: ✨ Checkout
         uses: actions/checkout@v3
 
-      - name: Build the project
+      - name: 🧶 Install Yarn
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: "yarn"
+          cache-dependency-path: "./front-admin/yarn.lock"
+
+      - name: 📦 Build the project
         run: yarn --cwd ./front-admin build
 
       - name: Setup Pages
