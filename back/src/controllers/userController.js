@@ -25,10 +25,12 @@ exports.getUserByUuid = async (req, res) => {
 
 exports.authentication = async (req, res) => {
   const { email, password } = req.body
-
   try {
+    console.log(req.body)
+    console.log(email)
+    console.log(password)
     const user = await Users.findOne({ where: { email } })
-
+    console.log(user)
     if (user === null) {
       return res.status(404).json({ error: 'User not found' })
     }
@@ -54,15 +56,7 @@ exports.authentication = async (req, res) => {
 }
 
 exports.registration = async (req, res) => {
-  const { 
-    email, 
-    password, 
-    confirmPassword, 
-    firstname, 
-    lastname, 
-    societyName, 
-    url
-  } = req.body
+  const { email, password, confirmPassword, firstname, lastname, societyName, url } = req.body
   const { file } = req
 
   if (password !== confirmPassword) {
@@ -88,24 +82,24 @@ exports.registration = async (req, res) => {
       firstname,
       lastname,
       status: 'PENDING',
-      kbisUuid
+      kbisUuid,
     })
-    
+
     const newKbis = await Kbis.create({
       uuid: kbisUuid,
       path: file.path,
       name: file.originalname,
-      type: file.mimetype
+      type: file.mimetype,
     })
-    
+
     await newUser.save()
     await newKbis.save()
 
-    // await sendEmail({ 
-    //   to: email, 
-    //   from: 'noreply@esgi-ads.fr', 
-    //   subject: 'Account activation', 
-    //   text: 'Votre compte est en attente de validation par un administrateur' 
+    // await sendEmail({
+    //   to: email,
+    //   from: 'noreply@esgi-ads.fr',
+    //   subject: 'Account activation',
+    //   text: 'Votre compte est en attente de validation par un administrateur'
     // })
 
     const response = { ...newUser.dataValues }
@@ -113,7 +107,8 @@ exports.registration = async (req, res) => {
 
     return res.status(201).json(response)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    console.log(e)
+    throw res.status(500).json({ error: e })
   }
 }
 

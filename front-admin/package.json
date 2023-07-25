@@ -18,19 +18,19 @@
     "chart.js": "^4.3.0",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.3.2",
+    "jwt-decode": "^3.1.2",
     "tailwind-merge": "^1.14.0",
     "vue": "^3.3.4",
     "vue-chart-3": "^3.1.8",
     "vue-chartjs": "^5.2.0",
-    "vue-router": "^4.2.2"
+    "vue-router": "^4.2.2",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/test-utils": "^2.3.2",
-    "unplugin-auto-import": "^0.16.6",
-    "unplugin-vue-components": "^0.25.1",
     "autoprefixer": "^10.4.14",
     "cypress": "^12.14.0",
     "eslint": "^8.39.0",
@@ -41,6 +41,8 @@
     "prettier": "^2.8.8",
     "start-server-and-test": "^2.0.0",
     "tailwindcss": "^3.3.3",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.1",
     "vite": "^4.3.9",
     "vitest": "^0.32.0"
   }

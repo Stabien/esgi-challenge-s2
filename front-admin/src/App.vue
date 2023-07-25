@@ -2,7 +2,7 @@
 import { userStatusVisitor } from '@/utils/userConstant';
 import { RouterView } from 'vue-router';
 import Layout from '@/components/Layout.vue';
-import { getLogo } from '@/utils';
+import { getLogo, decodeToken } from '@/utils';
 import { provide, ref } from 'vue';
 
 // Change FavIcon
@@ -14,7 +14,9 @@ if (!link) {
 }
 link.href = getLogo();
 
-const user = ref({ isLogged: false, status: userStatusVisitor });
+//verify if already connected
+const decodedToken = decodeToken();
+const user = ref({ isLogged: !!decodedToken, status: userStatusVisitor });
 
 const setIsLogged = (isLogged) => {
   user.value.isLogged = isLogged;
@@ -33,9 +35,4 @@ provide('user', {
 <template>
   <Layout v-if="$route.meta.layout !== 'none'" />
   <RouterView class="pt-24" />
-  <!-- <span
-    ref="cursor"
-    :style="{ left: mouseX + 'px', top: mouseY + 'px', visibility: visibility }"
-    class="fixed origin-center h-4 w-4 bg-palette-primary-500 mix-blend-difference invert rounded-full opacity-60 pointer-events-none"
-  ></span> -->
 </template>

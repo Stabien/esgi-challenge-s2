@@ -8,6 +8,11 @@ import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
 
 getLogo();
 const { user, setIsLogged, setStatus } = inject('user');
+const logout = () => {
+  localStorage.removeItem('token');
+  setIsLogged(false);
+  setStatus(userStatusVisitor);
+};
 </script>
 
 <template>
@@ -19,10 +24,10 @@ const { user, setIsLogged, setStatus } = inject('user');
       </Link>
     </div>
     <nav class="flex gap-4">
-      is logged :{{ user.isLogged }} status:{{ user.status }}
+      <!-- is logged :{{ user.isLogged }} status:{{ user.status }} -->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
-      <Button
+      <!-- <Button
         v-if="!user.isLogged"
         variant="outline"
         @click="
@@ -32,16 +37,14 @@ const { user, setIsLogged, setStatus } = inject('user');
           }
         "
         >QuickLogin</Button
-      >
+      > -->
       <Button v-if="user.isLogged" variant="outline" @click="setStatus(userStatusAdmin)"
         >Admin</Button
       >
       <Button v-if="user.isLogged" variant="outline" @click="setStatus(userStatusWebmaster)"
         >WebMaster</Button
       >
-      <Button v-if="user.isLogged" variant="outline" @click="setStatus(userStatusVisitor)"
-        >Visitor</Button
-      >
+
       <Link
         v-if="user.isLogged && user.status === userStatusWebmaster"
         variant="default"
@@ -51,17 +54,7 @@ const { user, setIsLogged, setStatus } = inject('user');
       <Link v-if="user.isLogged && user.status === userStatusAdmin" variant="default" to="/admin"
         >Admin</Link
       >
-      <Button
-        v-if="user.isLogged"
-        variant="default"
-        @click="
-          () => {
-            setIsLogged(false);
-            setStatus(userStatusVisitor);
-          }
-        "
-        >Logout</Button
-      >
+      <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
     </nav>
   </header>
 </template>
