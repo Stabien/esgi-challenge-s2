@@ -131,7 +131,10 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "./front-admin/yarn.lock"
 
-      - name: 📦 Build the project
+      - name: 📦 Install Dependencies
+        run: yarn --cwd ./front-admin install # Installez les dépendances du projet dans le dossier "front-admin"
+
+      - name: 👀 Build for tests (dev keys)
         run: yarn --cwd ./front-admin build
 
       - name: Setup Pages
