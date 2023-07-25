@@ -19,7 +19,7 @@ exports.getUserByUuid = async (req, res) => {
     const user = await Users.findOne({ where: { uuid: req.params.uuid } })
     return res.status(200).json(user)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }
 
@@ -49,7 +49,7 @@ exports.authentication = async (req, res) => {
       },
     })
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }
 
@@ -113,7 +113,7 @@ exports.registration = async (req, res) => {
 
     return res.status(201).json(response)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }
 
@@ -129,6 +129,6 @@ exports.updateUser = async (req, res) => {
 
     return res.status(200).json(user)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }

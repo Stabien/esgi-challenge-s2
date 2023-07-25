@@ -33,7 +33,7 @@ exports.authentication = async (req, res) => {
       },
     })
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }
 
@@ -42,7 +42,7 @@ exports.getUserRegistrations = async (req, res) => {
     const userRegistrations = await Users.find({ where: { status: 'PENDING' } })
     return res.status(200).json(userRegistrations)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }
 
@@ -56,7 +56,7 @@ exports.validateUser = async (req, res) => {
 
     return res.status(200).json(user)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }
 
@@ -70,6 +70,6 @@ exports.rejectUser = async (req, res) => {
     
     return res.status(200).json(user)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    throw res.status(500).json({ error: e })
   }
 }

@@ -5,24 +5,15 @@ const Admins = require('../models/admins')
 
 config()
 
-/**
- * Check token format.
- * If format is correct, returns token data.
- * Otherwise returns undefined.
- */
 const verifyUserToken = (req) => {
   const token = req.get('Authorization')
   const SECRET_KEY = process.env.JWT_KEY
-  let response
 
-  if (token !== undefined) {
-    jwt.verify(token.split(' ')[1], SECRET_KEY, { algorithms: ['HS256'] }, (error, decoded) => {
-      if (error === null) {
-        response = decoded
-      }
-    })
+  if (token === undefined) {
+    return null
   }
-  return response
+
+  return jwt.verify(token.split(' ')[1], SECRET_KEY, { algorithms: ['HS256'] })
 }
 
 exports.checkUserModel = (req, res, next) => {
