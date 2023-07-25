@@ -20,6 +20,9 @@ const routes = (app) => {
 
   app.route('/api/admin/userRegistrations')
     .get(isAdmin, getUserRegistrations)
+  
+  app.route('/api/admin/validateUser/:uuid')
+  app.route('/api/admin/rejectUser/:uuid')
 }
 
 module.exports = routes
