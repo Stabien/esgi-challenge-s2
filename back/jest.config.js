@@ -33,4 +33,4 @@ const config = {
   // setupFiles: ['<rootDir>/__tests__/localStorage.js'],
 }
 
-export default config
+// export default config
