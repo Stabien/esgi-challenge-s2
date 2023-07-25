@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { config } = require('dotenv')
 const { regexUuid, userRules } = require('../models/users')
+const Admins = require('../models/admins')
 
 config()
 
@@ -63,7 +64,6 @@ exports.checkUserTokenFormat = (req, res, next) => {
  */
 exports.checkUserTokenUuid = (req, res, next) => {
   const token = verifyUserToken(req)
-  const paramName = Object.keys(req.params)[0]
 
   if (token === undefined) {
     return res.status(401).json({ error: 'Invalid token' })
@@ -73,8 +73,28 @@ exports.checkUserTokenUuid = (req, res, next) => {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  if (token.uuid !== req.params[paramName]) {
+  if (token.uuid !== req.params.uuid) {
     return res.status(401).json({ error: 'Not authorized' })
+  }
+
+  return next()
+}
+
+exports.isAdmin = async (req, res, next) => {
+  const token = verifyUserToken(req)
+
+  if (token === undefined) {
+    return res.status(401).json({ error: 'Invalid token' })
+  }
+
+  if (!token.hasOwnProperty('uuid')) {
+    return res.status(401).json({ error: 'Invalid token' })
+  }
+
+  const admin = await Admins.findOne({ where: { uuid } })
+
+  if (!admin) {
+    return res.status(404).json({ error: 'Admin not found' })
   }
 
   return next()

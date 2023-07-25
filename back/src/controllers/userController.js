@@ -29,26 +29,25 @@ exports.authentication = async (req, res) => {
   try {
     const user = await Users.findOne({ where: { email } })
 
-    if (user !== null) {
-      if (!bcrypt.compareSync(password, user.password)) {
-        return res.status(404).json({ error: 'User not found' })
-      }
-
-      const { uuid, firstname, lastname } = user
-      const token = jwt.sign({ uuid }, process.env.JWT_KEY)
-
-      return res.status(200).json({
-        user: {
-          uuid,
-          email: user.email,
-          firstname,
-          lastname,
-          token,
-        },
-      })
-    } else {
+    if (user === null) {
       return res.status(404).json({ error: 'User not found' })
     }
+    if (!bcrypt.compareSync(password, user.password)) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const { uuid, firstname, lastname } = user
+    const token = jwt.sign({ uuid }, process.env.JWT_KEY)
+
+    return res.status(200).json({
+      user: {
+        uuid,
+        email: user.email,
+        firstname,
+        lastname,
+        token,
+      },
+    })
   } catch (e) {
     return res.status(500).json({ error: e })
   }
