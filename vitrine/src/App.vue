@@ -1,7 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import Layout from '@/components/Layout.vue'
-import Tracker from '@/components/Widget.vue'
 import { getLogo } from '@/utils'
 import { ref } from 'vue'
 // Change FavIcon
@@ -31,10 +30,10 @@ document.addEventListener('mouseout', () => {
   // console.log('je suis dehors')
   // visibility.value = 'hidden'
 })
+
 </script>
 
 <template>
-  <Tracker />
   <Layout v-if="$route.meta.layout !== 'none'" />
   <RouterView class="pt-24" />
   <span
