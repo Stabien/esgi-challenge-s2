@@ -1,14 +1,21 @@
 <script setup>
-import { ref } from 'vue'
-import Button from '@/components/ui/Button.vue'
+import { ref, defineProps } from 'vue';
 
-const email = ref('')
-const pwd = ref('')
+import Button from '@/components/ui/Button.vue';
+
+const props = defineProps(['isAdmin']);
+const email = ref('');
+const pwd = ref('');
 
 const sub = () => {
-  console.log(email.value)
-  console.log(pwd.value)
-}
+  if (props.isAdmin) {
+    console.log('je suis admin');
+  } else {
+    console.log('je suis pas admin');
+  }
+  console.log(email.value);
+  console.log(pwd.value);
+};
 </script>
 
 <template>

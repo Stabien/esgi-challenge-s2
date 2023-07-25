@@ -24,7 +24,12 @@ const getDbConfig = () => {
 }
 const { user, password, host, port, database } = getDbConfig()
 
-const sequelize = new Sequelize(`postgres://${user}:${password}@${host}:${port}/${database}`)
+const sequelize = new Sequelize(`postgres://${user}:${password}@${host}:${port}/${database}`, {
+  define: {
+    underscored: true, 
+    underscoredAll: true, 
+  }
+})
 
 sequelize
   .authenticate()
