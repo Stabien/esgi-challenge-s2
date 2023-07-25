@@ -1,7 +1,6 @@
 moduleDirectories: ['node_modules', 'src']
-import type { Config } from 'jest'
 
-const config: Config = {
+const config = {
   verbose: true,
   moduleNameMapper: {
     // Handle CSS imports (with CSS modules)
