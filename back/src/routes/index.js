@@ -6,8 +6,7 @@ const {
   updateUser,
 } = require('../controllers/userController')
 const { checkUserTokenUuid } = require('../middlewares')
-const multer = require('multer')
-const upload = multer({ dest: './public/upload/' })
+const upload = require('../config/multer')
 
 /** Router */
 const routes = (app) => {
