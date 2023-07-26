@@ -25,7 +25,7 @@ const handleRequest = async (status, uuid) => {
   try {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    const result = await fetch(
+    await fetch(
       `${import.meta.env.VITE_PROD_API_URL}/api/admin/${getCorrectRequest(status)}/${uuid}`,
       {
         method: 'PUT',
@@ -35,8 +35,6 @@ const handleRequest = async (status, uuid) => {
         }
       }
     );
-    console.log(result);
-    console.log('accept', uuid);
     props.getPendingUserList();
   } catch (error) {
     console.log(error);

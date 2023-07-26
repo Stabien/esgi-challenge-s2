@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import Button from '@/components/ui/Button.vue';
 import Input from '@/components/ui/Input.vue';
 import { useToast } from 'vue-toastification';
-import { errorHandler } from '@/utils';
 const toast = useToast();
 
 const form = ref({
@@ -19,6 +18,9 @@ const kbis = ref();
 
 const register = async () => {
   try {
+    if (form.value.password !== form.value.confirmPassword)
+      throw new Error("Password doesn't match");
+
     var formData = new FormData();
     formData.append('email', form.value.email);
     formData.append('password', form.value.password);
@@ -36,12 +38,13 @@ const register = async () => {
     };
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_KEY}/api/user/registration`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/registration`,
       requestOptions
     );
-    if (response.status === 422) throw new Error('Wrong');
+    if (!response.ok) throw new Error('Something went wrong');
   } catch (error) {
-    toast.error(errorHandler(error));
+    console.log(error);
+    toast.error(error.message);
   }
 };
 </script>
