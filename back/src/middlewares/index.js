@@ -81,11 +81,13 @@ exports.isAdmin = async (req, res, next) => {
   if (!token.hasOwnProperty('uuid')) {
     return res.status(401).json({ error: 'Invalid token' })
   }
-
-  const admin = await Admins.findOne({ where: { uuid } })
-
-  if (!admin) {
-    return res.status(404).json({ error: 'Admin not found' })
+  try {
+    const admin = await Admins.findOne({ where: { uuid: token.uuid } })
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' })
+    }
+  } catch (error) {
+    throw new Error(error)
   }
 
   return next()
