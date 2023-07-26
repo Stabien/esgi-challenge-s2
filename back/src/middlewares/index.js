@@ -87,7 +87,7 @@ exports.isAdmin = async (req, res, next) => {
       return res.status(404).json({ error: 'Admin not found' })
     }
     return next()
-  } catch (error) {
-    return new Error(error)
+  } catch (e) {
+    return res.status(500).json({ error: e })
   }
 }

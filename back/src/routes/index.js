@@ -22,8 +22,8 @@ const routes = (app) => {
 
   app.route('/api/admin/userRegistrations').get(isAdmin, getUserRegistrations)
 
-  app.route('/api/admin/validateUser/:uuid').put(validateUser)
-  app.route('/api/admin/rejectUser/:uuid').put(rejectUser)
+  app.route('/api/admin/validateUser/:uuid').put(isAdmin, validateUser)
+  app.route('/api/admin/rejectUser/:uuid').put(isAdmin, rejectUser)
   app.route('/api/admin/authentication').post(adminAuthentication)
 
   app.route('/api/analytics').post(addAnalytics)

@@ -48,7 +48,7 @@ exports.validateUser = async (req, res) => {
   const { uuid } = req.params
   try {
     await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
-    return res.status(200)
+    return res.send(200)
   } catch (e) {
     return res.status(500).json({ error: e })
   }
