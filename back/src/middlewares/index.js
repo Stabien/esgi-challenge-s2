@@ -88,6 +88,6 @@ exports.isAdmin = async (req, res, next) => {
     }
     return next()
   } catch (error) {
-    throw new Error(error)
+    return new Error(error)
   }
 }

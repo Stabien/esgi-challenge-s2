@@ -8,6 +8,6 @@ exports.addAnalytics = async (req, res) => {
     await analytics.save()
     return res.status(201).json(analytics)
   } catch (e) {
-    throw res.status(500).json({ error: e })
+    return res.status(500).json({ error: e })
   }
 }
