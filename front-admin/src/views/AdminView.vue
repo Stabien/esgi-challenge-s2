@@ -20,16 +20,17 @@ const x = ref(null);
 const getPendingUserList = async () => {
   console.log('je fetch');
   try {
-    const result = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/admin/userRegistrations`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/admin/userRegistrations`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       }
-    });
-    if (!result.ok) {
-      // Gérer les erreurs de réponse ici si besoin
-      throw new Error("La requête n'a pas abouti");
-    }
-    const data = await result.json();
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
 
     requestList.value = data;
     x.value = data[0];

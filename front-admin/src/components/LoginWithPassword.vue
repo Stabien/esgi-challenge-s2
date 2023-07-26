@@ -1,9 +1,8 @@
 <script setup>
-import { ref, defineProps } from 'vue';
-import { useToast } from 'vue-toastification';
-import { errorHandler } from '@/utils';
-import { updateLocalStorage } from '@/utils';
 import Button from '@/components/ui/Button.vue';
+import { updateLocalStorage } from '@/utils';
+import { defineProps, ref } from 'vue';
+import { useToast } from 'vue-toastification';
 
 const props = defineProps(['isAdmin']);
 const toast = useToast();
@@ -27,12 +26,13 @@ const login = async () => {
       `${import.meta.env.VITE_PROD_API_URL}/api/${props.isAdmin ? 'admin' : 'user'}/authentication`,
       requestOptions
     );
+    if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
     updateLocalStorage('token', props.isAdmin ? data.admin.token : data.user.token);
   } catch (error) {
     console.log(error);
-    toast.error(errorHandler(error));
+    toast.error(error.message);
   }
 };
 </script>
