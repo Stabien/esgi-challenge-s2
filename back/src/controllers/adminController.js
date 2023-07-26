@@ -68,9 +68,8 @@ exports.pendingUser = async (req, res) => {
 exports.rejectUser = async (req, res) => {
   const { uuid } = req.params
   try {
-    const user = await Users.update({ status: 'REJECTED' }, { where: { uuid } })
-
-    return res.status(200).json(user)
+    await Users.update({ status: 'REJECTED' }, { where: { uuid } })
+    return res.send(200)
   } catch (e) {
     return res.status(500).json({ error: e })
   }
