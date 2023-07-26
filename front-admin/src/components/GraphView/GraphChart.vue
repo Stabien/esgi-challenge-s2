@@ -12,7 +12,6 @@ import { useRouter } from 'vue-router';
 const { user } = inject('user');
 const router = useRouter();
 const redirect = () => {
-  console.log(user.value.status);
   if (user.value.status !== userStatusWebmaster) router.push('/404');
 };
 redirect();

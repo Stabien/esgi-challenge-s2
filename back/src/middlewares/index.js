@@ -56,7 +56,7 @@ exports.checkUserTokenFormat = (req, res, next) => {
 exports.checkUserTokenUuid = (req, res, next) => {
   const token = verifyUserToken(req)
 
-  if (token === undefined) {
+  if (token === undefined || token === null) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
@@ -74,19 +74,20 @@ exports.checkUserTokenUuid = (req, res, next) => {
 exports.isAdmin = async (req, res, next) => {
   const token = verifyUserToken(req)
 
-  if (token === undefined) {
+  if (token === undefined || token === null) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
   if (!token.hasOwnProperty('uuid')) {
     return res.status(401).json({ error: 'Invalid token' })
   }
-
-  const admin = await Admins.findOne({ where: { uuid } })
-
-  if (!admin) {
-    return res.status(404).json({ error: 'Admin not found' })
+  try {
+    const admin = await Admins.findOne({ where: { uuid: token.uuid } })
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' })
+    }
+    return next()
+  } catch (error) {
+    throw new Error(error)
   }
-
-  return next()
 }

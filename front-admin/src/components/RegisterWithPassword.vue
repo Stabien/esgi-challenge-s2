@@ -17,37 +17,32 @@ const form = ref({
 });
 const kbis = ref();
 
-const register = () => {
-  var formData = new FormData();
-  formData.append('email', form.value.email);
-  formData.append('password', form.value.password);
-  formData.append('confirmPassword', form.value.confirmPassword);
-  formData.append('societyName', form.value.society);
-  formData.append('url', form.value.url);
-  formData.append('firstname', form.value.firstname);
-  formData.append('lastname', form.value.lastname);
-  formData.append('kbis', kbis.value);
+const register = async () => {
+  try {
+    var formData = new FormData();
+    formData.append('email', form.value.email);
+    formData.append('password', form.value.password);
+    formData.append('confirmPassword', form.value.confirmPassword);
+    formData.append('societyName', form.value.society);
+    formData.append('url', form.value.url);
+    formData.append('firstname', form.value.firstname);
+    formData.append('lastname', form.value.lastname);
+    formData.append('kbis', kbis.value);
 
-  var requestOptions = {
-    method: 'POST',
-    body: formData,
-    redirect: 'follow'
-  };
+    var requestOptions = {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow'
+    };
 
-  fetch('http://localhost:4000/api/user/registration', requestOptions)
-    .then((response) => {
-      console.log('response');
-      response.text();
-    })
-    .then((result) => {
-      console.log('result');
-      console.log();
-      toast.error(errorHandler(result));
-    })
-    .catch((error) => {
-      toast.error(errorHandler(error));
-      console.log('error', error);
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/registration`,
+      requestOptions
+    );
+    if (response.status === 422) throw new Error('Wrong');
+  } catch (error) {
+    toast.error(errorHandler(error));
+  }
 };
 </script>
 
@@ -71,14 +66,24 @@ const register = () => {
     @submit.prevent="onSubmit"
     class="grid grid-cols-2 gap-4 w-full"
   >
-    <Input type="email" label="Email" v-model="form.email" />
+    <Input type="email" label="Email" v-model="form.email" required="true" />
     <Input type="text" label="Firstname" v-model="form.firstName" />
     <Input type="text" label="Lastname" v-model="form.lastname" />
-    <Input type="text" label="Society" v-model="form.society" />
-    <Input type="text" label="Url" v-model="form.url" />
-    <Input type="file" label="Kbis" @change="(event) => (kbis = event.target.files[0])" />
-    <Input type="password" label="Password" v-model="form.password" />
-    <Input type="password" label="Confirm_password" v-model="form.confirmPassword" />
+    <Input type="text" label="Society" v-model="form.society" required="true" />
+    <Input type="text" label="Url" v-model="form.url" required="true" />
+    <Input
+      type="file"
+      label="Kbis"
+      @change="(event) => (kbis = event.target.files[0])"
+      required="true"
+    />
+    <Input type="password" label="Password" v-model="form.password" required="true" />
+    <Input
+      type="password"
+      label="Confirm_password"
+      v-model="form.confirmPassword"
+      required="true"
+    />
 
     <Button :style="{ gridArea: 'button' }" type="submit" @click="register">Join</Button>
   </form>
