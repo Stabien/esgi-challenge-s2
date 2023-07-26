@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongoConnection = require('../config/mongoose')
 
 const analyticsSchema = new mongoose.Schema({ 
   appId: {
@@ -21,6 +22,6 @@ const analyticsSchema = new mongoose.Schema({
   tagId: String, 
 });
 
-const Analytics = mongoose.model('analytics', analyticsSchema);
+const Analytics = mongoConnection.model('analytics', analyticsSchema);
 
 module.exports = Analytics

@@ -32,7 +32,7 @@ const routes = (app) => {
   app.route('/api/admin/pendingUser/:uuid').put(pendingUser)
   app.route('/api/admin/authentication').post(adminAuthentication)
 
-  app.route('/api/analytics').post(addAnalytics)
+  app.route('/api/analytics/add').post(addAnalytics)
 }
 
 module.exports = routes
