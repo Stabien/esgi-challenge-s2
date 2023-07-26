@@ -4,10 +4,12 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { setLogo } from '@/utils'
-import Tracker from './utils/Tracker';
+import Tracker from './utils/Tracker.vue';
 
 setLogo()
 
 const app = createApp(App)
 app.use(router).mount('#app')
-app.use (Tracker)
+app.use (Tracker, {
+    App_id: "azertyuiop1234567890"
+})

@@ -11,13 +11,13 @@ const sub = () => {
 }
 </script>
 
-<template>
-  <form @submit.prevent="onSubmit" class="flex flex-col gap-4 w-full" v-submit>
+<template v-mouse>
+  <form @submit.prevent="onSubmit" class="flex flex-col gap-4 w-full" v-track.submit>
     <h1 class="inline-flex items-center gap-4 text-2xl font-bold dark:text-soft-black">Login</h1>
     <label for="email">Email</label>
-    <input type="email" v-click v-model="email" />
+    <input type="email" v-track.click.change v-model="email" />
     <label for="password">Password</label>
-    <input type="password" v-model="pwd" />
+    <input type="password" v-model="pwd" v-track.click.change/>
     <Button type="submit" @click="sub">Login</Button>
   </form>
 </template>
