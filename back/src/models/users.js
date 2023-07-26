@@ -66,6 +66,10 @@ const Users = sequelize.define(
       references: 'kbis',
       referencesKey: 'uuid',
     },
+    appId: {
+      type: Sequelize.DataTypes.STRING,
+      allowNull: false,
+    }
   },
   {
     underscored: true,

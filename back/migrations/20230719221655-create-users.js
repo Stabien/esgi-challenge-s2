@@ -48,6 +48,10 @@ module.exports = {
           defaultValue: Sequelize.DataTypes.UUIDV4,
           allowNull: false,
         },
+        app_id: {
+          type: Sequelize.DataTypes.STRING,
+          allowNull: false,
+        }
       },
       {
         underscored: true,

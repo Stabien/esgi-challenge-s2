@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt')
 const Users = require('../models/users')
 const Kbis = require('../models/kbis')
 const { sendEmail } = require('../services')
+const { generateAppId } = require('../helpers')
 
 config()
 
@@ -62,6 +63,7 @@ exports.registration = async (req, res) => {
   try {
     const userUuid = crypto.randomUUID()
     const kbisUuid = crypto.randomUUID()
+    const appId = generateAppId()
     const hashedPassword = bcrypt.hashSync(password, 10)
     const doesUserAlreadyExists = await checkIfUserAlreadyExists(email)
 
@@ -79,6 +81,7 @@ exports.registration = async (req, res) => {
       lastname,
       status: 'PENDING',
       kbisUuid,
+      appId
     })
 
     const newKbis = await Kbis.create({
