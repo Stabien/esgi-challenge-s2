@@ -73,7 +73,9 @@ import {ref} from "vue";
 
     VueInstance.directive('track', {
     mounted: (el, binding) => {
+      console.log(el, binding)
     Object.entries(binding.modifiers).forEach(function (modifier) {
+      console.log(modifier[0])
     el.addEventListener(`${modifier[0]}`, (e) => handleEvent(e, el, modifier[0]))
 })
 }
