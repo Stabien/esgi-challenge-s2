@@ -17,11 +17,16 @@ watch(user.value, () => {
 
 const getPendingUserList = async () => {
   try {
-    const result = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/admin/userRegistrations`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+    const result = await fetch(
+      `${
+        import.meta.env.DEV ? import.meta.env.VITE_PROD_API_URL : process.env.VITE_PROD_API_URL
+      }/api/admin/userRegistrations`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       }
-    });
+    );
     const data = await result.json();
     console.log(data);
   } catch (error) {
