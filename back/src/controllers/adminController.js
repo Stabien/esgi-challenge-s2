@@ -38,7 +38,6 @@ exports.adminAuthentication = async (req, res) => {
 exports.getUserRegistrations = async (req, res) => {
   try {
     const userRegistrations = await Users.findAll()
-    // const userRegistrations = await Users.findAll({ where: { status: 'PENDING' } })
     return res.status(200).json(userRegistrations)
   } catch (e) {
     return res.status(500).json({ error: e })
@@ -47,7 +46,6 @@ exports.getUserRegistrations = async (req, res) => {
 
 exports.validateUser = async (req, res) => {
   const { uuid } = req.params
-  console.log(uuid)
   try {
     await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
     return res.send(200)

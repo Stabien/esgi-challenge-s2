@@ -31,6 +31,8 @@ services:
     depends_on:
       - postgres
       - mongo
+    networks:
+      - default
 
   front-admin:
     build: ./front-admin
@@ -45,6 +47,14 @@ services:
       - "3001:3001"
     volumes:
       - ./vitrine:/home/app
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - default
 
 volumes:
   pg-data:
