@@ -8,7 +8,7 @@ const Users = require('../models/users')
 
 config()
 
-exports.authentication = async (req, res) => {
+exports.adminAuthentication = async (req, res) => {
   const { email, password } = req.body
 
   try {
@@ -49,10 +49,7 @@ exports.getUserRegistrations = async (req, res) => {
 exports.validateUser = async (req, res) => {
   const { uuid } = req.params
   try {
-    const user = await Users.update(
-      { status: 'VALIDATED' },
-      { where: { uuid } }
-    )
+    const user = await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
 
     return res.status(200).json(user)
   } catch (e) {
@@ -63,11 +60,8 @@ exports.validateUser = async (req, res) => {
 exports.rejectUser = async (req, res) => {
   const { uuid } = req.params
   try {
-    const user = await Users.update(
-      { status: 'REJECTED' },
-      { where: { uuid } }
-    )
-    
+    const user = await Users.update({ status: 'REJECTED' }, { where: { uuid } })
+
     return res.status(200).json(user)
   } catch (e) {
     throw res.status(500).json({ error: e })
