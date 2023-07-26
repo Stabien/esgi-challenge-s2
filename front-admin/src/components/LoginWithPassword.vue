@@ -2,12 +2,10 @@
 import { ref, defineProps } from 'vue';
 import { useToast } from 'vue-toastification';
 import { errorHandler } from '@/utils';
-import { inject } from 'vue';
+import { updateLocalStorage } from '@/utils';
 import Button from '@/components/ui/Button.vue';
-import { userStatusWebmaster } from '@/utils/userConstant';
 
 const props = defineProps(['isAdmin']);
-const { setIsLogged, setStatus } = inject('user');
 const toast = useToast();
 
 const email = ref('');
@@ -26,13 +24,12 @@ const login = async () => {
       headers
     };
     const response = await fetch(
-      `http://localhost:4000/api/${props.isAdmin ? 'admin' : 'user'}/authentication`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/${props.isAdmin ? 'admin' : 'user'}/authentication`,
       requestOptions
     );
+
     const data = await response.json();
-    localStorage.setItem('token', data.user.token);
-    setIsLogged(true);
-    setStatus(userStatusWebmaster);
+    updateLocalStorage('token', props.isAdmin ? data.admin.token : data.user.token);
   } catch (error) {
     console.log(error);
     toast.error(errorHandler(error));
