@@ -56,7 +56,7 @@ exports.checkUserTokenFormat = (req, res, next) => {
 exports.checkUserTokenUuid = (req, res, next) => {
   const token = verifyUserToken(req)
 
-  if (token === undefined) {
+  if (token === undefined || token === null) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 

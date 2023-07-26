@@ -1,9 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { config } = require('dotenv')
-const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 const Admins = require('../models/admins')
-const Kbis = require('../models/kbis')
 const Users = require('../models/users')
 
 config()

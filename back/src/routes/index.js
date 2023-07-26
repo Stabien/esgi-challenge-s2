@@ -7,8 +7,9 @@ const {
 } = require('../controllers/userController')
 const { checkUserTokenUuid, isAdmin } = require('../middlewares')
 const upload = require('../config/multer')
-const { getUserRegistrations } = require('../controllers/adminController')
+const { getUserRegistrations, validateUser, rejectUser } = require('../controllers/adminController')
 const { adminAuthentication } = require('../controllers/adminController')
+const { addAnalytics } = require('../controllers/analyticsController')
 
 /** Router */
 const routes = (app) => {
@@ -21,9 +22,11 @@ const routes = (app) => {
 
   app.route('/api/admin/userRegistrations').get(isAdmin, getUserRegistrations)
 
-  app.route('/api/admin/validateUser/:uuid')
-  app.route('/api/admin/rejectUser/:uuid')
+  app.route('/api/admin/validateUser/:uuid').post(validateUser)
+  app.route('/api/admin/rejectUser/:uuid').post(rejectUser)
   app.route('/api/admin/authentication').post(adminAuthentication)
+
+  app.route('/api/analytics').post(addAnalytics)
 }
 
 module.exports = routes

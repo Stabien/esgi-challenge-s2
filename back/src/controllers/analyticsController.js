@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const Analytics = require('../models/analytics')
 
 exports.addAnalytics = async (req, res) => {
