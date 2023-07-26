@@ -36,7 +36,9 @@ const register = async () => {
     };
 
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/registration`,
+      `${
+        import.meta.env.DEV ? import.meta.env.VITE_PROD_API_URL : process.env.VITE_PROD_API_URL
+      }/api/user/registration`,
       requestOptions
     );
     if (response.status === 422) throw new Error('Wrong');
@@ -67,8 +69,8 @@ const register = async () => {
     class="grid grid-cols-2 gap-4 w-full"
   >
     <Input type="email" label="Email" v-model="form.email" required="true" />
-    <Input type="text" label="Firstname" v-model="form.firstName" />
-    <Input type="text" label="Lastname" v-model="form.lastname" />
+    <Input type="text" label="Firstname" v-model="form.firstName" required="true" />
+    <Input type="text" label="Lastname" v-model="form.lastname" required="true" />
     <Input type="text" label="Society" v-model="form.society" required="true" />
     <Input type="text" label="Url" v-model="form.url" required="true" />
     <Input
