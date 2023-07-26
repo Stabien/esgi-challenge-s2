@@ -36,9 +36,7 @@ const register = async () => {
     };
 
     const response = await fetch(
-      `${
-        import.meta.env.DEV ? import.meta.env.VITE_PROD_API_URL : process.env.VITE_PROD_API_URL
-      }/api/user/registration`,
+      `${import.meta.env.VITE_API_KEY}/api/user/registration`,
       requestOptions
     );
     if (response.status === 422) throw new Error('Wrong');
