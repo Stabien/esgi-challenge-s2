@@ -1,11 +1,9 @@
 <script setup>
 import { inject, watch } from 'vue';
 import { userStatusAdmin } from '@/utils/userConstant';
-import { useRouter } from 'vue-router';
 import RequestRow from '@/components/AdminView/RequestRow.vue';
 import { requestList } from '@/utils/requestConstants';
 const { user } = inject('user');
-const router = useRouter();
 
 const redirect = () => {
   if (user.value.status !== userStatusAdmin) {
@@ -16,6 +14,21 @@ redirect();
 watch(user.value, () => {
   redirect();
 });
+
+const getPendingUserList = async () => {
+  try {
+    const result = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/admin/userRegistrations`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    const data = await result.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+getPendingUserList();
 </script>
 
 <template>

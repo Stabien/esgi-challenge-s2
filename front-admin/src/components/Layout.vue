@@ -19,7 +19,7 @@ const logout = () => {
   <header class="w-full fixed top-0 flex items-center justify-between p-4 z-50">
     <div class="flex items-center justify-center">
       <Link variant="link" to="/">
-        <img class="h-10 invert mix-blend-difference" :src="getLogo()" alt="" srcset="" />
+        <img class="h-10 dark:invert dark:mix-blend-difference" :src="getLogo()" alt="" srcset="" />
       </Link>
     </div>
     <nav class="flex gap-4">
