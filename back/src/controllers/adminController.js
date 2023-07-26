@@ -57,11 +57,9 @@ exports.validateUser = async (req, res) => {
 }
 exports.pendingUser = async (req, res) => {
   const { uuid } = req.params
-  console.log(uuid)
   try {
-    const user = await Users.update({ status: 'PENDING' }, { where: { uuid } })
-
-    return res.status(200).json(user)
+    await Users.update({ status: 'PENDING' }, { where: { uuid } })
+    return res.send(200)
   } catch (e) {
     return res.status(500).json({ error: e })
   }
