@@ -1,17 +1,16 @@
 <script setup>
-import { userStatusWebmaster, userStatusAdmin, userStatusVisitor } from '@/utils/userConstant';
+import { userStatusWebmaster, userStatusAdmin } from '@/utils/userConstant';
 import Link from '@/components/ui/Link.vue';
 import Button from '@/components/ui/Button.vue';
 import { inject } from 'vue';
 import { getLogo } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
+import { removeLocalStorageItem } from '@/utils';
 
 getLogo();
-const { user, setIsLogged, setStatus } = inject('user');
+const { user } = inject('user');
 const logout = () => {
-  localStorage.removeItem('token');
-  setIsLogged(false);
-  setStatus(userStatusVisitor);
+  removeLocalStorageItem('token');
 };
 </script>
 
@@ -27,23 +26,6 @@ const logout = () => {
       <!-- is logged :{{ user.isLogged }} status:{{ user.status }} -->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
-      <!-- <Button
-        v-if="!user.isLogged"
-        variant="outline"
-        @click="
-          () => {
-            setIsLogged(true);
-            setStatus(userStatusAdmin);
-          }
-        "
-        >QuickLogin</Button
-      > -->
-      <Button v-if="user.isLogged" variant="outline" @click="setStatus(userStatusAdmin)"
-        >Admin</Button
-      >
-      <Button v-if="user.isLogged" variant="outline" @click="setStatus(userStatusWebmaster)"
-        >WebMaster</Button
-      >
 
       <Link
         v-if="user.isLogged && user.status === userStatusWebmaster"

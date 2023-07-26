@@ -2,6 +2,7 @@ import cx from 'classnames';
 import { twMerge } from 'tailwind-merge';
 import { numberOfLogo } from '@/utils/constant';
 import jwt_decode from 'jwt-decode';
+import { userStatusWebmaster, userStatusAdmin, userStatusVisitor } from '@/utils/userConstant';
 
 export const cn = (...inputs) => {
   return twMerge(cx(inputs));
@@ -11,8 +12,34 @@ export const decodeToken = () => {
   try {
     return jwt_decode(localStorage.getItem('token'));
   } catch (error) {
-    console.log(error);
+    // return 'error';
+    // console.log(error);
   }
+};
+export const updateLocalStorage = (key, value) => {
+  localStorage.setItem(key, value);
+
+  // Déclencher une action personnalisée pour indiquer que les données ont été mises à jour
+  const event = new CustomEvent('local-storage-updated', { detail: { key, value } });
+  window.dispatchEvent(event);
+};
+export const removeLocalStorageItem = (key) => {
+  localStorage.removeItem(key);
+
+  // Déclencher une action personnalisée pour indiquer que les données ont été mises à jour
+  const event = new CustomEvent('local-storage-updated', { detail: { key } });
+  window.dispatchEvent(event);
+};
+
+export const getConnectionProviderValue = () => {
+  const decodedNewToken = decodeToken();
+  if (!decodedNewToken) {
+    return { isLogged: false, status: userStatusVisitor };
+  }
+  return {
+    isLogged: !!decodedNewToken,
+    status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster
+  };
 };
 
 export const randomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;

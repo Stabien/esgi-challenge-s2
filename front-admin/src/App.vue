@@ -1,8 +1,7 @@
 <script setup>
-import { userStatusVisitor } from '@/utils/userConstant';
 import { RouterView } from 'vue-router';
 import Layout from '@/components/Layout.vue';
-import { getLogo, decodeToken } from '@/utils';
+import { getLogo, getConnectionProviderValue } from '@/utils';
 import { provide, ref } from 'vue';
 
 // Change FavIcon
@@ -15,20 +14,17 @@ if (!link) {
 link.href = getLogo();
 
 //verify if already connected
-const decodedToken = decodeToken();
-const user = ref({ isLogged: !!decodedToken, status: userStatusVisitor });
 
-const setIsLogged = (isLogged) => {
-  user.value.isLogged = isLogged;
-};
-const setStatus = (status) => {
-  user.value.status = status;
-};
+const providerValue = getConnectionProviderValue();
+const user = ref(providerValue);
+
+window.addEventListener('local-storage-updated', () => {
+  const newProviderValue = getConnectionProviderValue();
+  user.value = newProviderValue;
+});
 
 provide('user', {
-  user,
-  setIsLogged,
-  setStatus
+  user
 });
 </script>
 
