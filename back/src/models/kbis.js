@@ -54,7 +54,7 @@ module.exports = sequelize.define(
       allowNull: false,
       references: 'kbis',
       referencesKey: 'uuid',
-    }
+    },
   },
   {
     underscored: true,
