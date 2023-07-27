@@ -24,6 +24,8 @@ const logout = () => {
     </div>
     <nav class="flex gap-4">
       <!-- is logged :{{ user.isLogged }} status:{{ user.status }} -->
+      
+      <Link v-if="user.isLogged" variant="default" to="/tags">Choose tags</Link><!-- =============== (ce qu'on a ajouté)-->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
 
@@ -40,3 +42,4 @@ const logout = () => {
     </nav>
   </header>
 </template>
+

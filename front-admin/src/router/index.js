@@ -45,6 +45,12 @@ const router = createRouter({
         layout: 'none' // Utilisez une méta pour identifier les routes sans layout
       },
       component: () => import('@/views/404.vue')
+    },
+    {
+      path: '/tags',
+      name: 'chooseTags',
+      component: () => import('@/components/GraphView/FormTagView.vue')
+      // ==================================================================   ce qu'on a ajouté
     }
   ]
 });
