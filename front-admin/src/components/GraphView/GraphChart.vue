@@ -17,10 +17,17 @@ watch(user.value, () => {
   redirect();
 });
 
-const props = defineProps(['type', 'title', 'data', 'dataType']);
+const props = defineProps([
+  'graphDataType',
+  'title',
+  'eventByPagesList',
+  'dataType',
+  'sessionByPagesList',
+  'sessionByTagsList'
+]);
 
 const getClickByPage = () => {
-  const clickEvents = props.data.filter((item) => item._id.event === props.dataType);
+  const clickEvents = props.eventByPagesList.filter((item) => item._id.event === props.dataType);
 
   const urlCounts = {};
   // Compter les occurrences de chaque URL
@@ -39,9 +46,63 @@ const getClickByPage = () => {
   const occurrencesArray = Object.values(urlCounts);
   return { url: urlsArray, occurences: occurrencesArray };
 };
+const getSessionByPages = () => {
+  // const clickEvents = props.eventByPagesList.filter((item) => item._id.event === props.dataType);
+
+  const urlCounts = {};
+  // Compter les occurrences de chaque URL
+  props.sessionByPagesList.forEach((item) => {
+    const page = item._id;
+    const count = item.uniqueVisitors;
+
+    if (!urlCounts[page]) {
+      urlCounts[page] = count;
+    } else {
+      urlCounts[page] += count;
+    }
+  });
+  // Extraire les URLs et les occurrences
+  const urlsArray = Object.keys(urlCounts);
+  const occurrencesArray = Object.values(urlCounts);
+  return { url: urlsArray, occurences: occurrencesArray };
+};
+const getSessionByTags = () => {
+  const urlCounts = {};
+  // Compter les occurrences de chaque URL
+  props.sessionByTagsList.forEach((item) => {
+    const page = item._id;
+    const count = item.uniqueVisitors;
+
+    if (!urlCounts[page]) {
+      urlCounts[page] = count;
+    } else {
+      urlCounts[page] += count;
+    }
+  });
+  // Extraire les URLs et les occurrences
+  const urlsArray = Object.keys(urlCounts);
+  const occurrencesArray = Object.values(urlCounts);
+  return { url: urlsArray, occurences: occurrencesArray };
+};
+
+const dataByDataType = () => {
+  switch (props.dataType) {
+    case 'click':
+      return getClickByPage();
+    case 'newSession':
+      return getClickByPage();
+    case 'sessionByPages':
+      return getSessionByPages();
+    case 'sessionByTags':
+      return getSessionByTags();
+
+    default:
+      return getClickByPage();
+  }
+};
 
 const filterDataForGraphsDonut = () => {
-  const { url, occurences } = getClickByPage();
+  const { url, occurences } = dataByDataType();
   const labels = url;
   const datasetsData = occurences;
 
@@ -97,17 +158,17 @@ const repeatArrayColors = (desiredLength) => {
 <template>
   <div class="flex justify-center">
     <DoughnutChart
-      v-if="props.type === DONUT"
+      v-if="props.graphDataType === DONUT"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphsDonut()"
     />
     <ScatterChart
-      v-if="props.type === SCATTER"
+      v-if="props.graphDataType === SCATTER"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphsDonut()"
     />
     <BarChart
-      v-if="props.type === BAR"
+      v-if="props.graphDataType === BAR"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphsDonut()"
     />
