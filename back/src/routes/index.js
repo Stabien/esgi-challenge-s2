@@ -30,7 +30,7 @@ const routes = (app) => {
 
   app.route('/api/admin/validateUser/:uuid').put(isAdmin, validateUser)
   app.route('/api/admin/rejectUser/:uuid').put(isAdmin, rejectUser)
-  app.route('/api/admin/pendingUser/:uuid').put(pendingUser)
+  app.route('/api/admin/pendingUser/:uuid').put(isAdmin, pendingUser)
   app.route('/api/admin/authentication').post(adminAuthentication)
 
   app.route('/api/analytics/add').post(addAnalytics)
