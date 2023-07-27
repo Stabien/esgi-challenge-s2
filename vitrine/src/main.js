@@ -11,6 +11,6 @@ setLogo();
 
 const app = createApp(App);
 app.use(Tracker, {
-  App_id: 'azertyuiop1234567890'
+  App_id: 'wq6yljUGIg'
 });
 app.use(router).mount('#app');
