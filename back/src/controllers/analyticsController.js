@@ -22,3 +22,33 @@ exports.getAnalyticsByAppId = async (req, res) => {
     return res.status(500).json({ error: e })
   }
 }
+
+exports.getEventsByPages = async (req, res) => {
+  try {
+    const analytics = await Analytics.find({ appId: req.params.appId })
+    return res.status(200).json(analytics)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: e })
+  }
+}
+
+exports.getVisitorsByPage = async (req, res) => {
+  try {
+    const analytics = await Analytics.find({ appId: req.params.appId })
+    return res.status(200).json(analytics)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: e })
+  }
+}
+
+exports.getClicksByTag = async (req, res) => {
+  try {
+    const analytics = await Analytics.find({ appId: req.params.appId })
+    return res.status(200).json(analytics)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: e })
+  }
+}
