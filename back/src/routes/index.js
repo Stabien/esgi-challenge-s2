@@ -14,7 +14,7 @@ const {
   pendingUser,
 } = require('../controllers/adminController')
 const { adminAuthentication } = require('../controllers/adminController')
-const { addAnalytics, getAnalyticsByAppId, getEventByPages, getSessionByPages } = require('../controllers/analyticsController')
+const { addAnalytics, getAnalyticsByAppId, getEventByPages, getSessionByPages, getSessionByTags } = require('../controllers/analyticsController')
 const { addTag, getTagsByUserUuid } = require('../controllers/tagController')
 
 /** Router */
@@ -37,6 +37,7 @@ const routes = (app) => {
   app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
   app.route('/api/analytics/eventByPages/:appId').get(getEventByPages)
   app.route('/api/analytics/sessionByPages/:appId').get(getSessionByPages)
+  app.route('/api/analytics/sessionByTags/:appId').get(getSessionByTags)
 
   app.route('/api/tag/all/:uuid').get(getTagsByUserUuid)
   app.route('/api/tag/add/:uuid').post(addTag)

@@ -4,7 +4,7 @@ const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 const Users = require('../models/users')
 const Kbis = require('../models/kbis')
-const { sendEmail } = require('../services')
+const { sendEmail } = require('../helpers')
 const { generateAppId } = require('../helpers')
 
 config()
@@ -90,18 +90,19 @@ exports.registration = async (req, res) => {
     await newUser.save()
     await newKbis.save()
 
-    // await sendEmail({
-    //   to: email,
-    //   from: 'noreply@esgi-ads.fr',
-    //   subject: 'Account activation',
-    //   text: 'Votre compte est en attente de validation par un administrateur'
-    // })
+    sendEmail({
+      to: email,
+      from: 'noreply@esgi-tracking.fr',
+      subject: 'Account activation',
+      text: 'Votre compte est en attente de validation par un administrateur'
+    })
 
     const response = { ...newUser.dataValues }
     delete response.password
 
     return res.status(201).json(response)
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: e })
   }
 }

@@ -1,3 +1,5 @@
+const transporter = require('../config/mail')
+
 exports.generateAppId = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let appId = ''
@@ -8,4 +10,16 @@ exports.generateAppId = () => {
   }
 
   return appId
+}
+
+exports.sendEmail = (mailOptions) => {
+  console.log('enter sendMail', mailOptions)
+  transporter.sendMail(mailOptions, function(error, info){
+    console.log('enter callback')
+    if (error) {
+        console.log(error);
+    } else {
+        console.log('Email sent: ' + info.response);
+    }
+  });
 }
