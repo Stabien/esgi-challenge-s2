@@ -9,8 +9,6 @@ const exportData = async ({
   timestamp,
 }) => {
   try {
-    // console.log('gonna fetch');
-    // console.log({ appId, event, url, sessionId, htmlElement, directiveTag, timestamp });
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     var requestOptions = {
@@ -43,26 +41,17 @@ function handleURL() {
 }
 
 function checkUrls() {
-  // console.log('check url');
-  if (window.localStorage.getItem("url") === getURL()) {
-    return;
-  }
-  window.localStorage.setItem("url", getURL());
-  // console.log('url changed');
+  if (window.localStorage.getItem("url") !== getURL())
+    window.localStorage.setItem("url", getURL());
 }
 
 function getURL() {
   return window.location.pathname;
 }
 
-// function getHostName() {
-//   return window.location.hostname;
-// }
-
 function setSessionID(APP_ID) {
   /* Trigger aux changement des conditions */
-
-  let SessionId = Math.floor(Math.random() * Date.now()).toString(36);
+  let SessionId = window.localStorage.getItem("Session_ID");
   exportData({
     appId: APP_ID,
     event: "newSession",
@@ -74,13 +63,6 @@ function setSessionID(APP_ID) {
   });
   return SessionId;
 }
-
-// function checkHostName(el) {
-//   if (!el.hostname === getHostName()) {
-//     return false;
-//   }
-//   return true;
-// }
 
 function handleEvent(element, eventName, directiveBindingArgument, APP_ID) {
   const htmlElement = element.tagName;
@@ -103,16 +85,38 @@ function handleEvent(element, eventName, directiveBindingArgument, APP_ID) {
 //   if (e.clientY < window.innerHeight - 16 / 2) mouseY.value = e.clientY;
 // }
 
-// function handleTest(e, bArg) {
-//   console.log(`Clicked on ${e.target.tagName} with arg ${bArg}`);
+window.localStorage.setItem("url", getURL());
+// if (!window.localStorage.getItem('Session_ID')) {
+//   const token = jwt_decode(localStorage.getItem('token'));
+//   if (token) {
+//     console.log(token);
+//     window.localStorage.setItem('Session_ID', setSessionID(token.token.appId));
+//   }
 // }
+
+window.addEventListener("unload", () => {
+  console.log("je unload");
+  // window.localStorage.removeItem('Session_ID');
+});
+// window.localStorage.setItem('url', getURL());
+// window.localStorage.setItem('Session_ID', setSessionID(APP_ID));
+
+const itemExistsInLocalStorage = (key) => {
+  const value = localStorage.getItem(key);
+  return value !== null;
+};
 
 export default {
   install(VueInstance, options) {
     let APP_ID = options.App_id;
-
-    window.localStorage.setItem("url", getURL());
-    window.localStorage.setItem("Session_ID", setSessionID(APP_ID));
+    if (!itemExistsInLocalStorage("Session_ID")) {
+      window.localStorage.setItem(
+        "Session_ID",
+        Math.floor(Math.random() * Date.now()).toString(36)
+      );
+      setSessionID(APP_ID);
+    }
+    VueInstance.provide("app_id", APP_ID);
 
     VueInstance.directive("track", {
       mounted: (el, binding) => {
@@ -125,22 +129,8 @@ export default {
     });
 
     VueInstance.directive("mouse", {
-      mounted: () => {
-        // mounted: (el, binding) => {
-        // console.log('mouse');
-        // el.addEventListener('mousemove', (e) => {
-        //   handleMouse(el, e, binding.arg);
-        // });
-      },
+      mounted: () => {},
     });
-    // VueInstance.directive('test', {
-    //   mounted: (el, binding) => {
-    //     console.log('test');
-    //     el.addEventListener('click', (e) => {
-    //       handleTest(e, binding.arg);
-    //     });
-    //   }
-    // });
   },
 };
 </script>
