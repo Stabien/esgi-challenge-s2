@@ -992,6 +992,11 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
+jwt-decode@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
+  integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
+
 levn@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/levn/-/levn-0.4.1.tgz#ae4562c007473b932a6200d403268dd2fffc6ade"
@@ -1451,10 +1456,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-tracker-vite@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/tracker-vite/-/tracker-vite-0.0.7.tgz#717707db5fa1bd8b966b7f2c1faca2407dccf709"
-  integrity sha512-6Nt4MrSVsQ391Qm19NHtls72MbRH2d1mxBabq0f9bNmy+NwRG+9pq5YwQR/5QoilxSLOyFyapt6YQKwJGFVZ0A==
+tracker-vite@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/tracker-vite/-/tracker-vite-0.0.9.tgz#5058bb33a7fd527af165284c8fd8b598ff083dc4"
+  integrity sha512-5+xxrF4LQsR+WyiZIRol/RR3dp4opBq58ygkmz/2ZPj3wWOrkNIoAm6rcfHoEinr9czwvmvVe7nCTOXhIvgnJg==
   dependencies:
     vue "^3.3.4"
 
