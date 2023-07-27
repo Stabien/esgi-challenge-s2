@@ -38,11 +38,7 @@ const buttonVariants = cva(
 </script>
 
 <template>
-<!--  Le v-test provoque une erreur au rechargement de page mais si l'on continue de changer de page à l'aide du menu de navigation, l'erreur disparait et le v-test fonctionne correctement-->
-<!--  Mettre le v-test dans une balise div encapsulant le composant permet de toucher tous les boutons du site.-->
-  <div v-test>
-    <button :class="cn(buttonVariants({ variant, size }))">
+    <button :class="cn(buttonVariants({ variant, size }))" v-track.click>
       <slot></slot>
     </button>
-  </div>
 </template>

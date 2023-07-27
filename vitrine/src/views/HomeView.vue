@@ -2,7 +2,7 @@
 import SquareImg from '@/components/SquareImg.vue';
 import { urlImg } from '@/utils/constant';
 import { getRandomItem } from '@/utils';
-import { Tracker } from 'tracker-vite';
+// import { Tracker } from 'tracker-vite';
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import { Tracker } from 'tracker-vite';
     <section class="flex gap-8 flex-col w-min mx-auto">
       <span class="uppercase w-min font-bold text-[8rem]">Virtual</span>
       <span class="uppercase w-min font-bold text-[8rem] ml-56 font-gridular">world</span>
-      <Tracker />
+<!--      <Tracker />-->
     </section>
   </main>
 </template>

@@ -9,7 +9,8 @@ import Tracker from './utils/Tracker.vue';
 setLogo();
 
 const app = createApp(App);
-app.use(router).mount('#app');
 app.use(Tracker, {
   App_id: 'azertyuiop1234567890'
 });
+app.use(router).mount('#app');
+
