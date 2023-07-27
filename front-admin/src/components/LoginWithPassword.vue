@@ -29,7 +29,8 @@ const login = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    updateLocalStorage('token', props.isAdmin ? data.admin.token : data.user.token);
+    updateLocalStorage('token', data.token);
+    toast('Your are now logged');
   } catch (error) {
     console.log(error);
     toast.error(error.message);

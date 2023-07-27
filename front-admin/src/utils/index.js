@@ -34,11 +34,12 @@ export const removeLocalStorageItem = (key) => {
 export const getConnectionProviderValue = () => {
   const decodedNewToken = decodeToken();
   if (!decodedNewToken) {
-    return { isLogged: false, status: userStatusVisitor };
+    return { isLogged: false, status: userStatusVisitor, decodedToken: {} };
   }
   return {
     isLogged: !!decodedNewToken,
-    status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster
+    status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster,
+    decodedToken: decodedNewToken
   };
 };
 

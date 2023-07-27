@@ -42,6 +42,7 @@ const register = async () => {
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
+    toast('Your account has been created, please login');
   } catch (error) {
     console.log(error);
     toast.error(error.message);
