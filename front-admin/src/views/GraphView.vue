@@ -17,21 +17,23 @@ const { user } = inject('user');
 const type = ref('');
 const graphTitle = ref('');
 const graphDataType = ref('');
+const dataType = ref('');
 const dataList = ref([]);
 
-const chartTypeList = [DONUT, BAR, SCATTER];
+// const chartTypeList = [DONUT, BAR, SCATTER];
+const chartTypeList = [DONUT, BAR];
 const chartTypeIconList = [GraphDonutIcon, GraphBarIcon, GraphScatterIcon];
 
 const fetchPossibleAnalytics = async () => {
   try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
     var requestOptions = {
       method: 'GET',
-      headers
+      redirect: 'follow'
     };
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${user.value.decodedToken.appId}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/eventByPages/${
+        user.value.decodedToken.appId
+      }`,
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
@@ -43,7 +45,9 @@ const fetchPossibleAnalytics = async () => {
     toast.error(error.message);
   }
 };
-
+const checkExistingValue = (evenement) => {
+  return dataList.value.some((objet) => objet._id.event === evenement);
+};
 fetchPossibleAnalytics();
 </script>
 
@@ -56,12 +60,17 @@ fetchPossibleAnalytics();
     >
       What do you want to see?
       <div class="flex gap-5">
-        <Button>Pages View</Button>
-        <Button>Heat map</Button>
+        <Button @click="() => (dataType = 'click')" v-if="checkExistingValue('click')"
+          >Click</Button
+        >
+        <Button @click="() => (dataType = 'newSession')" v-if="checkExistingValue('newSession')"
+          >New Session</Button
+        >
       </div>
     </div>
     <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
       <div class="flex flex-col gap-2">
+        {{ dataType }}
         <Button
           @click="() => (type = chartType)"
           :key="chartType"
@@ -90,7 +99,9 @@ fetchPossibleAnalytics();
       </div>
     </div>
     <GraphChart
+      v-if="!!dataType"
       :title="graphTitle"
+      :dataType="dataType"
       :data="dataList"
       class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
       :type="type"

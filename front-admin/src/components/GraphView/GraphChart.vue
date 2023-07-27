@@ -1,13 +1,12 @@
 <script setup>
 import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
-
 import { defineProps } from 'vue';
 import { DoughnutChart, BarChart, ScatterChart } from 'vue-chart-3';
 import { inject, watch } from 'vue';
 import { userStatusWebmaster } from '@/utils/userConstant';
-
 import { useRouter } from 'vue-router';
 
+// Handle redirection
 const { user } = inject('user');
 const router = useRouter();
 const redirect = () => {
@@ -17,30 +16,27 @@ redirect();
 watch(user.value, () => {
   redirect();
 });
-const props = defineProps(['type', 'title', 'data']);
+
+const props = defineProps(['type', 'title', 'data', 'dataType']);
 
 const getClickByPage = () => {
-  const clickEvents = props.data.filter((item) => item.event === 'click');
+  const clickEvents = props.data.filter((item) => item._id.event === props.dataType);
 
-  // Fonction pour regrouper les données par URL
-  function groupByURL(events) {
-    const groups = {};
-    events.forEach((item) => {
-      const { url } = item;
-      if (!groups[url]) {
-        groups[url] = [];
-      }
-      groups[url].push(item);
-    });
-    return groups;
-  }
+  const urlCounts = {};
+  // Compter les occurrences de chaque URL
+  clickEvents.forEach((item) => {
+    const { page } = item._id;
+    const count = item.count;
 
-  // Obtenir les données regroupées par URL
-  const groupedData = groupByURL(clickEvents);
-
-  // Extraire les tableaux d'URL et d'occurrences
-  const urlsArray = Object.keys(groupedData);
-  const occurrencesArray = Object.values(groupedData).map((group) => group.length);
+    if (!urlCounts[page]) {
+      urlCounts[page] = count;
+    } else {
+      urlCounts[page] += count;
+    }
+  });
+  // Extraire les URLs et les occurrences
+  const urlsArray = Object.keys(urlCounts);
+  const occurrencesArray = Object.values(urlCounts);
   return { url: urlsArray, occurences: occurrencesArray };
 };
 
