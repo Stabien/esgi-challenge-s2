@@ -23,7 +23,7 @@ const x = ref(null);
 
 const getPendingUserList = async () => {
   console.log('pending function user value', user.value, user.value.status)
-  if (user.value.status !== userStatusAdmin) return;
+  if (user?.value?.status !== userStatusAdmin) return;
   try {
     const response = await fetch(
       `${import.meta.env.VITE_PROD_API_URL}/api/admin/userRegistrations`,
@@ -48,7 +48,7 @@ getPendingUserList();
 </script>
 
 <template>
-  <div v-if="user.value.status === userStatusAdmin" class="p-8">
+  <div v-if="user?.value?.status === userStatusAdmin" class="p-8">
     <h1 class="text-palette-primary-500 font-bold text-4xl mb-8">Admin</h1>
     <section class="flex flex-col gap-2" v-if="requestList.length > 0">
       <RequestRow
@@ -58,6 +58,6 @@ getPendingUserList();
         :getPendingUserList="getPendingUserList"
       />
     </section>
-    <div v-else>LAODING</div>
+    <div v-else>LOADING</div>
   </div>
 </template>
