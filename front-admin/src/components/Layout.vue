@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button.vue';
 import { inject } from 'vue';
 import { getLogo } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
-import { removeLocalStorageItem } from '@/utils';
+import { removeLocalStorageItem, getConnectionProviderValue } from '@/utils';
 
 getLogo();
 const { user } = inject('user');
@@ -23,12 +23,8 @@ const logout = () => {
       </Link>
     </div>
     <nav class="flex gap-4">
-      <!-- is logged :{{ user.isLogged }} status:{{ user.status }} -->
-      
-      <Link v-if="user.isLogged" variant="default" to="/tags">Choose tags</Link><!-- =============== (ce qu'on a ajouté)-->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
-
       <Link
         v-if="user.isLogged && user.status === userStatusWebmaster"
         variant="default"
@@ -38,8 +34,10 @@ const logout = () => {
       <Link v-if="user.isLogged && user.status === userStatusAdmin" variant="default" to="/admin"
         >Admin</Link
       >
+      <Button variant="outline" @click="() => console.log(getConnectionProviderValue())"
+        >Test token</Button
+      >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
     </nav>
   </header>
 </template>
-
