@@ -14,9 +14,6 @@ exports.addAnalytics = async (req, res) => {
 }
 
 exports.getAnalyticsByAppId = async (req, res) => {
-  const { body } = req
-  const analytics = new Analytics(body)
-
   try {
     await analytics.save()
     return res.status(201).json(analytics)
