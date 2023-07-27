@@ -1,8 +1,6 @@
 <script setup>
 import RegisterWithPassword from '@/components/RegisterWithPassword.vue';
 import { randomInt } from '@/utils';
-
-console.log('bonjour');
 </script>
 
 <template>

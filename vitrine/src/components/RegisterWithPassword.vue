@@ -5,10 +5,6 @@ import Button from '@/components/ui/Button.vue';
 const email = ref('');
 const pwd = ref('');
 
-const sub = () => {
-  console.log(email.value);
-  console.log(pwd.value);
-};
 </script>
 
 <template>

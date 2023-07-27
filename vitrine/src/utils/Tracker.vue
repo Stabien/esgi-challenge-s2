@@ -94,7 +94,6 @@ window.localStorage.setItem('url', getURL());
 // }
 
 window.addEventListener('unload', () => {
-  console.log('je unload');
   // window.localStorage.removeItem('Session_ID');
 });
 // window.localStorage.setItem('url', getURL());
