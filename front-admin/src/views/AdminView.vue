@@ -23,7 +23,7 @@ const x = ref(null);
 
 const getPendingUserList = async () => {
   console.log('pending function user value', user.value, user.value.status)
-  if (user?.value?.status !== userStatusAdmin) return;
+  if (user.value.status !== userStatusAdmin) return;
   console.log('test')
   try {
     const response = await fetch(
@@ -49,7 +49,7 @@ getPendingUserList();
 </script>
 
 <template>
-  <div v-if="user?.value?.status === userStatusAdmin" class="p-8">
+  <div v-if="user.status === userStatusAdmin" class="p-8">
     <h1 class="text-palette-primary-500 font-bold text-4xl mb-8">Admin</h1>
     <section class="flex flex-col gap-2" v-if="requestList.length > 0">
       <RequestRow
