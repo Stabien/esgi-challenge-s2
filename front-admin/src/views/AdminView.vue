@@ -24,6 +24,7 @@ const x = ref(null);
 const getPendingUserList = async () => {
   console.log('pending function user value', user.value, user.value.status)
   if (user?.value?.status !== userStatusAdmin) return;
+  console.log('test')
   try {
     const response = await fetch(
       `${import.meta.env.VITE_PROD_API_URL}/api/admin/userRegistrations`,
