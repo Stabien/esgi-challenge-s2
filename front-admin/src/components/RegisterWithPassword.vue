@@ -3,6 +3,9 @@ import { ref } from 'vue';
 import Button from '@/components/ui/Button.vue';
 import Input from '@/components/ui/Input.vue';
 import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const toast = useToast();
 
 const form = ref({
@@ -43,6 +46,7 @@ const register = async () => {
     );
     if (!response.ok) throw new Error('Something went wrong');
     toast('Your account has been created, please login');
+    router.push('/login');
   } catch (error) {
     console.log(error);
     toast.error(error.message);

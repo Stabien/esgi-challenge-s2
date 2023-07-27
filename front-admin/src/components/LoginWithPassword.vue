@@ -2,6 +2,7 @@
 import Button from '@/components/ui/Button.vue';
 import { updateLocalStorage } from '@/utils';
 import { defineProps, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
 const props = defineProps(['isAdmin']);
@@ -9,6 +10,7 @@ const toast = useToast();
 
 const email = ref('');
 const pwd = ref('');
+const router = useRouter();
 
 const login = async () => {
   try {
@@ -31,6 +33,7 @@ const login = async () => {
     const data = await response.json();
     updateLocalStorage('token', data.token);
     toast('Your are now logged');
+    router.push('/');
   } catch (error) {
     console.log(error);
     toast.error(error.message);
