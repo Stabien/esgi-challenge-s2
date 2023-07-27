@@ -12,13 +12,11 @@ const { user } = inject('user');
 const logout = () => {
   removeLocalStorageItem('token');
 };
-
 </script>
 
 <template>
   <SwitchDarkMode :style="{ zIndex: 100 }" class="fixed bottom-5 right-5 z-50" />
   <header class="w-full fixed top-0 flex items-center justify-between p-4 z-50">
-    {{ user }}
     <div class="flex items-center justify-center">
       <Link variant="link" to="/">
         <img class="h-10 dark:invert dark:mix-blend-difference" :src="getLogo()" alt="" srcset="" />
@@ -28,7 +26,7 @@ const logout = () => {
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
       <Link
-        v-if="user.isLogged && user.isActive === userStatusValidated"
+        v-if="user.isLogged && user.isActive === userStatusValidated && user.status === userStatusWebmaster"
         variant="default"
         to="/graph"
         >Graphs</Link
@@ -37,7 +35,7 @@ const logout = () => {
         >Admin</Link
       >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
-      <div v-if="user.isLogged && user.isActive === 'VALIDATED'">APP_ID : {{ user.decodedToken.appId }}</div>
+      <div v-if="user.isLogged && user.isActive === userStatusValidated && user.status === userStatusWebmaster">{{ user.decodedToken.appId }}</div>
     </nav>
   </header>
 </template>
