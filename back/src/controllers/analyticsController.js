@@ -15,8 +15,8 @@ exports.addAnalytics = async (req, res) => {
 
 exports.getAnalyticsByAppId = async (req, res) => {
   try {
-    await analytics.save()
-    return res.status(201).json(analytics)
+    const analytics = await Analytics.find({ appId: req.params.appId })
+    return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: e })
