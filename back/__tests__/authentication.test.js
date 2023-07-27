@@ -1,4 +1,4 @@
-/*import { ATTENTIONTemporaireATTENTION } from './utils';
+import { ATTENTIONTemporaireATTENTION } from './utils';
 
 describe('Test de validation de taille du mdp', () => {
   it('mdp < 8 caractères', () => {
@@ -20,17 +20,12 @@ describe('Test de validation de taille du mdp', () => {
 
 
 
-*/
 
-
-
-// __tests__/myPostgresTest.spec.js
 
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db');
 
 
-// __tests__/myPostgresTest.spec.js
 
 // Modèle de la table
 class User extends Model {}
@@ -56,12 +51,15 @@ async function fetchUsersFromDatabase() {
   return User.findAll();
 }
 
+
+
+
 describe('PostgreSQL Unit Tests', () => {
   beforeAll(async () => {
-    // Synchroniser le modèle avec la base de données
+    // Synchronise le modèle avec la base de données
     await sequelize.sync();
 
-    // Peupler la table avec des données pour le test
+    // Peuple la table avec des données pour le test
     await User.bulkCreate([
       { name: 'John', age: 30 },
       { name: 'Jane', age: 25 },
@@ -69,7 +67,7 @@ describe('PostgreSQL Unit Tests', () => {
   });
 
   afterAll(async () => {
-    // Supprimer les données après les tests
+    // Supprime les données après les tests
     await User.destroy({ where: {} });
     await sequelize.close();
   });
@@ -83,7 +81,7 @@ describe('PostgreSQL Unit Tests', () => {
   });
 });
 
-// Fonctions CRUD à tester
+// Test fonctions CRUD
 async function createUser(name, age) {
   return User.create({ name, age });
 }
@@ -112,17 +110,17 @@ async function deleteUser(id) {
 
 describe('PostgreSQL Unit Tests', () => {
   beforeAll(async () => {
-    // Synchroniser le modèle avec la base de données
+    // Synchronise le modèle avec la base de données
     await sequelize.sync();
   });
 
   afterEach(async () => {
-    // Supprimer toutes les données après chaque test
+    // Supprime les données après chaque test
     await User.destroy({ where: {} });
   });
 
   afterAll(async () => {
-    // Fermer la connexion après les tests
+    // Ferme la connexion après les tests
     await sequelize.close();
   });
 
