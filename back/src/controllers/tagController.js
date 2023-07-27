@@ -21,6 +21,7 @@ exports.addTag = async (req, res) => {
     tag.save()
     return res.status(201).json(tag)
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: e })
   }
 }
