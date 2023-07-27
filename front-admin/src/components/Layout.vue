@@ -1,5 +1,5 @@
 <script setup>
-import { userStatusWebmaster, userStatusAdmin } from '@/utils/userConstant';
+import { userStatusWebmaster, userStatusAdmin, userStatusValidated } from '@/utils/userConstant';
 import Link from '@/components/ui/Link.vue';
 import Button from '@/components/ui/Button.vue';
 import { inject } from 'vue';
