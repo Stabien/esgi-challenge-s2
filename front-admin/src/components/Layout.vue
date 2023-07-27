@@ -26,7 +26,7 @@ const logout = () => {
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
       <Link
-        v-if="user.isLogged && user.status === userStatusWebmaster"
+        v-if="user.isLogged && user.isActive === userStatusValidated"
         variant="default"
         to="/graph"
         >Graphs</Link

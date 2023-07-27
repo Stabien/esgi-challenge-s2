@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { numberOfLogo } from '@/utils/constant';
 import jwt_decode from 'jwt-decode';
 import { userStatusWebmaster, userStatusAdmin, userStatusVisitor } from '@/utils/userConstant';
+import { userStatusValidated } from './userConstant';
 
 export const cn = (...inputs) => {
   return twMerge(cx(inputs));
@@ -37,15 +38,12 @@ export const getConnectionProviderValue = () => {
     return { isLogged: false, status: userStatusVisitor, decodedToken: {} };
   }
 
-  console.log('user', {
-    isLogged: !!decodedNewToken,
-    status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster,
-    decodedToken: decodedNewToken
-  })
+
   return {
     isLogged: !!decodedNewToken,
     status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster,
-    decodedToken: decodedNewToken
+    decodedToken: decodedNewToken,
+    isActive: decodedNewToken.isAdmin ? userStatusValidated : decodedNewToken?.status
   };
 };
 
