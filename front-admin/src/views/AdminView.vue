@@ -22,6 +22,7 @@ const requestList = ref([]);
 const x = ref(null);
 
 const getPendingUserList = async () => {
+  console.log('pending function user value', user)
   if (user.value.status !== userStatusAdmin) return;
   try {
     const response = await fetch(
