@@ -35,7 +35,7 @@ exports.authentication = async (req, res) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    const { uuid, firstname, lastname, appId, societyName, url } = user
+    const { uuid, firstname, lastname, email, appId, societyName, url } = user
     const token = jwt.sign(
       { uuid, isAdmin: false, firstname, lastname, appId, societyName, url },
       process.env.JWT_KEY,
