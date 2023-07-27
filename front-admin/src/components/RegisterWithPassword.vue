@@ -24,7 +24,7 @@ const register = async () => {
     if (form.value.password !== form.value.confirmPassword)
       throw new Error("Password doesn't match");
 
-    var formData = new FormData();
+    const formData = new FormData();
     formData.append('email', form.value.email);
     formData.append('password', form.value.password);
     formData.append('confirmPassword', form.value.confirmPassword);
@@ -34,7 +34,7 @@ const register = async () => {
     formData.append('lastname', form.value.lastname);
     formData.append('kbis', kbis.value);
 
-    var requestOptions = {
+    const requestOptions = {
       method: 'POST',
       body: formData,
       redirect: 'follow'

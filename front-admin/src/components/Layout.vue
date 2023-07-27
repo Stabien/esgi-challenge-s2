@@ -38,7 +38,7 @@ const logout = () => {
         >Test token</Button
       >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
-      <div v-if="user.isLogged">{{ user.decodedToken.appId }}</div>
+      <div v-if="user.isLogged && user.isActive === userStatusValidated && user.status === userStatusWebmaster">{{ user.decodedToken.appId }}</div>
     </nav>
   </header>
 </template>
