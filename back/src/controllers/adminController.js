@@ -47,6 +47,7 @@ exports.validateUser = async (req, res) => {
     return res.status(500).json({ error: e })
   }
 }
+
 exports.pendingUser = async (req, res) => {
   const { uuid } = req.params
   try {

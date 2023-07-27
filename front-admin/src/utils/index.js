@@ -36,6 +36,12 @@ export const getConnectionProviderValue = () => {
   if (!decodedNewToken) {
     return { isLogged: false, status: userStatusVisitor, decodedToken: {} };
   }
+
+  console.log('user', {
+    isLogged: !!decodedNewToken,
+    status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster,
+    decodedToken: decodedNewToken
+  })
   return {
     isLogged: !!decodedNewToken,
     status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster,
