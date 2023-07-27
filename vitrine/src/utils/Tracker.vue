@@ -1,5 +1,4 @@
 <script>
-
 const exportData = async ({
   appId,
   event,
@@ -14,10 +13,17 @@ const exportData = async ({
     // console.log({ appId, event, url, sessionId, htmlElement, directiveTag, timestamp });
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    console.log("rechargement")
     var requestOptions = {
       method: 'POST',
-      body: JSON.stringify({ appId, event, url, sessionId, htmlElement, directiveTag, timestamp }),
+      body: JSON.stringify({
+        appId,
+        event,
+        url,
+        sessionId,
+        htmlElement,
+        directiveTag,
+        timestamp
+      }),
       headers
     };
     const response = await fetch(
@@ -56,16 +62,16 @@ function getURL() {
 function setSessionID(APP_ID) {
   /* Trigger aux changement des conditions */
 
-  let SessionId = Math.floor(Math.random() * Date.now()).toString(36); 
+  let SessionId = Math.floor(Math.random() * Date.now()).toString(36);
   exportData({
-    appId:APP_ID, 
+    appId: APP_ID,
     event: 'newSession',
     url: getURL(),
     sessionId: SessionId,
-    htmlElement: 'none', 
-    directiveTag: 'none', 
+    htmlElement: 'none',
+    directiveTag: 'none',
     timestamp: Date.now()
-  })
+  });
   return SessionId;
 }
 
@@ -100,8 +106,6 @@ function handleEvent(element, eventName, directiveBindingArgument, APP_ID) {
 // function handleTest(e, bArg) {
 //   console.log(`Clicked on ${e.target.tagName} with arg ${bArg}`);
 // }
-
-
 
 export default {
   install(VueInstance, options) {
