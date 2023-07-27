@@ -12,3 +12,16 @@ exports.addAnalytics = async (req, res) => {
     return res.status(500).json({ error: e })
   }
 }
+
+exports.getAnalyticsByAppId = async (req, res) => {
+  const { body } = req
+  const analytics = new Analytics(body)
+
+  try {
+    await analytics.save()
+    return res.status(201).json(analytics)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: e })
+  }
+}

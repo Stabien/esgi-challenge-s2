@@ -35,18 +35,13 @@ exports.authentication = async (req, res) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    const { uuid, firstname, lastname } = user
-    const token = jwt.sign({ uuid, isAdmin: false }, process.env.JWT_KEY)
+    const { uuid, firstname, lastname, appId, societyName, url } = user
+    const token = jwt.sign(
+      { uuid, isAdmin: false, firstname, lastname, appId, societyName, url },
+      process.env.JWT_KEY,
+    )
 
-    return res.status(200).json({
-      user: {
-        uuid,
-        email: user.email,
-        firstname,
-        lastname,
-        token,
-      },
-    })
+    return res.status(200).json({ token })
   } catch (e) {
     return res.status(500).json({ error: e })
   }
@@ -81,7 +76,7 @@ exports.registration = async (req, res) => {
       lastname,
       status: 'PENDING',
       kbisUuid,
-      appId
+      appId,
     })
 
     const newKbis = await Kbis.create({

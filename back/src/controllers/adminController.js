@@ -21,15 +21,9 @@ exports.adminAuthentication = async (req, res) => {
     }
 
     const { uuid } = admin
-    const token = jwt.sign({ uuid, isAdmin: true }, process.env.JWT_KEY)
+    const token = jwt.sign({ uuid, isAdmin: true, email: admin.email }, process.env.JWT_KEY)
 
-    return res.status(200).json({
-      admin: {
-        uuid,
-        email: admin.email,
-        token,
-      },
-    })
+    return res.status(200).json({ token })
   } catch (e) {
     return res.status(500).json({ error: e })
   }
