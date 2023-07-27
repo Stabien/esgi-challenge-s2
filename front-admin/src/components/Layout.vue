@@ -12,11 +12,13 @@ const { user } = inject('user');
 const logout = () => {
   removeLocalStorageItem('token');
 };
+
 </script>
 
 <template>
   <SwitchDarkMode :style="{ zIndex: 100 }" class="fixed bottom-5 right-5 z-50" />
   <header class="w-full fixed top-0 flex items-center justify-between p-4 z-50">
+    {{ user }}
     <div class="flex items-center justify-center">
       <Link variant="link" to="/">
         <img class="h-10 dark:invert dark:mix-blend-difference" :src="getLogo()" alt="" srcset="" />
