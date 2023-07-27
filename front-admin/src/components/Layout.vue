@@ -34,9 +34,6 @@ const logout = () => {
       <Link v-if="user.isLogged && user.status === userStatusAdmin" variant="default" to="/admin"
         >Admin</Link
       >
-      <Button variant="outline" @click="() => console.log(getConnectionProviderValue())"
-        >Test token</Button
-      >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
       <div v-if="user.isLogged && user.isActive === userStatusValidated && user.status === userStatusWebmaster">{{ user.decodedToken.appId }}</div>
     </nav>
