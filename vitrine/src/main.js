@@ -4,7 +4,8 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { setLogo } from '@/utils';
-import { Tracker } from 'tracker-vite';
+// import { Tracker } from 'tracker-vite';
+import Tracker from '@/utils/Tracker.vue';
 
 setLogo();
 

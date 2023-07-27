@@ -1,5 +1,5 @@
 <script setup>
-import { blogArray } from '@/utils/constant'
+import { blogArray } from '@/utils/constant';
 </script>
 
 <template>
@@ -27,6 +27,7 @@ import { blogArray } from '@/utils/constant'
           <p class="my-4 w-3/4">{{ item.resume }}</p>
           <RouterLink
             :to="`/article/${item.image}`"
+            v-track.click
             class="font-semibold bg-soft-black text-xs text-soft-white dark:bg-soft-white dark:text-soft-black rounded-full px-2 py-1"
           >
             Read the article
