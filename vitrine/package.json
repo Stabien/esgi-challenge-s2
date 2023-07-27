@@ -13,7 +13,7 @@
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.3.2",
     "tailwind-merge": "^1.14.0",
-    "tracker-vite": "^0.0.3",
+    "tracker-vite": "^0.0.4",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2"
   },

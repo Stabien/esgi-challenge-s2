@@ -1,5 +1,5 @@
 <script setup>
-import LoginWithPassword from '@/components/LoginWithPassword.vue'
+import LoginWithPassword from '@/components/LoginWithPassword.vue';
 </script>
 
 <template>

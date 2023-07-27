@@ -1,7 +1,7 @@
 <script setup>
-import Button from '@/components/ui/Button.vue'
+import Button from '@/components/ui/Button.vue';
 
-const props = defineProps(['variant', 'class'])
+const props = defineProps(['variant', 'class']);
 </script>
 
 <template>

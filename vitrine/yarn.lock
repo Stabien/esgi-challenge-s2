@@ -1451,10 +1451,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-tracker-vite@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/tracker-vite/-/tracker-vite-0.0.3.tgz#fdea87b511fd08dfceb83173f91d3fa559e4ac0a"
-  integrity sha512-gTYLfVLJ0Wneo8weyMaV09F5VV+B55ljyIP9lXazpStCA7yamUuyXdvbANaYewAu0HdzFLm7+mhSc3N3zFQfdA==
+tracker-vite@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/tracker-vite/-/tracker-vite-0.0.4.tgz#3b637fa4634658be0ce3c5aa9bddec9dfb952868"
+  integrity sha512-6D4mr4/HFJKYu0BBjP8ksMOrUW4j+O0EpLo1YVNd6jyLAzJD4ora2ZlnIRREn7C5RwmRT+8Cz/DPNC6QUOvIsg==
   dependencies:
     vue "^3.3.4"
 

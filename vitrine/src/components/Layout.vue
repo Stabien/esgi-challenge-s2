@@ -21,7 +21,7 @@ getLogo();
       <Link variant="link" to="/blog">Blog</Link>
       <Link variant="link" to="/about">About</Link>
       <Link variant="outline" class="dark:invert" to="/login">Login</Link>
-    <!--  <Link variant="default" class="dark:invert" to="/join">Join</Link> -->
+      <Link variant="default" class="dark:invert" to="/join">Join</Link>
     </nav>
   </header>
 </template>

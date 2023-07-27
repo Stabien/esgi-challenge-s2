@@ -4,7 +4,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { setLogo } from '@/utils';
-import Tracker from './utils/Tracker.vue';
+import { Tracker } from 'tracker-vite';
 
 setLogo();
 
@@ -13,4 +13,3 @@ app.use(Tracker, {
   App_id: 'azertyuiop1234567890'
 });
 app.use(router).mount('#app');
-
