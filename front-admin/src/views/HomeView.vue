@@ -1,9 +1,14 @@
 <template>
   <main>
-    <section class="flex gap-8 flex-col w-min mx-auto">
-      <h1>
-        <span data-cy="tracking" class="uppercase w-min font-bold text-[8rem]">Tracking</span>
-        <span class="uppercase w-min font-bold text-[8rem] ml-56 font-gridular">world</span>
+    <section class="flex gap-8 flex-col w-min h-fit mx-auto">
+      <h1 class="animate-slideRightAndFade uppercase w-min font-bold text-[8rem] font-gridular">
+        esgi
+      </h1>
+      <h1
+        data-cy="tracking"
+        class="animate-slideLeftAndFade overflow-x-hidden uppercase w-min font-bold text-[8rem]"
+      >
+        Tracking
       </h1>
     </section>
   </main>

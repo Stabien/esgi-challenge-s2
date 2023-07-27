@@ -25,8 +25,17 @@ window.localStorage.setItem('Session_ID', setSessionID());
 
 function setSessionID() {
   /* Trigger aux changement des conditions */
-
-  return Math.floor(Math.random() * Date.now()).toString(36);
+  let SessionId = Math.floor(Math.random() * Date.now()).toString(36); 
+  exportData({
+    appId:APP_ID, 
+    event: 'newSession',
+    url: getURL(),
+    sessionId: SessionId,
+    htmlElement: 'none', 
+    directiveTag: 'none', 
+    timestamp: Date.now()
+  })
+  return SessionId;
 }
 
 // function checkHostName(el) {
