@@ -90,7 +90,7 @@ exports.registration = async (req, res) => {
     await newUser.save()
     await newKbis.save()
 
-    sendEmail({
+    await sendEmail({
       to: email,
       from: 'noreply@esgi-tracking.fr',
       subject: 'Account activation',

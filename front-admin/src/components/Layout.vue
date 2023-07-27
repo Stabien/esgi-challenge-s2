@@ -26,7 +26,7 @@ const logout = () => {
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
       <Link
-        v-if="user.isLogged && user.isActive === userStatusValidated && user.status === userStatusWebmaster"
+        v-if="user.isLogged && user.isActive === userStatusValidated
         variant="default"
         to="/graph"
         >Graphs</Link
@@ -35,7 +35,7 @@ const logout = () => {
         >Admin</Link
       >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
-      <div v-if="user.isLogged && user.isActive === userStatusValidated && user.status === userStatusWebmaster">APP_ID : {{ user.decodedToken.appId }}</div>
+      <div v-if="user.isLogged && user.isActive === userStatusValidated">APP_ID : {{ user.decodedToken.appId }}</div>
     </nav>
   </header>
 </template>

@@ -12,14 +12,10 @@ exports.generateAppId = () => {
   return appId
 }
 
-exports.sendEmail = (mailOptions) => {
-  console.log('enter sendMail', mailOptions)
-  transporter.sendMail(mailOptions, function(error, info){
-    console.log('enter callback')
-    if (error) {
-        console.log(error);
-    } else {
-        console.log('Email sent: ' + info.response);
-    }
-  });
+exports.sendEmail = async (mailOptions) => {
+  try {
+    await transporter.sendMail(mailOptions)
+  } catch (e) {
+    console.log('error', e)
+  }
 }
