@@ -35,14 +35,15 @@ exports.authentication = async (req, res) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    const { uuid, firstname, lastname, email, appId, societyName, url } = user
+    const { uuid, firstname, lastname, appId, societyName, url } = user
     const token = jwt.sign(
-      { uuid, isAdmin: false, firstname, lastname, appId, societyName, url },
+      { uuid, isAdmin: false, firstname, email, lastname, appId, societyName, url },
       process.env.JWT_KEY,
     )
 
     return res.status(200).json({ token })
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: e })
   }
 }
