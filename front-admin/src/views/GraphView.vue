@@ -58,7 +58,8 @@ fetchPossibleAnalytics();
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      What do you want to see?
+      <span> What do you want to see? </span>
+      <Input type="text" label="Graph title" oneLine="true" v-model="graphTitle" class="w-fit" />
       <div class="flex gap-5">
         <Button @click="() => (dataType = 'click')" v-if="checkExistingValue('click')"
           >Click</Button
@@ -70,7 +71,6 @@ fetchPossibleAnalytics();
     </div>
     <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
       <div class="flex flex-col gap-2">
-        {{ dataType }}
         <Button
           @click="() => (type = chartType)"
           :key="chartType"
@@ -79,23 +79,6 @@ fetchPossibleAnalytics();
         >
           <component :is="chartTypeIconList[index]" height="24" width="24" />
         </Button>
-      </div>
-      <div class="mt-4 flex flex-col gap-2">
-        <Input type="text" label="Graph title" oneLine="true" v-model="graphTitle" />
-
-        <div class="flex flex-col w-full gap-2">
-          <select v-model="graphDataType">
-            <option class="dark:text-palette-gray-700" disabled value="">Please select one</option>
-            <option
-              class="dark:text-palette-gray-700"
-              v-for="option in ['test', 'fdfg']"
-              :key="option"
-            >
-              {{ option }}
-            </option>
-          </select>
-        </div>
-        <Button @click="() => console.log(graphDataType.value)">test</Button>
       </div>
     </div>
     <GraphChart
