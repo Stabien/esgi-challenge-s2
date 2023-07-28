@@ -114,7 +114,7 @@ const filterDataForGraphsDonut = () => {
     labels: labels,
     datasets: [
       {
-        label: props.title || 'Beautiful Graph',
+        label: props.title || props.dataType,
         data: datasetsData,
 
         backgroundColor: repeatArrayColors(labels.length)

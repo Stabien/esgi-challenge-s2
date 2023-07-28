@@ -18,12 +18,13 @@ const form = ref({
   url: ''
 });
 const kbis = ref();
-
+const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 const register = async () => {
   try {
     if (form.value.password !== form.value.confirmPassword)
       throw new Error("Password doesn't match");
 
+    if (!regexUrl.test(form.value.url)) throw new Error('Url is not valid');
     const formData = new FormData();
     formData.append('email', form.value.email);
     formData.append('password', form.value.password);
@@ -71,28 +72,42 @@ const register = async () => {
     'button button'
   `
     }"
-    @submit.prevent="onSubmit"
+    @submit.prevent="register"
     class="grid grid-cols-2 gap-4 w-full"
   >
-    <Input type="email" label="Email" v-model="form.email" required="true" />
-    <Input type="text" label="Firstname" v-model="form.firstName" required="true" />
-    <Input type="text" label="Lastname" v-model="form.lastname" required="true" />
-    <Input type="text" label="Society" v-model="form.society" required="true" />
-    <Input type="text" label="Url" v-model="form.url" required="true" />
+    <Input dataCy="email" type="email" label="Email" v-model="form.email" required="true" />
     <Input
+      dataCy="firstname"
+      type="text"
+      label="Firstname"
+      v-model="form.firstName"
+      required="true"
+    />
+    <Input dataCy="lastname" type="text" label="Lastname" v-model="form.lastname" required="true" />
+    <Input dataCy="society" type="text" label="Society" v-model="form.society" required="true" />
+    <Input dataCy="url" type="text" label="Url" v-model="form.url" required="true" />
+    <Input
+      dataCy="file"
       type="file"
       label="Kbis"
       @change="(event) => (kbis = event.target.files[0])"
       required="true"
     />
-    <Input type="password" label="Password" v-model="form.password" required="true" />
     <Input
+      dataCy="password"
+      type="password"
+      label="Password"
+      v-model="form.password"
+      required="true"
+    />
+    <Input
+      dataCy="confirmPassword"
       type="password"
       label="Confirm_password"
       v-model="form.confirmPassword"
       required="true"
     />
 
-    <Button :style="{ gridArea: 'button' }" type="submit" @click="register">Join</Button>
+    <Button :style="{ gridArea: 'button' }" type="submit">Join</Button>
   </form>
 </template>

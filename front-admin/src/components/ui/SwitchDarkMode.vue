@@ -33,6 +33,7 @@ const toggleDarkMode = () => {
     <label class="relative inline-flex items-center space-x-2 cursor-pointer">
       <input type="checkbox" @click="toggleDarkMode" v-model="isChecked" class="hidden" />
       <div
+        data-cy="toggle-darkmode"
         class="relative w-12 h-6 border-2 bg-transparent border-palette-primary-500 rounded-full transition-colors"
       >
         <Sun class="absolute top-1/2 origin-center right-0" size="12" color="#ff3600" />
