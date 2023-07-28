@@ -38,7 +38,7 @@ const buttonVariants = cva(
 </script>
 
 <template>
-  <button :class="cn(buttonVariants({ variant, size }))" v-track.click>
+  <button :class="cn(buttonVariants({ variant, size }))" v-track:BUTTON_CLICK.click>
     <slot></slot>
   </button>
 </template>
