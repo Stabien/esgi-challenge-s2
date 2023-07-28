@@ -23,6 +23,7 @@ const logout = () => {
       </Link>
     </div>
     <nav class="flex gap-4 items-center">
+      <Link variant="outline" to="/tuto">Installation tutorial</Link>
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
       <Link
