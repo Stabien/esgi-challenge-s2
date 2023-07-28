@@ -39,7 +39,9 @@ const logout = () => {
       <Link v-if="user.isLogged && user.status === userStatusAdmin" variant="default" to="/admin"
         >Admin</Link
       >
-      <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
+      <Button v-if="user.isLogged" variant="default" @click="logout" data-cy="logout"
+        >Logout</Button
+      >
     </nav>
   </header>
   <div

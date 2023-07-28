@@ -45,9 +45,9 @@ const login = async () => {
   <form @submit.prevent="login" class="flex flex-col gap-4 w-full">
     <h1 class="inline-flex items-center gap-4 text-2xl font-bold dark:text-soft-black">Login</h1>
     <label for="email">Email</label>
-    <input type="email" v-model="email" />
+    <input data-cy="emailInput" type="email" v-model="email" />
     <label for="password">Password</label>
-    <input type="password" v-model="pwd" />
-    <Button type="submit">Login</Button>
+    <input data-cy="passwordInput" type="password" v-model="pwd" />
+    <Button data-cy="submit" type="submit">Login</Button>
   </form>
 </template>
