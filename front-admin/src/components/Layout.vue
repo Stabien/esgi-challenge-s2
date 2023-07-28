@@ -39,10 +39,6 @@ const logout = () => {
         >Admin</Link
       >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
-      <div class="text-palette-primary-500" v-if="user.status === userStatusWebmaster">
-        APP_ID : {{ user.decodedToken.appId }}
-        <span v-if="user.isActive !== userStatusValidated">Pending</span>
-      </div>
     </nav>
   </header>
   <div
