@@ -189,12 +189,12 @@ const createTag = async () => {
           v-if="checkExistingValueInEvent('click')"
           >Clicks per pages</Button
         >
-        <Button
+        <!-- <Button
           :variant="dataType === 'newSession' ? 'default' : 'outline'"
           @click="() => (dataType = 'newSession')"
           v-if="checkExistingValueInEvent('newSession')"
           >New Session</Button
-        >
+        > -->
         <Button
           :variant="dataType === 'sessionByPages' ? 'default' : 'outline'"
           v-if="sessionByPagesList.length > 0"
