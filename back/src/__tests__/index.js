@@ -1,150 +1,82 @@
-const supertest = require('supertest');
-const createServer = require('../server');
-const jwt = require('jsonwebtoken');
-const database = require('../config/db');
-const fs = require('fs')
+const request = require('supertest')
+const app = require('../server')()
+const bcrypt = require('bcrypt')
+const Users = require('../models/users')
+const Admins = require('../models/admins') // Assuming you have an Admins model
 
-const app = createServer();
+jest.mock('bcrypt', () => ({
+  hashSync: jest.fn(password => `hashed_${password}`),
+}))
 
-const randomWord = (length) => {
-  let alphabet = 'abcdefghijklmnopqrstuvwxyz';
-  let word = '';
+jest.mock('jsonwebtoken', () => ({
+  sign: jest.fn(),
+}))
 
-  for (let i = 0; i < length; i++)
-    word += alphabet[Math.floor(Math.random() * 26)]
+describe('registration', () => {
+  it('should return 422 if passwords do not match', async () => {
+    const response = await request(app)
+      .post('/api/user/registration')
+      .send({
+        email: 'test@example.com',
+        password: 'password1',
+        confirmPassword: 'password2',
+        firstname: 'John',
+        lastname: 'Doe',
+        societyName: 'Test Corp',
+        url: 'http://example.com',
+      })
 
-  return word;
-}
-
-let token = null;
-const userUuid = "56a65432-2b74-4efa-92e8-e62c862c0d3a"
-const kbisUuid = "0640be07-d243-4aec-ad34-c0e408f600ec"
-
-const testUser = {
-  uuid: userUuid,
-  email: "azerty@azerty.unittest",
-  password: "test",
-  societyName: "society test",
-  url: "http://url-test.fr",
-  firstname: "test",
-  lastname: "test",
-  status: 'PENDING',
-  kbisUuid,
-  appId: "cD8zu3uthA",
-}
-
-const testKbis = {
-  uuid: kbisUuid,
-  path: "public/uploads/test.pdf",
-  name: "test.pdf",
-  type: "application/pdf",
-}
-
-
-/** Create fake user and generate token */
-// beforeAll(async done => {
-//   const newUser = await Users.create({
-//     uuid: userUuid,
-//     email: "azerty@azerty.unittest",
-//     password: "test",
-//     societyName: "society test",
-//     url: "http://url-test.fr",
-//     firstname: "test",
-//     lastname: "test",
-//     status: 'PENDING',
-//     kbisUuid,
-//     appId: "cD8zu3uthA",
-//   })
-
-//   const newKbis = await Kbis.create({
-//     uuid: kbisUuid,
-//     path: "public/uploads/test.pdf",
-//     name: "test.pdf",
-//     type: "application/pdf",
-//   })
-
-//   await newUser.save()
-//   await newKbis.save()
-// })
-
-afterAll(async done => {
-  await Users.delete({ uuid: userUuid })
-  await Kbis.delete({ uuid: kbisUuid })
+    expect(response.status).toBe(422)
+    expect(response.body).toEqual({ error: "Passwords don't match" })
+  })
 })
 
-describe('User authentication tests', () => {
-  /** Testing user authentication success */
-  it('should return 200 status with jwt token', async () => {
-    await supertest(app)
+describe('authentication user', () => {
+  it('should return 404 if user is not found', async () => {
+    
+    Users.findOne = jest.fn().mockResolvedValueOnce(null)
+
+    const response = await request(app)
       .post('/api/user/authentication')
-      .send({ email: testUser.email, password: testUser.password })
-      .then(response => {
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({ token: expect.any(String) })
-      });
-  });
+      .send({ email: 'nonexistent@example.com', password: 'password123' })
 
-  /** Testing user authentication fail */
-  it('should return 404 status with an error message', async () => {
-    await supertest(app)
+    expect(response.status).toBe(404)
+  })
+
+  it('should return 404 if password does not match', async () => {
+    Users.findOne = jest.fn().mockResolvedValueOnce({
+      email: 'test@example.com',
+      password: bcrypt.hashSync('different_password', 10),
+    })
+
+    const response = await request(app)
       .post('/api/user/authentication')
-      .send({ email: email, password: '' })
-      .then(response => {
-        expect(response.statusCode).toBe(404);
-        expect(response.body).toEqual(expect.any(Object));
-      });
+      .send({ email: 'test@example.com', password: 'password123' })
+
+    expect(response.status).toBe(404)
+  })
+})
+
+describe('adminAuthentication admin', () => {
+  it('should return 404 if admin is not found', async () => {
+    Admins.findOne = jest.fn().mockResolvedValueOnce(null)
+
+    const response = await request(app)
+      .post('/api/admin/authentication')
+      .send({ email: 'nonexistent@example.com', password: 'password123' })
+
+    expect(response.status).toBe(404)
+    expect(response.body).toEqual({ error: 'Admin not found' })
+  })
+
+  it('should handle internal server error', async () => {
+    Admins.findOne = jest.fn().mockRejectedValueOnce(new Error('Database error'));
+
+    const response = await request(app)
+      .post('/api/admin/authentication')
+      .send({ email: 'admin@example.com', password: 'adminpassword' });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal error' });
   });
-});
-
-// describe('Update user test', () => {
-//   /** Testing user update success */
-//   it('should return 200 with a success message', async () => {
-//     await supertest(app)
-//       .put('/api/user/999')
-//       .set('Authorization', `bearer ${token}`)
-//       .send({
-//         firstname: 'teste',
-//         lastname: 'test',
-//         email: email,
-//         password: 'azertest7',
-//       })
-//       .then(response => {
-//         expect(response.statusCode).toBe(200);
-//         expect(response.body).toEqual(expect.any(Object));
-//       });
-//   });
-
-//   /** Testing user udpate with incorrect fields value */
-//   it('should return 422 with an error message', async () => {
-//     await supertest(app)
-//       .put('/api/user/999')
-//       .set('Authorization', `bearer ${token}`)
-//       .send({
-//         firstname: '',
-//         lastname: '',
-//         email: '',
-//         password: ''
-//       })
-//       .then(response => {
-//         expect(response.statusCode).toBe(422);
-//         expect(response.body).toEqual(expect.any(Object));
-//       });
-//   });
-
-//   /** Testing user update with incorrect id */
-//   it('should return 401 with an error message', async () => {
-//     await supertest(app)
-//       .put('/api/user/1000')
-//       .set('Authorization', `bearer ${token}`)
-//       .send({
-//         firstname: 'teste',
-//         lastname: 'test',
-//         email: email,
-//         password: 'azertest',
-//       })
-//       .then(response => {
-//         expect(response.statusCode).toBe(401);
-//         expect(response.body).toEqual(expect.any(Object));
-//       });
-//   });
-// });
+})

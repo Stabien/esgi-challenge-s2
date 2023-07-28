@@ -6,7 +6,7 @@ config()
 const getDbConfig = () => {
   if (process.env.ENV === "prod") {
     return {
-      host: process.env.PROD_MONGO_HOST,
+      host: process.env.PROD_MONGO_HOST || 'localhost',
       port: process.env.PROD_MONGO_PORT,
       database: process.env.PROD_MONGO_NAME,
       user: process.env.PROD_MONGO_USER,
@@ -36,7 +36,7 @@ const mongoConnection = mongoose.createConnection(`mongodb://${host}:${port}/${d
 })
 
 mongoConnection.asPromise()
-  .then(() => console.log('Connection established with MongoDB'))
+  .then()
   .catch((e) => console.log(e))
 
 module.exports = mongoConnection

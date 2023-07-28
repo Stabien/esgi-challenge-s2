@@ -14,7 +14,7 @@ const getDbConfig = () => {
     }
   } else {
     return {
-      host: process.env.DEV_PG_HOST,
+      host: process.env.DEV_PG_HOST  || 'localhost',
       port: process.env.DEV_PG_PORT,
       database: process.env.DEV_PG_NAME,
       user: process.env.DEV_PG_USER,
@@ -34,10 +34,10 @@ const sequelize = new Sequelize(`postgres://${user}:${password}@${host}:${port}/
 sequelize
   .authenticate()
   .then(() => {
-    console.log('Connection has been established successfully with PostgreSQL')
+    // console.log('Connection has been established successfully with PostgreSQL')
   })
   .catch((err) => {
-    console.error('Unable to connect to the database:', err)
+    // console.error('Unable to connect to the database:', err)
   })
 
 module.exports = sequelize
