@@ -24,7 +24,9 @@ const redirect = () => {
     return;
   }
 };
-redirect();
+onMounted(() => {
+  redirect();
+});
 watch(user.value, () => {
   redirect();
 });
@@ -170,7 +172,7 @@ const createTag = async () => {
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <!-- <form @submit.prevent="createTag" class="flex gap-2 items-center">
+      <form @submit.prevent="createTag" class="flex gap-2 items-center">
         <Input
           type="text"
           label="Create your tags"
@@ -180,7 +182,7 @@ const createTag = async () => {
           required
         />
         <Button type="submit" @click="createTag">Create Tags</Button>
-      </form> -->
+      </form>
       <span> What do you want to see? </span>
       <div class="flex gap-5">
         <Button
@@ -189,12 +191,6 @@ const createTag = async () => {
           v-if="checkExistingValueInEvent('click')"
           >Clicks per pages</Button
         >
-        <!-- <Button
-          :variant="dataType === 'newSession' ? 'default' : 'outline'"
-          @click="() => (dataType = 'newSession')"
-          v-if="checkExistingValueInEvent('newSession')"
-          >New Session</Button
-        > -->
         <Button
           :variant="dataType === 'sessionByPages' ? 'default' : 'outline'"
           v-if="sessionByPagesList.length > 0"

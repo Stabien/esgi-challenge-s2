@@ -1,6 +1,6 @@
 <script setup>
 import LoginWithPassword from '@/components/LoginWithPassword.vue';
-import { inject, watch } from 'vue';
+import { inject, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const { user } = inject('user');
@@ -8,7 +8,9 @@ const router = useRouter();
 const redirect = () => {
   if (user.value.isLogged) router.push('/');
 };
-redirect();
+onMounted(() => {
+  redirect();
+});
 watch(user.value, () => {
   redirect();
 });
