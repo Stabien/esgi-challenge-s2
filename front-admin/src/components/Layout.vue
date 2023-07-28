@@ -56,8 +56,8 @@ const logout = () => {
       </span>
     </div>
     <div class="" v-if="user.status === userStatusWebmaster">
-      APP_ID : {{ user.decodedToken.appId }}
       <span v-if="user.isActive !== userStatusValidated">Pending</span>
+      <span v-else> APP_ID : {{ user.decodedToken.appId }} </span>
     </div>
   </div>
 </template>
