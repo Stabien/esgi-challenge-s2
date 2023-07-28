@@ -14,11 +14,11 @@ const getDbConfig = () => {
     }
   } else {
     return {
-      host: process.env.DEV_PG_HOST  || 'localhost',
-      port: process.env.DEV_PG_PORT,
-      database: process.env.DEV_PG_NAME,
-      user: process.env.DEV_PG_USER,
-      password: process.env.DEV_PG_PASSWORD,
+      host: process.env.DEV_PG_HOST || 'localhost',
+      port: process.env.DEV_PG_PORT || 5432,
+      database: process.env.DEV_PG_NAME || 'esgi_challenge_s2',
+      user: process.env.DEV_PG_USER || 'postgres',
+      password: process.env.DEV_PG_PASSWORD || 'postgres',
     }
   }
 }
