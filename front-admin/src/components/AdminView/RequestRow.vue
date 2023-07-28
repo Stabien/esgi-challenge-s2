@@ -6,9 +6,6 @@ import { PENDING, REJECTED, VALIDATED } from '@/utils/requestConstants';
 import { defineProps } from 'vue';
 
 const props = defineProps(['request', 'getPendingUserList']);
-
-console.log(props.request);
-
 const getCorrectRequest = (status) => {
   switch (status) {
     case REJECTED:
@@ -45,7 +42,7 @@ const handleRequest = async (status, uuid) => {
 <template>
   <article
     :style="{
-      gridTemplateAreas: `'icon last first email url buttons'`
+      gridTemplateAreas: `'icon last email URL buttons'`
     }"
     class="bg-palette-gray-50 grid-cols-[auto_1fr_1fr_1fr_1fr_auto] items-center rounded p-4 grid grid-rows-1 gap-4"
   >
@@ -69,12 +66,11 @@ const handleRequest = async (status, uuid) => {
         class="text-palette-primary-500"
       />
     </div>
-    <div :style="{ gridArea: 'first' }" class="font-bold text-xl">
-      {{ props.request.firstname }}
+    <div :style="{ gridArea: 'URL' }" class="font-bold text-xl">
+      {{ props.request.url }}
     </div>
     <div :style="{ gridArea: 'last' }" class="font-bold text-xl">{{ props.request.lastname }}</div>
     <div :style="{ gridArea: 'email' }">{{ props.request.email }}</div>
-    <div :style="{ gridArea: 'url' }">{{ props.request.url }}</div>
     <div :style="{ gridArea: 'buttons' }" class="flex gap-2">
       <Button
         v-if="props.request.status === PENDING"

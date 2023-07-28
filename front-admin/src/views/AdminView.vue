@@ -51,7 +51,13 @@ getPendingUserList();
     <h1 class="text-palette-primary-500 font-bold text-4xl mb-8">Admin</h1>
     <section class="flex flex-col gap-2" v-if="requestList.length > 0">
       <RequestRow
-        v-for="request in requestList"
+        v-for="request in requestList.sort((a, b) =>
+          a.status === 'PENDING' && b.status !== 'PENDING'
+            ? -1
+            : a.status !== 'PENDING' && b.status === 'PENDING'
+            ? 1
+            : 0
+        )"
         :key="request.id"
         :request="request"
         :getPendingUserList="getPendingUserList"

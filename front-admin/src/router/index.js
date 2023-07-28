@@ -39,6 +39,11 @@ const router = createRouter({
       component: () => import('@/views/AdminView.vue')
     },
     {
+      path: '/tuto',
+      name: 'tuto',
+      component: () => import('@/views/TutoView.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
       meta: {

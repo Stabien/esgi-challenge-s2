@@ -25,7 +25,7 @@ exports.adminAuthentication = async (req, res) => {
 
     return res.status(200).json({ token })
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -34,7 +34,7 @@ exports.getUserRegistrations = async (req, res) => {
     const userRegistrations = await Users.findAll()
     return res.status(200).json(userRegistrations)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -44,7 +44,7 @@ exports.validateUser = async (req, res) => {
     await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
     return res.send(200)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -54,7 +54,7 @@ exports.pendingUser = async (req, res) => {
     await Users.update({ status: 'PENDING' }, { where: { uuid } })
     return res.send(200)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -64,6 +64,6 @@ exports.rejectUser = async (req, res) => {
     await Users.update({ status: 'REJECTED' }, { where: { uuid } })
     return res.send(200)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }

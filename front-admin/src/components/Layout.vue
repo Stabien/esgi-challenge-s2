@@ -23,6 +23,7 @@ const logout = () => {
       </Link>
     </div>
     <nav class="flex gap-4 items-center">
+      <Link variant="outline" to="/tuto">Installation tutorial</Link>
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
       <Link
@@ -39,15 +40,11 @@ const logout = () => {
         >Admin</Link
       >
       <Button v-if="user.isLogged" variant="default" @click="logout">Logout</Button>
-      <div class="text-palette-primary-500" v-if="user.status === userStatusWebmaster">
-        APP_ID : {{ user.decodedToken.appId }}
-        <span v-if="user.isActive !== userStatusValidated">Pending</span>
-      </div>
     </nav>
   </header>
   <div
     v-if="user.isLogged"
-    class="bg-palette-primary-500 px-6 font-bold text-soft-white dark:bg-soft-black py-2 rounded-full absolute z-50 bottom-4 left-4"
+    class="bg-palette-primary-500 px-6 font-bold text-soft-white py-2 rounded-full fixed z-50 bottom-4 left-4"
   >
     <div>
       connected with :
@@ -56,8 +53,8 @@ const logout = () => {
       </span>
     </div>
     <div class="" v-if="user.status === userStatusWebmaster">
-      APP_ID : {{ user.decodedToken.appId }}
       <span v-if="user.isActive !== userStatusValidated">Pending</span>
+      <span v-else> APP_ID : {{ user.decodedToken.appId }} </span>
     </div>
   </div>
 </template>

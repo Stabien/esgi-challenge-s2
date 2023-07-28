@@ -18,12 +18,13 @@ const form = ref({
   url: ''
 });
 const kbis = ref();
-
+const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 const register = async () => {
   try {
     if (form.value.password !== form.value.confirmPassword)
       throw new Error("Password doesn't match");
 
+    if (!regexUrl.test(form.value.url)) throw new Error('Url not valid');
     const formData = new FormData();
     formData.append('email', form.value.email);
     formData.append('password', form.value.password);
@@ -71,7 +72,7 @@ const register = async () => {
     'button button'
   `
     }"
-    @submit.prevent="onSubmit"
+    @submit.prevent="register"
     class="grid grid-cols-2 gap-4 w-full"
   >
     <Input type="email" label="Email" v-model="form.email" required="true" />
@@ -93,6 +94,6 @@ const register = async () => {
       required="true"
     />
 
-    <Button :style="{ gridArea: 'button' }" type="submit" @click="register">Join</Button>
+    <Button :style="{ gridArea: 'button' }" type="submit">Join</Button>
   </form>
 </template>

@@ -20,7 +20,7 @@ exports.getUserByUuid = async (req, res) => {
     const user = await Users.findOne({ where: { uuid: req.params.uuid } })
     return res.status(200).json(user)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -44,7 +44,7 @@ exports.authentication = async (req, res) => {
     return res.status(200).json({ token })
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -103,7 +103,7 @@ exports.registration = async (req, res) => {
     return res.status(201).json(response)
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -119,6 +119,6 @@ exports.updateUser = async (req, res) => {
 
     return res.status(200).json(user)
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }

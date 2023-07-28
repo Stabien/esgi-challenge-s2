@@ -88,6 +88,6 @@ exports.isAdmin = async (req, res, next) => {
     }
     return next()
   } catch (e) {
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }

@@ -9,7 +9,7 @@ exports.addAnalytics = async (req, res) => {
     return res.status(201).json(analytics)
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -19,7 +19,7 @@ exports.getAnalyticsByAppId = async (req, res) => {
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -37,7 +37,7 @@ exports.getEventByPages = async (req, res) => {
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -65,7 +65,7 @@ exports.getSessionByPages = async (req, res) => {
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
 
@@ -93,6 +93,6 @@ exports.getSessionByTags = async (req, res) => {
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
-    return res.status(500).json({ error: e })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }

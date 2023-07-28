@@ -104,14 +104,34 @@ const fetchSessionByTags = async () => {
     toast.error(error.message);
   }
 };
+
+const fetchTags = async () => {
+  try {
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/all/${user.value.decodedToken.uuid}`,
+      requestOptions
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    tagsList.value = data;
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
 const checkExistingValueInEvent = (evenement) => {
   return eventByPagesList.value.some((objet) => objet._id.event === evenement);
 };
-
 onMounted(() => {
   fetchEventByPages();
   fetchSessionByPages();
   fetchSessionByTags();
+  fetchTags();
 });
 
 const createTag = async () => {
@@ -135,6 +155,7 @@ const createTag = async () => {
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
+    fetchTags();
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -149,10 +170,17 @@ const createTag = async () => {
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <form @submit.prevent="onSubmit" class="flex gap-2 items-center">
-        <Input type="text" label="Graph title" oneLine="true" v-model="graphTitle" class="w-fit" />
+      <!-- <form @submit.prevent="createTag" class="flex gap-2 items-center">
+        <Input
+          type="text"
+          label="Create your tags"
+          oneLine="true"
+          v-model="graphTitle"
+          class="w-fit"
+          required
+        />
         <Button type="submit" @click="createTag">Create Tags</Button>
-      </form>
+      </form> -->
       <span> What do you want to see? </span>
       <div class="flex gap-5">
         <Button
@@ -161,12 +189,12 @@ const createTag = async () => {
           v-if="checkExistingValueInEvent('click')"
           >Clicks per pages</Button
         >
-        <Button
+        <!-- <Button
           :variant="dataType === 'newSession' ? 'default' : 'outline'"
           @click="() => (dataType = 'newSession')"
           v-if="checkExistingValueInEvent('newSession')"
           >New Session</Button
-        >
+        > -->
         <Button
           :variant="dataType === 'sessionByPages' ? 'default' : 'outline'"
           v-if="sessionByPagesList.length > 0"
@@ -191,6 +219,11 @@ const createTag = async () => {
         >
           <component :is="chartTypeIconList[index]" height="24" width="24" />
         </Button>
+      </div>
+      <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
+        <div v-for="tag in tagsList" :key="tag" class="bg-palette-primary-100 text-sm p-4 rounded">
+          {{ tag.name || 'empty tag' }}
+        </div>
       </div>
     </div>
     <GraphChart
