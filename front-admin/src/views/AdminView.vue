@@ -1,5 +1,5 @@
 <script setup>
-import { inject, watch, ref } from 'vue';
+import { inject, watch, ref, onMounted } from 'vue';
 import { userStatusAdmin } from '@/utils/userConstant';
 import RequestRow from '@/components/AdminView/RequestRow.vue';
 import { useRouter } from 'vue-router';
@@ -13,7 +13,9 @@ const redirect = () => {
     return;
   }
 };
-redirect();
+onMounted(() => {
+  redirect();
+});
 watch(user.value, () => {
   redirect();
 });

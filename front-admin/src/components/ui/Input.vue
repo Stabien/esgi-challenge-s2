@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 
-const props = defineProps(['type', 'label', 'modelValue', 'required', 'oneLine']);
+const props = defineProps(['type', 'label', 'modelValue', 'required', 'oneLine', 'dataCy']);
 defineEmits(['update:modelValue']);
 </script>
 
@@ -13,6 +13,7 @@ defineEmits(['update:modelValue']);
     </label>
 
     <input
+      :data-cy="props.dataCy"
       v-if="props.type !== 'file'"
       :required="props.required"
       :type="props.type"
@@ -22,6 +23,7 @@ defineEmits(['update:modelValue']);
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <input
+      :data-cy="props.dataCy"
       v-else
       :required="props.required"
       accept="application/pdf"

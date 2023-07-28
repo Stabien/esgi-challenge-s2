@@ -18,6 +18,6 @@ const pwd = ref('');
     <input type="email" v-model="email" />
     <label for="password">Password</label>
     <input type="password" v-model="pwd" />
-    <Button type="submit" @click="sub">Join</Button>
+    <Button type="submit">Join</Button>
   </form>
 </template>
