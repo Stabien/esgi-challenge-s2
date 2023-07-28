@@ -5,12 +5,12 @@
     </h1>
     <div class="grid grid-cols-3 items-center gap-8">
       <h2>Step 1: Install the package using yarn:</h2>
-      <img class="col-span-2" src="/install.jpg" alt="install" srcset="" />
+      <img class="col-span-2" src="/install.png" alt="install" srcset="" />
       <h2>
         Step 2: Import and use the "tracker-vite" package in the main.js file of your Vue
         application:
       </h2>
-      <img class="col-span-2" src="/tuto.jpg" alt="install" srcset="" />
+      <img class="col-span-2" src="/tuto.png" alt="install" srcset="" />
       <h3 class="col-span-3">
         In this code, we first import the "tracker-vite" package using import Tracker from
         'tracker-vite';. Make sure that the package has been installed in your project using yarn as

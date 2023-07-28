@@ -170,13 +170,14 @@ const createTag = async () => {
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <!-- <form @submit.prevent="onSubmit" class="flex gap-2 items-center">
+      <!-- <form @submit.prevent="createTag" class="flex gap-2 items-center">
         <Input
           type="text"
           label="Create your tags"
           oneLine="true"
           v-model="graphTitle"
           class="w-fit"
+          required
         />
         <Button type="submit" @click="createTag">Create Tags</Button>
       </form> -->
