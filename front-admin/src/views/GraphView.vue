@@ -34,6 +34,7 @@ const dataType = ref('');
 const eventByPagesList = ref([]);
 const sessionByPagesList = ref([]);
 const sessionByTagsList = ref([]);
+const tagsList = ref([]);
 
 // const chartTypeList = [DONUT, BAR, SCATTER];
 const chartTypeList = [DONUT, BAR];
@@ -112,6 +113,33 @@ onMounted(() => {
   fetchSessionByPages();
   fetchSessionByTags();
 });
+
+const createTag = async () => {
+  if (!graphTitle.value) return;
+  try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    console.log(graphTitle.value);
+    var requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        name: graphTitle.value
+      }),
+      headers: {
+        headers
+      },
+      redirect: 'follow'
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/add/${user.value.decodedToken.uuid}`,
+      requestOptions
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
 </script>
 
 <template>
@@ -121,8 +149,11 @@ onMounted(() => {
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
+      <form @submit.prevent="onSubmit" class="flex gap-2 items-center">
+        <Input type="text" label="Graph title" oneLine="true" v-model="graphTitle" class="w-fit" />
+        <Button type="submit" @click="createTag">Create Tags</Button>
+      </form>
       <span> What do you want to see? </span>
-      <Input type="text" label="Graph title" oneLine="true" v-model="graphTitle" class="w-fit" />
       <div class="flex gap-5">
         <Button
           :variant="dataType === 'click' ? 'default' : 'outline'"
@@ -164,7 +195,6 @@ onMounted(() => {
     </div>
     <GraphChart
       v-if="!!dataType"
-      :title="graphTitle"
       :dataType="dataType"
       class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
       :graphDataType="graphDataType"
