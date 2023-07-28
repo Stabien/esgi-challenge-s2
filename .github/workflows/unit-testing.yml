@@ -96,7 +96,8 @@ jobs:
 
       - name: 👀 Build for tests (dev keys)
         run: yarn --cwd ./front-admin build # Construisez le projet pour les tests E2E (si nécessaire)
-
+        env:
+          VITE_PROD_API_URL: "http://44.211.138.101:4000"
       - name: 📦 Install Cypress
         run: yarn --cwd ./front-admin add cypress # Installez Cypress localement dans le dossier "front-admin"
 
