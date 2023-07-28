@@ -47,7 +47,7 @@ const logout = () => {
   </header>
   <div
     v-if="user.isLogged"
-    class="bg-palette-primary-500 px-6 font-bold text-soft-white dark:bg-soft-black py-2 rounded-full absolute z-50 bottom-4 left-4"
+    class="bg-palette-primary-500 px-6 font-bold text-soft-white py-2 rounded-full fixed z-50 bottom-4 left-4"
   >
     <div>
       connected with :
