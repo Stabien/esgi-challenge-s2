@@ -6,11 +6,15 @@ import { inject } from 'vue';
 import { getLogo } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
 import { removeLocalStorageItem } from '@/utils';
+import { useRouter } from 'vue-router';
 
 getLogo();
+const router = useRouter();
+
 const { user } = inject('user');
 const logout = () => {
   removeLocalStorageItem('token');
+  router.push('/');
 };
 </script>
 
