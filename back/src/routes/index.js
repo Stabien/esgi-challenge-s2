@@ -14,12 +14,18 @@ const {
   pendingUser,
 } = require('../controllers/adminController')
 const { adminAuthentication } = require('../controllers/adminController')
-const { addAnalytics, getAnalyticsByAppId, getEventByPages, getSessionByPages, getSessionByTags } = require('../controllers/analyticsController')
+const {
+  addAnalytics,
+  getAnalyticsByAppId,
+  getEventByPages,
+  getSessionByPages,
+  getSessionByTags,
+} = require('../controllers/analyticsController')
 const { addTag, getTagsByUserUuid } = require('../controllers/tagController')
 
 /** Router */
 const routes = (app) => {
-  // app.route('/api/user/authentication').post(authentication)
+  app.route('/api/user/authentication').post(authentication)
   app.route('/api/user/registration').post(upload.single('kbis'), registration)
   app
     .route('/api/user/:uuid')
