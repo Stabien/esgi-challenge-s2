@@ -49,7 +49,7 @@ getPendingUserList();
 </script>
 
 <template>
-  <div v-if="user.status === userStatusAdmin" class="p-8">
+  <div v-if="user.status === userStatusAdmin" class="p-8 mx-40">
     <h1 class="text-palette-primary-500 font-bold text-4xl mb-8">Admin</h1>
     <section class="flex flex-col gap-2" v-if="requestList.length > 0">
       <RequestRow
@@ -65,6 +65,8 @@ getPendingUserList();
         :getPendingUserList="getPendingUserList"
       />
     </section>
-    <div v-else>LOADING</div>
+    <div v-else class="flex items-center justify-center">
+      <LoadingIcon class="h-40 w-40 text-palette-primary-500" />
+    </div>
   </div>
 </template>

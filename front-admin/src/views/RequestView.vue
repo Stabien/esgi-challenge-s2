@@ -1,14 +1,160 @@
 <script setup>
 import { useRoute } from 'vue-router';
+import { onMounted, ref } from 'vue';
 import Link from '@/components/ui/Link.vue';
+import { REJECTED, VALIDATED, PENDING } from '@/utils/requestConstants';
 
 const route = useRoute();
 const requestUid = route.params.uid;
+const userRequest = ref();
+
+const getCorrectRequest = (status) => {
+  switch (status) {
+    case REJECTED:
+      return 'rejectUser';
+    case VALIDATED:
+      return 'validateUser';
+
+    default:
+      return 'pendingUser';
+  }
+};
+
+const handleRequest = async (status, uuid) => {
+  try {
+    console.log('jeeee');
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/admin/${getCorrectRequest(status)}/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          headers,
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+    // props.getPendingUserList();
+    fetchUserRequest();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const fetchUserRequest = async () => {
+  try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    const response = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
+      method: 'GET',
+      headers: {
+        headers,
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userRequest.value = data;
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+onMounted(() => {
+  fetchUserRequest();
+});
 </script>
 
 <template>
   <div>
-    <Link to="/admin">Back to request</Link>
-    {{ requestUid }}
+    <div
+      v-if="!!userRequest"
+      :style="{
+        'grid-template-columns': '2fr 1fr'
+      }"
+      class="grid grid-cols-2 border border-palette-gray-300 gap-4 p-4 rounded mx-40"
+    >
+      <div class="flex gap-2 items-center">
+        <Link to="/admin" variant="ghost" class=""
+          ><ArrowLeft class="h-6 w-6 text-palette-primary-500"
+        /></Link>
+        <div class="text-palette-primary-500 text-4xl uppercase font-bold">
+          status :
+          <span
+            class="font-bold"
+            :class="
+              userRequest.status === PENDING
+                ? 'text-palette-gray-500'
+                : userRequest.status === VALIDATED
+                ? 'text-palette-green'
+                : 'text-red-500'
+            "
+          >
+            {{ userRequest.status }}
+          </span>
+        </div>
+      </div>
+      <div
+        class="row-span-2 bg-palette-gray-100 h-full w-full flex justify-center items-center rounded"
+      >
+        PDF
+      </div>
+
+      <div
+        :style="{
+          'grid-template-areas': `'email appId' 'firstname lastname''society url' '. buttons'`
+        }"
+        class="grid grid-cols-2 gap-4"
+      >
+        <Input disabled type="text" label="email" v-model="userRequest.email" />
+        <Input disabled type="text" label="appId" v-model="userRequest.appId" />
+        <Input disabled type="text" label="firstname" v-model="userRequest.firstname" />
+        <Input disabled type="text" label="lastname" v-model="userRequest.lastname" />
+        <Input disabled type="text" label="society" v-model="userRequest.societyName" />
+        <div
+          :style="{
+            'grid-area': 'url'
+          }"
+          class="flex gap-2 items-end"
+        >
+          <Input disabled type="text" label="url" v-model="userRequest.url" />
+          <a target="_blank" :href="userRequest.url"
+            ><Button variant="outline"
+              ><ExternalLink class="h-6 w-6 text-palette-primary-500" /></Button
+          ></a>
+        </div>
+        <div
+          :style="{
+            'grid-area': 'buttons'
+          }"
+          class="flex gap-2 items-end place-self-end"
+        >
+          <Button
+            v-if="userRequest.status === PENDING"
+            variant="outline"
+            @click="() => handleRequest(VALIDATED, userRequest.uuid)"
+          >
+            <CheckIcon height="24" width="24" class="text-palette-green mr-2" />Validate
+          </Button>
+          <Button
+            v-if="userRequest.status === PENDING"
+            variant="outline"
+            @click="() => handleRequest(REJECTED, userRequest.uuid)"
+          >
+            <RefusedIcon height="24" width="24" class="text-palette-primary-500 mr-2" />Reject
+          </Button>
+          <Button v-else variant="outline" @click="() => handleRequest(PENDING, userRequest.uuid)">
+            <PendingIcon height="24" width="24" class="text-palette-gray-300 mr-2" />
+            Go back to pending
+          </Button>
+        </div>
+      </div>
+    </div>
+    <div v-else class="flex items-center justify-center">
+      <LoadingIcon class="h-40 w-40 text-palette-primary-500" />
+    </div>
   </div>
 </template>

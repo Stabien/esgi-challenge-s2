@@ -1,7 +1,7 @@
 const sequelize = require('../config/sequelize')
 const Sequelize = require('sequelize')
 
-module.exports = sequelize.define(
+const Kbis = sequelize.define(
   'kbis',
   {
     uuid: {
@@ -44,3 +44,4 @@ module.exports = sequelize.define(
     timestamps: true,
   },
 )
+module.exports = Kbis

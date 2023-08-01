@@ -6,7 +6,7 @@ const Users = require('../models/users')
 const Kbis = require('../models/kbis')
 const { sendEmail } = require('../helpers')
 const { generateAppId } = require('../helpers')
-const multer = require('multer');
+const multer = require('multer')
 
 config()
 
@@ -19,6 +19,17 @@ const checkIfUserAlreadyExists = async (email) => {
 exports.getUserByUuid = async (req, res) => {
   try {
     const user = await Users.findOne({ where: { uuid: req.params.uuid } })
+    console.log(user.dataValues.kbisUuid)
+    const kbis = await Kbis.findOne({ where: { uuid: user.dataValues.kbisUuid } })
+    console.log(kbis)
+    return res.status(200).json(user)
+  } catch (e) {
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.getUserKbisByUuid = async (req, res) => {
+  try {
+    const user = await Kbis.findOne({ where: { uuid: req.params.uuid } })
     return res.status(200).json(user)
   } catch (e) {
     return res.status(500).json({ error: 'Internal error' })
