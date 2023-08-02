@@ -2,7 +2,10 @@
 import Avatar from 'vue-boring-avatars';
 import { userStatusWebmaster, userStatusAdmin, userStatusValidated } from '@/utils/userConstant';
 import Link from '@/components/ui/Link.vue';
-import Button from '@/components/ui/Button.vue';
+import GraphBarIcon from '@/components/icons/GraphBarIcon.vue';
+import AdminIcon from '@/components/icons/AdminIcon.vue';
+import ArrowBracketIcon from '@/components/icons/ArrowBracketIcon.vue';
+import AccountSettingsIcon from '@/components/icons/AccountSettingsIcon.vue';
 import { inject, onMounted, ref } from 'vue';
 import { getLogo, getRandomColorsAvatar } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
@@ -43,61 +46,29 @@ onMounted(() => {
           v-if="isMenuOpened"
           class="absolute top-12 right-0 flex flex-col gap-2 p-4 rounded w-max bg-palette-gray-800 text-white"
         >
-          <RouterLink
+          <LinkMenu
             to="/graph"
             v-if="
               user.isLogged &&
               user.isActive === userStatusValidated &&
               user.status === userStatusWebmaster
             "
-            :style="{
-              'grid-template-columns': 'auto 1fr'
-            }"
-            class="grid gap-2 px-2 py-1 text-sm"
-          >
-            <GraphBarIcon class="h-6 w-6" />
-            Graphs
-          </RouterLink>
-
-          <RouterLink
+            :icon="GraphBarIcon"
+            label="Graphs"
+          />
+          <LinkMenu
             v-if="user.isLogged && user.status === userStatusWebmaster"
             to="/account-settings"
-            class="grid gap-2 px-2 py-1 text-sm"
-            :style="{
-              'grid-template-columns': 'auto 1fr'
-            }"
-          >
-            <AccountSettingsIcon class="h-6 w-6" />Account Settings</RouterLink
-          >
-          <RouterLink
+            :icon="AccountSettingsIcon"
+            label="Account Settings"
+          />
+          <LinkMenu
             v-if="user.isLogged && user.status === userStatusAdmin"
             to="/admin"
-            :style="{
-              'grid-template-columns': 'auto 1fr'
-            }"
-            class="grid gap-2 px-2 py-1 text-sm"
-          >
-            <AdminIcon class="h-6 w-6" />Admin</RouterLink
-          >
-          <RouterLink
-            v-if="user.isLogged"
-            to="/logout"
-            :style="{
-              'grid-template-columns': 'auto 1fr'
-            }"
-            class="grid gap-2 px-2 py-1 text-sm"
-          >
-            <ArrowBracketIcon class="h-6 w-6" />Logout</RouterLink
-          >
-          <!-- <Button
-            v-if="user.isLogged"
-            variant="default"
-            @click="logout"
-            data-cy="logout"
-            class="flex gap-2"
-          >
-            <ArrowBracketIcon class="h-6 w-6" />Logout</Button
-          > -->
+            :icon="AdminIcon"
+            label="Admin"
+          />
+          <LinkMenu v-if="user.isLogged" to="/logout" :icon="ArrowBracketIcon" label="Logout" />
         </div>
       </div>
     </nav>
