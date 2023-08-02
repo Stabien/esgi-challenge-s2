@@ -41,7 +41,7 @@ const router = createRouter({
     {
       path: '/account-settings',
       name: 'account-settings',
-      component: () => import('@/views/AccountSettingsView.vue')
+      component: () => import('@/views/RequestView.vue')
     },
     {
       path: '/admin-user/:uid',
