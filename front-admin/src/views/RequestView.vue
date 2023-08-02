@@ -7,6 +7,7 @@ import { REJECTED, VALIDATED, PENDING } from '@/utils/requestConstants';
 const route = useRoute();
 const requestUid = route.params.uid;
 const userRequest = ref();
+const isLoading = ref(false);
 
 const getCorrectRequest = (status) => {
   switch (status) {
@@ -22,7 +23,8 @@ const getCorrectRequest = (status) => {
 
 const handleRequest = async (status, uuid) => {
   try {
-    console.log('jeeee');
+    isLoading.value = true;
+
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     await fetch(
@@ -40,10 +42,12 @@ const handleRequest = async (status, uuid) => {
   } catch (error) {
     console.log(error);
   }
+  isLoading.value = false;
 };
 
 const fetchUserRequest = async () => {
   try {
+    isLoading.value = true;
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     const response = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
@@ -61,6 +65,7 @@ const fetchUserRequest = async () => {
   } catch (error) {
     console.log(error);
   }
+  isLoading.value = false;
 };
 
 onMounted(() => {
@@ -71,7 +76,7 @@ onMounted(() => {
 <template>
   <div>
     <div
-      v-if="!!userRequest"
+      v-if="!!userRequest && !isLoading"
       :style="{
         'grid-template-columns': '2fr 1fr'
       }"

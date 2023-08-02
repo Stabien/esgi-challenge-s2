@@ -22,6 +22,10 @@ window.addEventListener('local-storage-updated', () => {
   const newProviderValue = getConnectionProviderValue();
   user.value = newProviderValue;
 });
+window.addEventListener('storage', () => {
+  const newProviderValue = getConnectionProviderValue();
+  user.value = newProviderValue;
+});
 
 provide('user', {
   user

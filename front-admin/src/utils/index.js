@@ -4,6 +4,7 @@ import { numberOfLogo } from '@/utils/constant';
 import jwt_decode from 'jwt-decode';
 import { userStatusWebmaster, userStatusAdmin, userStatusVisitor } from '@/utils/userConstant';
 import { userStatusValidated } from './userConstant';
+import colors from 'nice-color-palettes';
 
 export const cn = (...inputs) => {
   return twMerge(cx(inputs));
@@ -37,7 +38,6 @@ export const getConnectionProviderValue = () => {
   if (!decodedNewToken) {
     return { isLogged: false, status: userStatusVisitor, decodedToken: {} };
   }
-
 
   return {
     isLogged: !!decodedNewToken,
@@ -102,4 +102,14 @@ export const errorHandler = (error) => {
     default:
       return 'Something went wrong';
   }
+};
+
+export const getRandomColorsAvatar = () => {
+  if (!localStorage.getItem('avatarColors'))
+    localStorage.setItem(
+      'avatarColors',
+      JSON.stringify(colors[Math.floor(Math.random() * colors.length)])
+    );
+
+  return JSON.parse(localStorage.getItem('avatarColors'));
 };

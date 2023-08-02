@@ -39,6 +39,11 @@ const router = createRouter({
       component: () => import('@/views/AdminView.vue')
     },
     {
+      path: '/account-settings',
+      name: 'account-settings',
+      component: () => import('@/views/AccountSettingsView.vue')
+    },
+    {
       path: '/admin-user/:uid',
       name: 'admin-user',
       component: () => import('@/views/RequestView.vue')
@@ -47,6 +52,11 @@ const router = createRouter({
       path: '/tuto',
       name: 'tuto',
       component: () => import('@/views/TutoView.vue')
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: () => import('@/views/LogoutView.vue')
     },
     {
       path: '/:pathMatch(.*)*',
