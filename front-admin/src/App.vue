@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router';
 import Layout from '@/components/Layout.vue';
 import { getLogo, getConnectionProviderValue } from '@/utils';
 import { provide, ref } from 'vue';
-
+import { io } from 'socket.io-client';
 // Change FavIcon
 var link = document.querySelector("link[rel~='icon']");
 if (!link) {
@@ -14,7 +14,6 @@ if (!link) {
 link.href = getLogo();
 
 //verify if already connected
-
 const providerValue = getConnectionProviderValue();
 const user = ref(providerValue);
 
@@ -29,6 +28,16 @@ window.addEventListener('storage', () => {
 
 provide('user', {
   user
+});
+
+// socket io connection
+const socket = io('http://localhost:4000');
+socket.on('connect', () => {
+  console.log('Connected to Socket.IO server.');
+});
+
+socket.on('disconnect', () => {
+  console.log('Disconnected from Socket.IO server.');
 });
 </script>
 
