@@ -123,7 +123,12 @@ exports.updateUser = async (req, res) => {
   const { uuid } = req.params
 
   try {
-    const user = await Users.create({ uuid })
+    // const user = await Users.create({ uuid })
+    const user = await Users.findOne({ where: { uuid } })
+
+    if (!user) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé' })
+    }
 
     user.update({
       ...req.body,
