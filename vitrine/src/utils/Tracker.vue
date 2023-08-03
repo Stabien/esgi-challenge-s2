@@ -1,17 +1,19 @@
 <script>
+import { io } from 'socket.io-client';
+
 export default {
   install(VueInstance, options) {
     let APP_ID = options.App_id;
 
     const exportData = async ({
-                                appId,
-                                event,
-                                url,
-                                sessionId,
-                                htmlElement,
-                                directiveTag,
-                                timestamp
-                              }) => {
+      appId,
+      event,
+      url,
+      sessionId,
+      htmlElement,
+      directiveTag,
+      timestamp
+    }) => {
       try {
         const headers = new Headers();
         headers.append('Content-Type', 'application/json');
@@ -29,8 +31,8 @@ export default {
           headers
         };
         const response = await fetch(
-            `${import.meta.env.VITE_PROD_API_URL}/api/analytics/add`,
-            requestOptions
+          `${import.meta.env.VITE_PROD_API_URL}/api/analytics/add`,
+          requestOptions
         );
         if (!response.ok) throw new Error('Something went wrong');
         // const data = await response.json();
@@ -44,7 +46,7 @@ export default {
       setTimeout(() => {
         if (window.localStorage.getItem('url') !== getURL()) {
           window.localStorage.setItem('url', getURL());
-          console.log(window.localStorage.getItem('url'))
+          console.log(window.localStorage.getItem('url'));
           exportData({
             appId: APP_ID,
             event: 'navigation',
@@ -55,7 +57,7 @@ export default {
             timestamp: Date.now()
           });
         }
-      },100)
+      }, 100);
     }
 
     function getURL() {
@@ -65,7 +67,7 @@ export default {
     function setSessionID(APP_ID) {
       /* Trigger aux changement des conditions */
       let SessionId = window.localStorage.getItem('Session_ID');
-      console.log(SessionId)
+      console.log(SessionId);
       exportData({
         appId: APP_ID,
         event: 'newSession',
@@ -110,9 +112,19 @@ export default {
       setSessionID(APP_ID);
     }
 
+    // socket io connection
+    const socket = io('http://localhost:4000');
+    socket.on('connect', () => {
+      console.log('Connected to Socket.IO server.');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server.');
+    });
+
     setInterval(() => {
-      handleURL(APP_ID)
-    },500)
+      handleURL(APP_ID);
+    }, 500);
 
     VueInstance.directive('track', {
       mounted: (el, binding) => {
@@ -126,7 +138,6 @@ export default {
     VueInstance.directive('mouse', {
       mounted: () => {}
     });
-  },
+  }
 };
 </script>
-
