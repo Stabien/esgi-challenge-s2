@@ -1,14 +1,7 @@
-import { io } from 'socket.io-client';
-
-export const exportData = async ({
-  appId,
-  event,
-  url,
-  sessionId,
-  htmlElement,
-  directiveTag,
-  timestamp
-}) => {
+export const exportData = async (
+  { appId, event, url, sessionId, htmlElement, directiveTag, timestamp },
+  socket
+) => {
   try {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -32,25 +25,30 @@ export const exportData = async ({
     if (!response.ok) throw new Error('Something went wrong');
     // const data = await response.json();
     // updateLocalStorage('token', props.isAdmin ? data.admin.token : data.user.token);
+    console.log(socket);
+    socket.emit('newDataAdded');
   } catch (error) {
     console.log(error);
   }
 };
 
-export const handleURL = (APP_ID) => {
+export const handleURL = (APP_ID, socket) => {
   setTimeout(() => {
     if (window.localStorage.getItem('url') !== getURL()) {
       window.localStorage.setItem('url', getURL());
       console.log(window.localStorage.getItem('url'));
-      exportData({
-        appId: APP_ID,
-        event: 'navigation',
-        url: getURL(),
-        sessionId: window.localStorage.getItem('Session_ID'),
-        htmlElement: 'none',
-        directiveTag: 'none',
-        timestamp: Date.now()
-      });
+      exportData(
+        {
+          appId: APP_ID,
+          event: 'navigation',
+          url: getURL(),
+          sessionId: window.localStorage.getItem('Session_ID'),
+          htmlElement: 'none',
+          directiveTag: 'none',
+          timestamp: Date.now()
+        },
+        socket
+      );
     }
   }, 100);
 };
@@ -59,33 +57,39 @@ export const getURL = () => {
   return window.location.pathname;
 };
 
-export const setSessionID = (APP_ID) => {
+export const setSessionID = (APP_ID, socket) => {
   /* Trigger aux changement des conditions */
   let SessionId = window.localStorage.getItem('Session_ID');
   console.log(SessionId);
-  exportData({
-    appId: APP_ID,
-    event: 'newSession',
-    url: getURL(),
-    sessionId: SessionId,
-    htmlElement: 'none',
-    directiveTag: 'none',
-    timestamp: Date.now()
-  });
+  exportData(
+    {
+      appId: APP_ID,
+      event: 'newSession',
+      url: getURL(),
+      sessionId: SessionId,
+      htmlElement: 'none',
+      directiveTag: 'none',
+      timestamp: Date.now()
+    },
+    socket
+  );
   return SessionId;
 };
 
-export const handleEvent = (element, eventName, directiveBindingArgument, APP_ID) => {
+export const handleEvent = (element, eventName, directiveBindingArgument, APP_ID, socket) => {
   const htmlElement = element.tagName;
-  exportData({
-    appId: APP_ID,
-    event: eventName,
-    url: getURL(),
-    sessionId: window.localStorage.getItem('Session_ID'),
-    htmlElement: htmlElement,
-    directiveTag: directiveBindingArgument,
-    timestamp: Date.now()
-  });
+  exportData(
+    {
+      appId: APP_ID,
+      event: eventName,
+      url: getURL(),
+      sessionId: window.localStorage.getItem('Session_ID'),
+      htmlElement: htmlElement,
+      directiveTag: directiveBindingArgument,
+      timestamp: Date.now()
+    },
+    socket
+  );
 };
 export const itemExistsInLocalStorage = (key) => {
   const value = localStorage.getItem(key);
@@ -112,7 +116,7 @@ export const checkInactivity = () => {
   window.addEventListener('keypress', resetInactiveTimer);
 };
 
-export const handleSessionId = (APP_ID) => {
+export const handleSessionId = (APP_ID, socket) => {
   window.localStorage.setItem('url', getURL());
 
   window.addEventListener('close', () => {
@@ -121,22 +125,6 @@ export const handleSessionId = (APP_ID) => {
 
   if (!itemExistsInLocalStorage('Session_ID')) {
     window.localStorage.setItem('Session_ID', Math.floor(Math.random() * Date.now()).toString(36));
-    setSessionID(APP_ID);
+    setSessionID(APP_ID, socket);
   }
-};
-
-export const handleSocketIo = (APP_ID) => {
-  // socket io connection
-  const socket = io(import.meta.env.VITE_PROD_API_URL);
-  socket.on('connect', () => {
-    socket.emit('connectedWithAppId', { appId: APP_ID });
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Disconnected from Socket.IO server.');
-  });
-
-  socket.on('message', (arg) => {
-    console.log(arg); // world
-  });
 };

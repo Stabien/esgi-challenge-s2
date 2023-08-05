@@ -58,6 +58,10 @@ watch(user, (u) => {
 onMounted(() => {
   hadleSocketRoom(user.value);
 });
+
+provide('socket', {
+  socket
+});
 </script>
 
 <template>

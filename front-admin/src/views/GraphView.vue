@@ -10,11 +10,12 @@ import { userStatusWebmaster } from '@/utils/userConstant';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
-import { ref, inject, watch, onMounted } from 'vue';
+import { ref, inject, watch, onMounted, onUnmounted } from 'vue';
 
 Chart.register(...registerables);
 const toast = useToast();
 const { user } = inject('user');
+const { socket } = inject('socket');
 
 const router = useRouter();
 
@@ -129,12 +130,6 @@ const fetchTags = async () => {
 const checkExistingValueInEvent = (evenement) => {
   return eventByPagesList.value.some((objet) => objet._id.event === evenement);
 };
-onMounted(() => {
-  fetchEventByPages();
-  fetchSessionByPages();
-  fetchSessionByTags();
-  fetchTags();
-});
 
 const createTag = async () => {
   if (!graphTitle.value) return;
@@ -163,6 +158,21 @@ const createTag = async () => {
     toast.error(error.message);
   }
 };
+onMounted(() => {
+  fetchEventByPages();
+  fetchSessionByPages();
+  fetchSessionByTags();
+  fetchTags();
+  socket.on('newDataAdded', (arg) => {
+    console.log(arg); // world
+  });
+});
+
+onUnmounted(() => {
+  console.log('je demonte graph View');
+  socket.removeAllListeners('newDataAdded');
+  console.log('j ai arrete decouter');
+});
 </script>
 
 <template>

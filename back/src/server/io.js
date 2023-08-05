@@ -22,6 +22,7 @@ const serverIo = (io) => {
 
       console.log('leaving room:', room)
     })
+    socket.on('newDataAdded', () => io.to(room).emit('newDataAdded', 'new data added for room '))
     // Gérer la déconnexion de l'utilisateur
     socket.on('disconnect', () => {
       console.log('Utilisateur déconnecté')
