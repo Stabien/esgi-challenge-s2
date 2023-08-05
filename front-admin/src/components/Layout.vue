@@ -31,6 +31,7 @@ onMounted(() => {
     </div>
     <nav class="flex gap-4 items-center">
       <Link variant="outline" to="/tuto">Installation tutorial</Link>
+      <!-- <Button @click="() => console.log(user)">log User</Button> -->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
       <div v-if="user.isLogged" @click="openMenu" class="relative flex items-center cursor-pointer">
@@ -44,8 +45,30 @@ onMounted(() => {
         <ChevronDown class="transition-all" :transform="`rotate(${isMenuOpened ? '180' : '0'})`" />
         <div
           v-if="isMenuOpened"
-          class="absolute top-12 right-0 flex flex-col gap-2 p-4 rounded w-max bg-palette-gray-800 text-white"
+          class="absolute top-12 right-0 flex flex-col gap-2 p-4 rounded w-max bg-palette-gray-800 text-palette-gray-200"
         >
+          <div
+            :style="{
+              'grid-template-columns': 'auto 1fr'
+            }"
+            class="grid gap-2 px-2 py-1 text-sm"
+          >
+            <UserIcon height="24" width="24" />
+
+            {{ user.decodedToken.email }}
+          </div>
+          <div
+            v-if="!user.decodedToken.isAdmin"
+            :style="{
+              'grid-template-columns': 'auto 1fr'
+            }"
+            class="grid gap-2 px-2 py-1 text-sm"
+          >
+            <AdminIcon height="24" width="24" />
+
+            {{ user.decodedToken.appId }}
+          </div>
+          <hr class="border-palette-gray-500" />
           <LinkMenu
             to="/graph"
             v-if="
@@ -73,19 +96,4 @@ onMounted(() => {
       </div>
     </nav>
   </header>
-  <div
-    v-if="user.isLogged"
-    class="bg-palette-primary-500 px-6 font-bold text-soft-white py-2 rounded-full fixed z-50 bottom-4 left-4"
-  >
-    <div>
-      connected with :
-      <span class="font-bold">
-        {{ user.decodedToken.email }}
-      </span>
-    </div>
-    <div class="" v-if="user.status === userStatusWebmaster">
-      <span v-if="user.isActive !== userStatusValidated">Pending</span>
-      <span v-else> APP_ID : {{ user.decodedToken.appId }} </span>
-    </div>
-  </div>
 </template>
