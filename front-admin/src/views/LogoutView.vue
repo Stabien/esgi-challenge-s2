@@ -6,9 +6,7 @@ import { onMounted } from 'vue';
 const router = useRouter();
 
 const logout = () => {
-  console.log('dsdsdf');
   removeLocalStorageItem('token');
-  console.log(router);
   router.push('/');
 };
 onMounted(() => {

@@ -1,4 +1,5 @@
-const createServer = require('./server')
+// const serverIo = require('./server')
+const serverIo = require('./server/io')
 const bodyParser = require('body-parser')
 const express = require('express')
 const http = require('http')
@@ -36,24 +37,8 @@ app.use((req, res, next) => {
 })
 
 routes(app)
-
-// Configuration de Socket.IO
-io.on('connection', (socket) => {
-  console.log("Un utilisateur s'est connecté")
-
-  // Gérer les événements socket ici
-  socket.on('message', (data) => {
-    console.log('Message reçu :', data)
-    // Vous pouvez diffuser le message à tous les autres clients connectés
-    // io.emit('message', data);
-  })
-
-  // Gérer la déconnexion de l'utilisateur
-  socket.on('disconnect', () => {
-    console.log('Utilisateur déconnecté')
-  })
-})
-
+console.log(serverIo)
+serverIo(io)
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

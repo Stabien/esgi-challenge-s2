@@ -1,40 +1,20 @@
 <script>
-import { io } from 'socket.io-client';
 import {
   handleURL,
-  getURL,
-  setSessionID,
   handleEvent,
-  itemExistsInLocalStorage
+  checkInactivity,
+  handleSessionId,
+  handleSocketIo
 } from './trackerUtils';
 
 export default {
   install(VueInstance, options) {
     let APP_ID = options.App_id;
 
-    window.localStorage.setItem('url', getURL());
+    checkInactivity();
 
-    window.addEventListener('close', () => {
-      window.localStorage.removeItem('Session_ID');
-    });
-
-    if (!itemExistsInLocalStorage('Session_ID')) {
-      window.localStorage.setItem(
-        'Session_ID',
-        Math.floor(Math.random() * Date.now()).toString(36)
-      );
-      setSessionID(APP_ID);
-    }
-
-    // socket io connection
-    const socket = io(import.meta.env.VITE_PROD_API_URL);
-    socket.on('connect', () => {
-      console.log('Connected to Socket.IO server.');
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from Socket.IO server.');
-    });
+    handleSessionId(APP_ID);
+    handleSocketIo(APP_ID);
 
     setInterval(() => {
       handleURL(APP_ID);

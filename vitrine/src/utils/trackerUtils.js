@@ -1,3 +1,5 @@
+import { io } from 'socket.io-client';
+
 export const exportData = async ({
   appId,
   event,
@@ -88,4 +90,53 @@ export const handleEvent = (element, eventName, directiveBindingArgument, APP_ID
 export const itemExistsInLocalStorage = (key) => {
   const value = localStorage.getItem(key);
   return value !== null;
+};
+
+export const checkInactivity = () => {
+  let inactiveTimer;
+  const inactivityTimeout = 3000; // Temps en millisecondes (30 secondes ici)
+
+  function resetInactiveTimer() {
+    clearTimeout(inactiveTimer);
+    inactiveTimer = setTimeout(handleInactivity, inactivityTimeout);
+  }
+
+  function handleInactivity() {
+    // Mettez ici le code à exécuter lorsque le site devient inactif
+    console.log('Le site est inactif !');
+  }
+
+  // Écoutez les événements de souris et de clavier pour réinitialiser le minuteur
+  window.addEventListener('mousemove', resetInactiveTimer);
+  window.addEventListener('mousedown', resetInactiveTimer);
+  window.addEventListener('keypress', resetInactiveTimer);
+};
+
+export const handleSessionId = (APP_ID) => {
+  window.localStorage.setItem('url', getURL());
+
+  window.addEventListener('close', () => {
+    window.localStorage.removeItem('Session_ID');
+  });
+
+  if (!itemExistsInLocalStorage('Session_ID')) {
+    window.localStorage.setItem('Session_ID', Math.floor(Math.random() * Date.now()).toString(36));
+    setSessionID(APP_ID);
+  }
+};
+
+export const handleSocketIo = (APP_ID) => {
+  // socket io connection
+  const socket = io(import.meta.env.VITE_PROD_API_URL);
+  socket.on('connect', () => {
+    socket.emit('connectedWithAppId', { appId: APP_ID });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from Socket.IO server.');
+  });
+
+  socket.on('message', (arg) => {
+    console.log(arg); // world
+  });
 };

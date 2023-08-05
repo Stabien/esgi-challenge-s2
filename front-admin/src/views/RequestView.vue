@@ -104,7 +104,6 @@ const fetchUserRequest = async () => {
 
 onMounted(() => {
   fetchUserRequest();
-  console.log(user);
   if (!user.value.isLogged) router.push('/');
 });
 </script>
