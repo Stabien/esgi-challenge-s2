@@ -23,9 +23,6 @@ export const exportData = async (
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
-    // const data = await response.json();
-    // updateLocalStorage('token', props.isAdmin ? data.admin.token : data.user.token);
-    console.log(socket);
     socket.emit('newDataAdded');
   } catch (error) {
     console.log(error);
@@ -36,7 +33,6 @@ export const handleURL = (APP_ID, socket) => {
   setTimeout(() => {
     if (window.localStorage.getItem('url') !== getURL()) {
       window.localStorage.setItem('url', getURL());
-      console.log(window.localStorage.getItem('url'));
       exportData(
         {
           appId: APP_ID,
@@ -60,7 +56,6 @@ export const getURL = () => {
 export const setSessionID = (APP_ID, socket) => {
   /* Trigger aux changement des conditions */
   let SessionId = window.localStorage.getItem('Session_ID');
-  console.log(SessionId);
   exportData(
     {
       appId: APP_ID,
@@ -96,9 +91,9 @@ export const itemExistsInLocalStorage = (key) => {
   return value !== null;
 };
 
-export const checkInactivity = () => {
+export const checkInactivity = (APP_ID, socket) => {
   let inactiveTimer;
-  const inactivityTimeout = 3000; // Temps en millisecondes (30 secondes ici)
+  const inactivityTimeout = 30000; // Temps en millisecondes (30 secondes ici)
 
   function resetInactiveTimer() {
     clearTimeout(inactiveTimer);
@@ -108,6 +103,8 @@ export const checkInactivity = () => {
   function handleInactivity() {
     // Mettez ici le code à exécuter lorsque le site devient inactif
     console.log('Le site est inactif !');
+    window.localStorage.setItem('Session_ID', Math.floor(Math.random() * Date.now()).toString(36));
+    setSessionID(APP_ID, socket);
   }
 
   // Écoutez les événements de souris et de clavier pour réinitialiser le minuteur

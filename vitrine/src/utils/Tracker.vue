@@ -14,7 +14,7 @@ export default {
       console.log(arg); // world
     });
 
-    checkInactivity();
+    checkInactivity(APP_ID, socket);
 
     handleSessionId(APP_ID, socket);
 
