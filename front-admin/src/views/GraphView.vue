@@ -165,6 +165,10 @@ onMounted(() => {
   fetchTags();
   socket.on('newDataAdded', (arg) => {
     console.log(arg); // world
+    fetchEventByPages();
+    fetchSessionByPages();
+    fetchSessionByTags();
+    fetchTags();
   });
 });
 
