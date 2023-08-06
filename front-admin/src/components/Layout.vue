@@ -22,6 +22,12 @@ onMounted(() => {
 </script>
 
 <template>
+  <RouterLink
+    to="/tuto"
+    title="Installation tutorial"
+    class="fixed bottom-5 right-20 z-50 rounded-full border-2 font-bold border-soft-black text-soft-black dark:border-soft-white dark:text-soft-white h-6 w-6 flex justify-center items-center"
+    >?
+  </RouterLink>
   <SwitchDarkMode :style="{ zIndex: 100 }" class="fixed bottom-5 right-5 z-50" />
   <header class="w-full fixed top-0 flex items-center justify-between p-4 z-50">
     <div class="flex items-center justify-center">
@@ -30,7 +36,6 @@ onMounted(() => {
       </Link>
     </div>
     <nav class="flex gap-4 items-center">
-      <Link variant="outline" to="/tuto">Installation tutorial</Link>
       <!-- <Button @click="() => console.log(user)">log User</Button> -->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
