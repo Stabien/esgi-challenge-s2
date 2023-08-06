@@ -80,7 +80,7 @@ const register = async () => {
       dataCy="firstname"
       type="text"
       label="Firstname"
-      v-model="form.firstName"
+      v-model="form.firstname"
       required="true"
     />
     <Input dataCy="lastname" type="text" label="Lastname" v-model="form.lastname" required="true" />
