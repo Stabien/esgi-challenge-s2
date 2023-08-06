@@ -52,7 +52,6 @@ exports.authentication = async (req, res) => {
       { uuid, isAdmin: false, firstname, email, lastname, appId, societyName, url, status },
       process.env.JWT_KEY,
     )
-
     return res.status(200).json({ token })
   } catch (e) {
     console.log(e)
@@ -60,7 +59,7 @@ exports.authentication = async (req, res) => {
   }
 }
 
-exports.registration = async (req, res) => {
+exports.registration = async (req, res, next) => {
   const { email, password, confirmPassword, firstname, lastname, societyName, url } = req.body
   const { file } = req
 
@@ -112,7 +111,7 @@ exports.registration = async (req, res) => {
     const response = { ...newUser.dataValues }
     delete response.password
 
-    return res.status(201).json(response)
+    return next()
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'Internal error' })
