@@ -16,26 +16,19 @@ const isEditing = ref(false);
 
 const toggleEdit = () => (isEditing.value = !isEditing.value);
 const cancelEdit = () => {
-  console.log('cancel');
   isEditing.value = !isEditing.value;
   fetchUserRequest();
 };
+
 const saveEdit = async () => {
   try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`,
-      JSON.stringify(userRequest.value),
-      {
-        method: 'PUT',
-        body: JSON.stringify(userRequest.value),
-        headers: {
-          headers,
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
+      method: 'PUT',
+      body: JSON.stringify(userRequest.value),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-    );
+    });
     console.log(userRequest.value);
   } catch (error) {
     console.log(error);
@@ -172,18 +165,13 @@ onUnmounted(() => {
           label="society"
           v-model="userRequest.societyName"
         />
-        <div
-          :style="{
-            'grid-area': 'url'
-          }"
-          class="flex gap-2 items-end"
-        >
-          <Input :disabled="!isEditing" type="text" label="url" v-model="userRequest.url" />
-          <a target="_blank" :href="userRequest.url"
-            ><Button variant="outline"
-              ><ExternalLink class="h-6 w-6 text-palette-primary-500" /></Button
-          ></a>
-        </div>
+        <Input
+          class="w-fit"
+          :disabled="!isEditing"
+          type="text"
+          label="url"
+          v-model="userRequest.url"
+        />
         <div
           :style="{
             'grid-area': 'buttons'
