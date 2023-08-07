@@ -201,9 +201,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  console.log('je demonte graph View');
   socket.removeAllListeners('newDataAdded');
-  console.log('j ai arrete decouter');
 });
 </script>
 

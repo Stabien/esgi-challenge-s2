@@ -2,6 +2,7 @@
 const {
   getUserByUuid,
   authentication,
+  getUserToken,
   registration,
   updateUser,
 } = require('../controllers/userController')
@@ -26,6 +27,7 @@ const { addTag, getTagsByUserUuid } = require('../controllers/tagController')
 /** Router */
 const routes = (app) => {
   app.route('/api/user/authentication').post(authentication)
+  app.route('/api/user/getUserToken/:uuid').get(checkUserTokenUuid, getUserToken)
   app.route('/api/user/registration').post(upload.single('kbis'), registration, authentication)
   app
     .route('/api/user/:uuid')

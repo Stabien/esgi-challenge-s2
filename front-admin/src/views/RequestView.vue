@@ -1,12 +1,13 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import Link from '@/components/ui/Link.vue';
 import { REJECTED, VALIDATED, PENDING } from '@/utils/requestConstants';
 
 const route = useRoute();
 const router = useRouter();
 const { user } = inject('user');
+const { socket } = inject('socket');
 const requestUid = route.params.uid || user.value.decodedToken.uuid;
 
 const userRequest = ref();
@@ -56,7 +57,7 @@ const getCorrectRequest = (status) => {
   }
 };
 
-const handleRequest = async (status, uuid) => {
+const updateUserStatus = async (status, uuid) => {
   try {
     isLoading.value = true;
 
@@ -72,7 +73,7 @@ const handleRequest = async (status, uuid) => {
         }
       }
     );
-    // props.getPendingUserList();
+    socket.emit('updateUserDocument', userRequest.value.appId);
     fetchUserRequest();
   } catch (error) {
     console.log(error);
@@ -103,8 +104,15 @@ const fetchUserRequest = async () => {
 };
 
 onMounted(() => {
-  fetchUserRequest();
   if (!user.value.isLogged) router.push('/');
+
+  fetchUserRequest();
+
+  socket.on('updateUserDocument', () => fetchUserRequest());
+});
+
+onUnmounted(() => {
+  socket.removeAllListeners('updateUserDocument');
 });
 </script>
 
@@ -185,21 +193,21 @@ onMounted(() => {
             <Button
               v-if="userRequest.status === PENDING"
               variant="outline"
-              @click="() => handleRequest(VALIDATED, userRequest.uuid)"
+              @click="() => updateUserStatus(VALIDATED, userRequest.uuid)"
             >
               <CheckIcon height="24" width="24" class="text-palette-green mr-2" />Validate
             </Button>
             <Button
               v-if="userRequest.status === PENDING"
               variant="outline"
-              @click="() => handleRequest(REJECTED, userRequest.uuid)"
+              @click="() => updateUserStatus(REJECTED, userRequest.uuid)"
             >
               <RefusedIcon height="24" width="24" class="text-palette-primary-500 mr-2" />Reject
             </Button>
             <Button
               v-else
               variant="outline"
-              @click="() => handleRequest(PENDING, userRequest.uuid)"
+              @click="() => updateUserStatus(PENDING, userRequest.uuid)"
             >
               <PendingIcon height="24" width="24" class="text-palette-gray-300 mr-2" />
               Go back to pending

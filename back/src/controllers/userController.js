@@ -59,6 +59,25 @@ exports.authentication = async (req, res) => {
   }
 }
 
+exports.getUserToken = async (req, res) => {
+  try {
+    const user = await Users.findOne({ where: { uuid: req.params.uuid } })
+    if (user === null) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const { uuid, email, firstname, lastname, appId, societyName, url, status } = user
+    const token = jwt.sign(
+      { uuid, isAdmin: false, firstname, email, lastname, appId, societyName, url, status },
+      process.env.JWT_KEY,
+    )
+    return res.status(200).json({ token })
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+
 exports.registration = async (req, res, next) => {
   const { email, password, confirmPassword, firstname, lastname, societyName, url } = req.body
   const { file } = req

@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import Layout from '@/components/Layout.vue';
+import { updateLocalStorage } from '@/utils';
 import { getLogo, getConnectionProviderValue } from '@/utils';
 import { provide, ref, watch, onMounted } from 'vue';
 import { io } from 'socket.io-client';
@@ -32,12 +33,27 @@ provide('user', {
 
 // socket io connection
 const socket = io(import.meta.env.VITE_PROD_API_URL);
-socket.on('connect', () => {
-  console.log('Connected to Socket.IO server.');
-});
+// socket.on('connect', () => {
+//   console.log('Connected to Socket.IO server.');
+// });
+// socket.on('disconnect', () => {
+//   console.log('Disconnected from Socket.IO server.');
+// });
 
-socket.on('disconnect', () => {
-  console.log('Disconnected from Socket.IO server.');
+socket.on('updateUserDocument', async () => {
+  //gonna fetch user to update token
+  const response = await fetch(
+    `${import.meta.env.VITE_PROD_API_URL}/api/user/getUserToken/${user.value.decodedToken.uuid}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    }
+  );
+  if (!response.ok) throw new Error('Something went wrong');
+  const data = await response.json();
+  updateLocalStorage('token', data.token);
 });
 socket.on('message', (arg) => {
   console.log(arg); // world
@@ -45,14 +61,12 @@ socket.on('message', (arg) => {
 
 const hadleSocketRoom = (userValue) => {
   if (userValue.decodedToken.appId) {
-    console.log('try to connect to socket withapp ID');
     socket.emit('connectedWithAppId', { appId: userValue.decodedToken.appId });
   } else {
     socket.emit('leaveRoom', { appId: user.value.decodedToken.appId });
   }
 };
 watch(user, (u) => {
-  // if(user)
   hadleSocketRoom(u);
 });
 onMounted(() => {
