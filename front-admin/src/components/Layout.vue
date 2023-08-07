@@ -5,8 +5,8 @@ import Link from '@/components/ui/Link.vue';
 import GraphBarIcon from '@/components/icons/GraphBarIcon.vue';
 import AdminIcon from '@/components/icons/AdminIcon.vue';
 import ArrowBracketIcon from '@/components/icons/ArrowBracketIcon.vue';
-import AccountSettingsIcon from '@/components/icons/AccountSettingsIcon.vue';
-import { inject, onMounted, ref } from 'vue';
+import UserIcon from '@/components/icons/UserIcon.vue';
+import { inject, ref } from 'vue';
 import { getLogo, getRandomColorsAvatar } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
 
@@ -14,11 +14,7 @@ const { user } = inject('user');
 
 const isMenuOpened = ref(false);
 
-const openMenu = () => (isMenuOpened.value = !isMenuOpened.value);
-
-onMounted(() => {
-  getLogo();
-});
+const openMenu = (isOpen) => (isMenuOpened.value = isOpen);
 </script>
 
 <template>
@@ -39,7 +35,11 @@ onMounted(() => {
       <!-- <Button @click="() => console.log(user)">log User</Button> -->
       <Link v-if="!user.isLogged" variant="outline" to="/login">Login</Link>
       <Link v-if="!user.isLogged" variant="default" to="/join">Join</Link>
-      <div v-if="user.isLogged" @click="openMenu" class="relative flex items-center cursor-pointer">
+      <div
+        v-if="user.isLogged"
+        @click="openMenu(!isMenuOpened)"
+        class="relative flex items-center cursor-pointer"
+      >
         <div class="relative w-10 h-10">
           <Avatar :colors="getRandomColorsAvatar()" class="absolute absolute-center" />
           <span
@@ -48,32 +48,30 @@ onMounted(() => {
           >
         </div>
         <ChevronDown class="transition-all" :transform="`rotate(${isMenuOpened ? '180' : '0'})`" />
-        <div
+        <Modal
+          :toggle="openMenu"
           v-if="isMenuOpened"
-          class="absolute top-12 right-0 flex flex-col gap-2 p-4 rounded w-max bg-palette-gray-800 text-palette-gray-200"
+          class="top-12 right-0 flex flex-col gap-2 p-4 rounded bg-palette-gray-800 text-palette-gray-200"
         >
-          <div
-            :style="{
-              'grid-template-columns': 'auto 1fr'
-            }"
-            class="grid gap-2 px-2 py-1 text-sm"
-          >
-            <UserIcon height="24" width="24" />
-
-            {{ user.decodedToken.email }}
-          </div>
           <div
             v-if="!user.decodedToken.isAdmin"
             :style="{
               'grid-template-columns': 'auto 1fr'
             }"
-            class="grid gap-2 px-2 py-1 text-sm"
+            :title="`Your appId: ${user.decodedToken.appId}`"
+            class="grid gap-2 px-2 py-1 text-sm cursor-default"
           >
             <AdminIcon height="24" width="24" />
 
             {{ user.decodedToken.appId }}
           </div>
-          <hr class="border-palette-gray-500" />
+          <hr v-if="!user.decodedToken.isAdmin" class="border-palette-gray-500" />
+          <LinkMenu
+            v-if="user.isLogged && user.status === userStatusWebmaster"
+            to="/account-settings"
+            :icon="UserIcon"
+            :label="user.decodedToken.email"
+          />
           <LinkMenu
             to="/graph"
             v-if="
@@ -85,19 +83,13 @@ onMounted(() => {
             label="Graphs"
           />
           <LinkMenu
-            v-if="user.isLogged && user.status === userStatusWebmaster"
-            to="/account-settings"
-            :icon="AccountSettingsIcon"
-            label="Account Settings"
-          />
-          <LinkMenu
             v-if="user.isLogged && user.status === userStatusAdmin"
             to="/admin"
             :icon="AdminIcon"
             label="Admin"
           />
           <LinkMenu v-if="user.isLogged" to="/logout" :icon="ArrowBracketIcon" label="Logout" />
-        </div>
+        </Modal>
       </div>
     </nav>
   </header>

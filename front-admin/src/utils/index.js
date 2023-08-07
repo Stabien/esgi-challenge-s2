@@ -59,6 +59,14 @@ export const getLogo = () => {
 export const setLogo = () => {
   const randomNumber = randomInt(1, numberOfLogo);
   localStorage.setItem('logoNumber', randomNumber);
+
+  var link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = getLogo();
 };
 
 export const getOcto = (ecart = 20) => {

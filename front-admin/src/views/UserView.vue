@@ -16,42 +16,44 @@ const userRequest = ref();
 const isLoading = ref(false);
 const isEditing = ref(false);
 
-const toggleEdit = () => (isEditing.value = !isEditing.value);
-const cancelEdit = () => {
-  isEditing.value = false;
-  fetchUserRequest();
-};
-
-const saveEdit = async () => {
+const fetchUserRequest = async () => {
   try {
+    isLoading.value = true;
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
-    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
-      method: 'PUT',
-      body: JSON.stringify(userRequest.value),
+    const response = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
+      method: 'GET',
       headers
     });
-    fetchUserRequest();
-    toast('Your profile has been modified');
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userRequest.value = data;
+  } catch (error) {
+    console.log(error);
+  }
+  isLoading.value = false;
+};
+
+const handleEdit = async (isEdit) => {
+  try {
+    if (isEdit) {
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+      await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
+        method: 'PUT',
+        body: JSON.stringify(userRequest.value),
+        headers
+      });
+      toast('Your profile has been modified');
+    }
+    socket.emit('updateUserDocument', userRequest.value.appId);
   } catch (error) {
     console.log(error);
   }
   isEditing.value = false;
-};
-
-const isMe = () => requestUid === user.value.decodedToken.uuid;
-
-const getCorrectRequest = (status) => {
-  switch (status) {
-    case REJECTED:
-      return 'rejectUser';
-    case VALIDATED:
-      return 'validateUser';
-
-    default:
-      return 'pendingUser';
-  }
 };
 
 const updateUserStatus = async (status, uuid) => {
@@ -60,40 +62,14 @@ const updateUserStatus = async (status, uuid) => {
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/admin/${getCorrectRequest(status)}/${uuid}`,
-      {
-        method: 'PUT',
-        headers: {
-          headers,
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      }
-    );
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/admin/handleUserStatus/${uuid}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: status }),
+      headers
+    });
     socket.emit('updateUserDocument', userRequest.value.appId);
     fetchUserRequest();
-  } catch (error) {
-    console.log(error);
-  }
-  isLoading.value = false;
-};
-
-const fetchUserRequest = async () => {
-  try {
-    isLoading.value = true;
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    const response = await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
-      method: 'GET',
-      headers: {
-        headers,
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    userRequest.value = data;
   } catch (error) {
     console.log(error);
   }
@@ -205,10 +181,15 @@ onUnmounted(() => {
               Go back to pending
             </Button>
           </div>
-          <div class="flex gap-2 items-end justify-end" v-else-if="isMe()">
-            <Button v-if="!isEditing" variant="outline" @click="toggleEdit">Edit</Button>
-            <Button v-if="isEditing" variant="outline" @click="cancelEdit">Cancel</Button>
-            <Button v-if="isEditing" variant="default" @click="saveEdit">Save</Button>
+          <div
+            class="flex gap-2 items-end justify-end"
+            v-else-if="requestUid === user.decodedToken.uuid"
+          >
+            <Button v-if="!isEditing" variant="outline" @click="isEditing = !isEditing"
+              >Edit</Button
+            >
+            <Button v-if="isEditing" variant="outline" @click="handleEdit(false)">Cancel</Button>
+            <Button v-if="isEditing" variant="default" @click="handleEdit(true)">Save</Button>
           </div>
         </div>
       </div>

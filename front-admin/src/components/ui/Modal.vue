@@ -20,7 +20,7 @@ onUnmounted(() => window.removeEventListener('click', handleRefClick));
 <template>
   <div
     ref="modal"
-    class="animate-slideDownAndFade absolute shadow-default inline-block p-4 bg-white rounded"
+    class="animate-slideDownAndFade absolute shadow-default inline-block p-4 rounded"
   >
     <slot></slot>
   </div>

@@ -6,42 +6,29 @@ import GraphScatterIcon from '@/components/icons/GraphScatterIcon.vue';
 import Button from '@/components/ui/Button.vue';
 import Input from '@/components/ui/Input.vue';
 import { BAR, DONUT } from '@/utils/graphConstant';
-import { userStatusWebmaster } from '@/utils/userConstant';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
-import { useRouter } from 'vue-router';
-import { ref, inject, watch, onMounted, onUnmounted, provide } from 'vue';
+import { ref, inject, onMounted, onUnmounted, provide } from 'vue';
 
 Chart.register(...registerables);
 const toast = useToast();
 const { user } = inject('user');
 const { socket } = inject('socket');
 
-const router = useRouter();
-
-const redirect = () => {
-  if (user.value.status !== userStatusWebmaster) {
-    router.push('/404');
-    return;
-  }
-};
-onMounted(() => {
-  redirect();
-});
-watch(user.value, () => {
-  redirect();
-});
 const tagNameInput = ref('');
 const graphDataType = ref('');
 const dataType = ref('');
+
 const eventByPagesList = ref([]);
 const sessionByPagesList = ref([]);
 const sessionByTagsList = ref([]);
 const tagsList = ref([]);
+
 const isSettingsModalOpened = ref(false);
 const graphSettings = ref({
-  graphValue: 'quantity', //percenteages or quantity
-  graphSize: 1
+  graphValue: 'quantity', //percentages or quantity
+  graphSize: 1, //size of graph: 1 to 10
+  graphPeriod: ''
 });
 
 provide('graphSettings', { graphSettings });
@@ -142,7 +129,7 @@ const fetchTags = async () => {
       redirect: 'follow'
     };
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/all/${user.value.decodedToken.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${user.value.decodedToken.uuid}`,
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
@@ -173,7 +160,7 @@ const createTag = async () => {
       redirect: 'follow'
     };
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/add/${user.value.decodedToken.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${user.value.decodedToken.uuid}`,
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
@@ -187,7 +174,7 @@ const createTag = async () => {
 
 const deleteTag = async (tagUuid) => {
   try {
-    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/delete/${tagUuid}`, {
+    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/${tagUuid}`, {
       method: 'DELETE'
     });
     fetchTags();

@@ -5,7 +5,7 @@ const { graphSettings } = inject('graphSettings');
 </script>
 
 <template>
-  <Modal>
+  <Modal class="bg-white">
     <input type="range" min="1" max="10" v-model="graphSettings.graphSize" />
   </Modal>
 </template>

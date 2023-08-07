@@ -2,22 +2,6 @@
 import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
 import { defineProps } from 'vue';
 import { DoughnutChart, BarChart, ScatterChart } from 'vue-chart-3';
-import { inject, watch, onMounted } from 'vue';
-import { userStatusWebmaster } from '@/utils/userConstant';
-import { useRouter } from 'vue-router';
-
-// Handle redirection
-const { user } = inject('user');
-const router = useRouter();
-const redirect = () => {
-  if (user.value.status !== userStatusWebmaster) router.push('/404');
-};
-onMounted(() => {
-  redirect();
-});
-watch(user.value, () => {
-  redirect();
-});
 
 const props = defineProps([
   'graphDataType',

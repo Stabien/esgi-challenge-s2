@@ -38,6 +38,17 @@ exports.getUserRegistrations = async (req, res) => {
   }
 }
 
+exports.handleUserStatus = async (req, res) => {
+  const { uuid } = req.params
+  const { status } = req.body
+  try {
+    await Users.update({ status: status }, { where: { uuid } })
+    return res.send(200)
+  } catch (e) {
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+
 exports.validateUser = async (req, res) => {
   const { uuid } = req.params
   try {

@@ -7,7 +7,7 @@ const props = defineProps(['icon', 'label']);
     :style="{
       'grid-template-columns': 'auto 1fr'
     }"
-    class="grid gap-2 px-2 py-1 text-sm"
+    class="grid gap-2 px-2 py-1 text-sm hover:bg-palette-gray-700"
   >
     <component :is="props.icon" height="24" width="24" />
 

@@ -1,24 +1,9 @@
 <script setup>
-import { inject, watch, ref, onMounted } from 'vue';
+import { inject, ref } from 'vue';
 import { userStatusAdmin } from '@/utils/userConstant';
 import RequestRow from '@/components/AdminView/RequestRow.vue';
-import { useRouter } from 'vue-router';
 
 const { user } = inject('user');
-const router = useRouter();
-
-const redirect = () => {
-  if (user.value.status !== userStatusAdmin) {
-    router.push('/404');
-    return;
-  }
-};
-onMounted(() => {
-  redirect();
-});
-watch(user.value, () => {
-  redirect();
-});
 
 const requestList = ref([]);
 const x = ref(null);
