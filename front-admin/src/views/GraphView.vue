@@ -31,7 +31,7 @@ onMounted(() => {
 watch(user.value, () => {
   redirect();
 });
-const graphTitle = ref('');
+const tagNameInput = ref('');
 const graphDataType = ref('');
 const dataType = ref('');
 const eventByPagesList = ref([]);
@@ -159,19 +159,16 @@ const checkExistingValueInEvent = (evenement) => {
 };
 
 const createTag = async () => {
-  if (!graphTitle.value) return;
+  if (!tagNameInput.value) return;
   try {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    console.log(graphTitle.value);
     var requestOptions = {
       method: 'POST',
       body: JSON.stringify({
-        name: graphTitle.value
+        name: tagNameInput.value
       }),
-      headers: {
-        headers
-      },
+      headers,
       redirect: 'follow'
     };
     const response = await fetch(
@@ -180,19 +177,20 @@ const createTag = async () => {
     );
     if (!response.ok) throw new Error('Something went wrong');
     fetchTags();
+    tagNameInput.value = '';
   } catch (error) {
     console.log(error);
     toast.error(error.message);
   }
 };
+
 onMounted(() => {
   fetchEventByPages();
   fetchSessionByPages();
   fetchSessionByTags();
   fetchTags();
   fetchAll();
-  socket.on('newDataAdded', (arg) => {
-    console.log(arg); // world
+  socket.on('newDataAdded', () => {
     fetchEventByPages();
     fetchSessionByPages();
     fetchSessionByTags();
@@ -217,11 +215,11 @@ onUnmounted(() => {
           type="text"
           label="Create your tags"
           oneLine="true"
-          v-model="graphTitle"
+          v-model="tagNameInput"
           class="w-fit"
           required
         />
-        <Button type="submit" @click="createTag">Create Tags</Button>
+        <Button type="submit">Create Tags</Button>
       </form>
       <span> What do you want to see? </span>
       <div class="relative">
