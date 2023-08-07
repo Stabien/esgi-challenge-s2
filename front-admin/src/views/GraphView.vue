@@ -64,8 +64,8 @@ const fetchAll = async () => {
     );
     if (!response.ok) throw new Error('Something went wrong');
 
-    const data = await response.json();
-    console.log(data);
+    // const data = await response.json();
+    // console.log(data);
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -154,6 +154,7 @@ const fetchTags = async () => {
     toast.error(error.message);
   }
 };
+
 const checkExistingValueInEvent = (evenement) => {
   return eventByPagesList.value.some((objet) => objet._id.event === evenement);
 };
@@ -184,6 +185,16 @@ const createTag = async () => {
   }
 };
 
+const deleteTag = async (tagUuid) => {
+  try {
+    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/delete/${tagUuid}`, {
+      method: 'DELETE'
+    });
+    fetchTags();
+  } catch (error) {
+    console.log(error);
+  }
+};
 onMounted(() => {
   fetchEventByPages();
   fetchSessionByPages();
@@ -261,7 +272,7 @@ onUnmounted(() => {
       </div>
       <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
         <div v-for="tag in tagsList" :key="tag" class="bg-palette-primary-100 text-sm p-4 rounded">
-          {{ tag.name || 'empty tag' }}
+          {{ tag.name || 'empty tag' }} <Button @click="deleteTag(tag.uuid)">Delete</Button>
         </div>
       </div>
     </div>

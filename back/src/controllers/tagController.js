@@ -25,3 +25,19 @@ exports.addTag = async (req, res) => {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
+exports.deleteTag = async (req, res) => {
+  try {
+    const { uuid } = req.params
+    console.log(uuid)
+    const tag = await Tags.destroy({
+      where: {
+        uuid: uuid,
+      },
+    })
+    console.log('destroyed')
+    return res.status(201).json(tag)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}

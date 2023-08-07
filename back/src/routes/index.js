@@ -22,7 +22,7 @@ const {
   getSessionByPages,
   getSessionByTags,
 } = require('../controllers/analyticsController')
-const { addTag, getTagsByUserUuid } = require('../controllers/tagController')
+const { addTag, deleteTag, getTagsByUserUuid } = require('../controllers/tagController')
 
 /** Router */
 const routes = (app) => {
@@ -49,6 +49,7 @@ const routes = (app) => {
 
   app.route('/api/tag/all/:uuid').get(getTagsByUserUuid)
   app.route('/api/tag/add/:uuid').post(addTag)
+  app.route('/api/tag/delete/:uuid').delete(deleteTag)
 }
 
 module.exports = routes
