@@ -3,7 +3,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { inject, onMounted, ref, onUnmounted } from 'vue';
 import Link from '@/components/ui/Link.vue';
 import { REJECTED, VALIDATED, PENDING } from '@/utils/requestConstants';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const { user } = inject('user');
@@ -16,24 +18,26 @@ const isEditing = ref(false);
 
 const toggleEdit = () => (isEditing.value = !isEditing.value);
 const cancelEdit = () => {
-  isEditing.value = !isEditing.value;
+  isEditing.value = false;
   fetchUserRequest();
 };
 
 const saveEdit = async () => {
   try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/user/${requestUid}`, {
       method: 'PUT',
       body: JSON.stringify(userRequest.value),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      headers
     });
-    console.log(userRequest.value);
+    fetchUserRequest();
+    toast('Your profile has been modified');
   } catch (error) {
     console.log(error);
   }
-  isEditing.value = !isEditing.value;
+  isEditing.value = false;
 };
 
 const isMe = () => requestUid === user.value.decodedToken.uuid;
@@ -116,7 +120,7 @@ onUnmounted(() => {
       :style="{
         'grid-template-columns': '2fr 1fr'
       }"
-      class="grid grid-cols-2 border border-palette-gray-300 gap-4 p-4 rounded mx-40"
+      class="grid border border-palette-gray-300 gap-4 p-4 rounded mx-10 lg:mx-40"
     >
       <div class="flex gap-2 items-center">
         <Link :to="user.isAdmin ? '/admin' : '/'" variant="ghost" class=""

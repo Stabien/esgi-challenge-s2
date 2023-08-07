@@ -141,19 +141,16 @@ exports.updateUser = async (req, res) => {
   const { uuid } = req.params
 
   try {
-    // const user = await Users.create({ uuid })
-    const user = await Users.findOne({ where: { uuid } })
+    Users.update(
+      {
+        ...req.body,
+      },
+      { where: { uuid } },
+    )
 
-    if (!user) {
-      return res.status(404).json({ error: 'Utilisateur non trouvé' })
-    }
-
-    user.update({
-      ...req.body,
-    })
-
-    return res.status(200).json(user)
+    return res.status(200).json({})
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: 'Internal error' })
   }
 }
