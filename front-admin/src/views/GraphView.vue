@@ -10,7 +10,7 @@ import { userStatusWebmaster } from '@/utils/userConstant';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
-import { ref, inject, watch, onMounted, onUnmounted } from 'vue';
+import { ref, inject, watch, onMounted, onUnmounted, provide } from 'vue';
 
 Chart.register(...registerables);
 const toast = useToast();
@@ -38,11 +38,39 @@ const eventByPagesList = ref([]);
 const sessionByPagesList = ref([]);
 const sessionByTagsList = ref([]);
 const tagsList = ref([]);
+const isSettingsModalOpened = ref(false);
+const graphSettings = ref({
+  graphValue: 'quantity', //percenteages or quantity
+  graphSize: 1
+});
+
+provide('graphSettings', { graphSettings });
 
 // const chartTypeList = [DONUT, BAR, SCATTER];
 const chartTypeList = [DONUT, BAR];
 const chartTypeIconList = [GraphDonutIcon, GraphBarIcon, GraphScatterIcon];
 
+const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
+
+const fetchAll = async () => {
+  try {
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${user.value.decodedToken.appId}`,
+      requestOptions
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
 const fetchEventByPages = async () => {
   try {
     var requestOptions = {
@@ -100,7 +128,6 @@ const fetchSessionByTags = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
     sessionByTagsList.value = data;
   } catch (error) {
     console.log(error);
@@ -163,6 +190,7 @@ onMounted(() => {
   fetchSessionByPages();
   fetchSessionByTags();
   fetchTags();
+  fetchAll();
   socket.on('newDataAdded', (arg) => {
     console.log(arg); // world
     fetchEventByPages();
@@ -198,6 +226,11 @@ onUnmounted(() => {
         <Button type="submit" @click="createTag">Create Tags</Button>
       </form>
       <span> What do you want to see? </span>
+      <div class="relative">
+        <Button @click="openSettingModal(true)">Open</Button>
+        <ModalGraphSettings :toggle="openSettingModal" v-if="isSettingsModalOpened" />
+        {{ graphSettings.graphSize }}
+      </div>
       <div class="flex gap-5">
         <Button
           :variant="dataType === 'click' ? 'default' : 'outline'"
