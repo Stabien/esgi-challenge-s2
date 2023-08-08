@@ -1,5 +1,9 @@
 <script>
-import { handleURL, handleEvent, checkInactivity, handleSessionId } from './trackerUtils';
+// import { handleURL, handleEvent, checkInactivity, handleSessionId } from './trackerUtils';
+import { checkInactivity } from './trackerUtils/utils';
+import { handleEvent } from './trackerUtils/handleEvents.js';
+import { handleSessionId } from './trackerUtils/handleSessionId.js';
+import { handleURL } from './trackerUtils/handleUrl.js';
 import { io } from 'socket.io-client';
 
 export default {
@@ -7,12 +11,7 @@ export default {
     let APP_ID = options.App_id;
     // socket io connection
     const socket = io(import.meta.env.VITE_PROD_API_URL);
-    socket.on('connect', () => {
-      socket.emit('connectedWithAppId', { appId: APP_ID });
-    });
-    socket.on('message', (arg) => {
-      console.log(arg); // world
-    });
+    socket.on('connect', () => socket.emit('connectedWithAppId', { appId: APP_ID }));
 
     checkInactivity(APP_ID, socket);
 
