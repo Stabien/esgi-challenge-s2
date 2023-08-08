@@ -1,7 +1,9 @@
 <script setup>
-import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
-import { defineProps } from 'vue';
+// import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
+import { defineProps, inject } from 'vue';
 import { DoughnutChart, BarChart, ScatterChart } from 'vue-chart-3';
+
+const { graphSettings } = inject('graphSettings');
 
 const props = defineProps([
   'graphDataType',
@@ -142,20 +144,14 @@ const repeatArrayColors = (desiredLength) => {
 </script>
 
 <template>
-  <div class="flex justify-center">
-    <DoughnutChart
-      v-if="props.graphDataType === DONUT"
-      class="w-full flex justify-center"
-      :chartData="filterDataForGraphsDonut()"
-    />
+  <div
+    class="justify-center grid grid-cols-2 gap-4"
+    :class="`w-[${graphSettings.graphSize.toString()}rem]`"
+  >
+    <DoughnutChart class="w-full flex justify-center" :chartData="filterDataForGraphsDonut()" />
+    <BarChart class="w-full flex justify-center" :chartData="filterDataForGraphsDonut()" />
     <ScatterChart
-      v-if="props.graphDataType === SCATTER"
-      class="w-full flex justify-center"
-      :chartData="filterDataForGraphsDonut()"
-    />
-    <BarChart
-      v-if="props.graphDataType === BAR"
-      class="w-full flex justify-center"
+      class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphsDonut()"
     />
   </div>

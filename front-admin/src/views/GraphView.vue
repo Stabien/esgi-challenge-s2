@@ -18,6 +18,7 @@ const { socket } = inject('socket');
 const tagNameInput = ref('');
 const graphDataType = ref('');
 const dataType = ref('');
+const dataGraph = ref([]);
 
 const eventByPagesList = ref([]);
 const sessionByPagesList = ref([]);
@@ -25,10 +26,15 @@ const sessionByTagsList = ref([]);
 const tagsList = ref([]);
 
 const isSettingsModalOpened = ref(false);
+const isTagsModalOpened = ref(false);
 const graphSettings = ref({
   graphValue: 'quantity', //percentages or quantity
   graphSize: 1, //size of graph: 1 to 10
-  graphPeriod: ''
+  graphPeriod: 'M'
+  // graphPeriod: {
+  //   start: 0,
+  //   end: Date.now()
+  // } //week, day, month, etc...
 });
 
 provide('graphSettings', { graphSettings });
@@ -37,6 +43,7 @@ provide('graphSettings', { graphSettings });
 const chartTypeList = [DONUT, BAR];
 const chartTypeIconList = [GraphDonutIcon, GraphBarIcon, GraphScatterIcon];
 
+const openTagsModal = (isOpen) => (isTagsModalOpened.value = isOpen);
 const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
 
 const fetchAll = async () => {
@@ -51,8 +58,9 @@ const fetchAll = async () => {
     );
     if (!response.ok) throw new Error('Something went wrong');
 
-    // const data = await response.json();
+    const data = await response.json();
     // console.log(data);
+    dataGraph.value = data;
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -192,6 +200,7 @@ onMounted(() => {
     fetchEventByPages();
     fetchSessionByPages();
     fetchSessionByTags();
+    fetchAll();
     fetchTags();
   });
 });
@@ -208,17 +217,21 @@ onUnmounted(() => {
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <form @submit.prevent="createTag" class="flex gap-2 items-center">
-        <Input
-          type="text"
-          label="Create your tags"
-          oneLine="true"
-          v-model="tagNameInput"
-          class="w-fit"
-          required
-        />
-        <Button type="submit">Create Tags</Button>
-      </form>
+      <Button @click="openTagsModal(true)">Open</Button>
+
+      <Modal :toggle="openTagsModal" v-if="isTagsModalOpened" fullHeight="true">
+        <form @submit.prevent="createTag" class="flex gap-2 items-center">
+          <Input
+            type="text"
+            label="Create your tags"
+            oneLine="true"
+            v-model="tagNameInput"
+            class="w-fit"
+            required
+          />
+          <Button type="submit">Create Tags</Button>
+        </form>
+      </Modal>
       <span> What do you want to see? </span>
       <div class="relative">
         <Button @click="openSettingModal(true)">Open</Button>

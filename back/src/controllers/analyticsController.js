@@ -20,17 +20,13 @@ exports.getAnalyticsByAppId = async (req, res) => {
 
     const analytics = await Analytics.aggregate([
       { $match: { appId } },
-      {
-        $group: {
-          _id: { event: '$event', page: '$url' },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $sort: { uniqueVisitors: -1 },
-      },
+      // {
+      //   $group: {},
+      // },
+      // {
+      //   $sort: { $timestamp: -1 },
+      // },
     ])
-    console.log(analytics)
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
