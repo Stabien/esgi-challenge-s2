@@ -1,10 +1,8 @@
 <script setup>
+// import SomeIcon from '';
 // import { RouterLink } from 'vue-router'
 import Link from '@/components/ui/Link.vue';
-import { getLogo } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
-
-getLogo();
 </script>
 
 <template>
@@ -14,7 +12,7 @@ getLogo();
   >
     <div class="flex items-center justify-center">
       <Link variant="link" to="/">
-        <img class="h-10" :src="getLogo()" alt="" srcset="" />
+        <img class="h-10" src="/world.svg" alt="" srcset="" />
       </Link>
     </div>
     <nav class="flex gap-4">

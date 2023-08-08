@@ -1,6 +1,5 @@
 <script setup>
-import { getLogo } from '@/utils'
-import Link from '@/components/ui/Link.vue'
+import Link from '@/components/ui/Link.vue';
 </script>
 
 <template>
@@ -13,7 +12,7 @@ import Link from '@/components/ui/Link.vue'
     <section
       class="bg-opacity-50 w-full absolute z-20 gap-10 flex flex-col items-center -translate-y-1/2 top-1/2 -translate-x-1/2 left-1/2"
     >
-      <img class="h-20" :src="getLogo()" alt="" srcset="" />
+      <img class="h-20" src="/world.svg" alt="" srcset="" />
       <article class="dark:text-palette-gray-200 text-3xl text-center font-bold">
         Oops, the page doesn't exist
       </article>
