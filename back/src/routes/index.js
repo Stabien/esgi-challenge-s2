@@ -35,7 +35,8 @@ const routes = (app) => {
   app.route('/api/admin/authentication').post(adminAuthentication)
 
   app.route('/api/analytics/add').post(addAnalytics)
-  app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
+  app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)
+  // app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
   app.route('/api/analytics/eventByPages/:appId').get(getEventByPages)
   app.route('/api/analytics/sessionByPages/:appId').get(getSessionByPages)
   app.route('/api/analytics/sessionByTags/:appId').get(getSessionByTags)

@@ -1,6 +1,7 @@
 <script setup>
 import GraphChart from '@/components/GraphView/GraphChart.vue';
 import GraphBarIcon from '@/components/icons/GraphBarIcon.vue';
+import { updateLocalStorage } from '@/utils';
 import GraphDonutIcon from '@/components/icons/GraphDonutIcon.vue';
 import GraphScatterIcon from '@/components/icons/GraphScatterIcon.vue';
 import Button from '@/components/ui/Button.vue';
@@ -8,7 +9,7 @@ import Input from '@/components/ui/Input.vue';
 import { BAR, DONUT } from '@/utils/graphConstant';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
-import { ref, inject, onMounted, onUnmounted, provide } from 'vue';
+import { ref, reactive, inject, onMounted, onUnmounted, provide, watch } from 'vue';
 
 Chart.register(...registerables);
 const toast = useToast();
@@ -27,15 +28,18 @@ const tagsList = ref([]);
 
 const isSettingsModalOpened = ref(false);
 const isTagsModalOpened = ref(false);
-const graphSettings = ref({
-  graphValue: 'quantity', //percentages or quantity
-  graphSize: 1, //size of graph: 1 to 10
-  graphPeriod: 'M'
-  // graphPeriod: {
-  //   start: 0,
-  //   end: Date.now()
-  // } //week, day, month, etc...
-});
+const graphSettings = reactive(
+  JSON.parse(localStorage.getItem('graphSettings')) || {
+    appId: user.value.decodedToken.appId,
+    graphValue: 'quantity', //percentages or quantity
+    graphSize: 1, //size of graph: 1 to 10
+    graphPeriod: 'D'
+    // graphPeriod: {
+    //   start: 0,
+    //   end: Date.now()
+    // } //week, day, month, etc...
+  }
+);
 
 provide('graphSettings', { graphSettings });
 
@@ -48,18 +52,22 @@ const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
 
 const fetchAll = async () => {
   try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${user.value.decodedToken.appId}`,
-      requestOptions
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify(graphSettings)}`,
+      {
+        method: 'GET',
+        headers,
+        // body: JSON.stringify(graphSettings.value),
+        redirect: 'follow'
+      }
     );
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    // console.log(data);
+    // console.log(data.map((e) => e.timestamp));
     dataGraph.value = data;
   } catch (error) {
     console.log(error);
@@ -190,6 +198,12 @@ const deleteTag = async (tagUuid) => {
     console.log(error);
   }
 };
+
+watch(graphSettings, () => {
+  updateLocalStorage('graphSettings', JSON.stringify(graphSettings));
+  fetchAll();
+});
+
 onMounted(() => {
   fetchEventByPages();
   fetchSessionByPages();
@@ -218,6 +232,7 @@ onUnmounted(() => {
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
       <Button @click="openTagsModal(true)">Open</Button>
+      <Button @click="console.log(graphSettings)">Log</Button>
 
       <Modal :toggle="openTagsModal" v-if="isTagsModalOpened" fullHeight="true">
         <form @submit.prevent="createTag" class="flex gap-2 items-center">

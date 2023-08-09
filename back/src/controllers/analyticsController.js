@@ -1,4 +1,5 @@
 const Analytics = require('../models/analytics')
+const { getIsoDateFromTimestamp } = require('../helpers')
 
 exports.addAnalytics = async (req, res) => {
   const { body } = req
@@ -16,10 +17,21 @@ exports.addAnalytics = async (req, res) => {
 exports.getAnalyticsByAppId = async (req, res) => {
   try {
     // const analytics = await Analytics.find({ appId: req.params.appId })
-    const { appId } = req.params
+    const graphSettings = JSON.parse(req.params.graphSettings)
+    const { appId, graphValue, graphSize, graphPeriod } = graphSettings
+
+    const { start, end } = getIsoDateFromTimestamp(graphPeriod)
 
     const analytics = await Analytics.aggregate([
       { $match: { appId } },
+      {
+        $match: {
+          timestamp: {
+            $gte: new Date(start),
+            $lt: new Date(end),
+          },
+        },
+      },
       // {
       //   $group: {},
       // },
