@@ -121,3 +121,13 @@ export const getRandomColorsAvatar = () => {
 
   return JSON.parse(localStorage.getItem('avatarColors'));
 };
+
+export const findDifferentProperties = (obj1, obj2) => {
+  let keyFound = false;
+  Object.keys(obj1).forEach((key) => {
+    if (obj1[key] !== obj2[key]) {
+      return (keyFound = key);
+    }
+  });
+  return keyFound || -1;
+};

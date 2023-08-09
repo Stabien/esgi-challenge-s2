@@ -1,7 +1,7 @@
 <script setup>
 import GraphChart from '@/components/GraphView/GraphChart.vue';
 import GraphBarIcon from '@/components/icons/GraphBarIcon.vue';
-import { updateLocalStorage } from '@/utils';
+import { updateLocalStorage, findDifferentProperties } from '@/utils';
 import GraphDonutIcon from '@/components/icons/GraphDonutIcon.vue';
 import GraphScatterIcon from '@/components/icons/GraphScatterIcon.vue';
 import Button from '@/components/ui/Button.vue';
@@ -200,8 +200,15 @@ const deleteTag = async (tagUuid) => {
 };
 
 watch(graphSettings, () => {
+  const denyFetch = ['graphSize'];
+  if (
+    !denyFetch.includes(
+      findDifferentProperties(JSON.parse(localStorage.getItem('graphSettings')), graphSettings)
+    )
+  ) {
+    fetchAll();
+  }
   updateLocalStorage('graphSettings', JSON.stringify(graphSettings));
-  fetchAll();
 });
 
 onMounted(() => {
