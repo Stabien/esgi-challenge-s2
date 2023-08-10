@@ -1,23 +1,16 @@
 <script setup>
 // import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
 import { defineProps, inject } from 'vue';
-import { DoughnutChart, BarChart, ScatterChart } from 'vue-chart-3';
+import { DoughnutChart, BarChart, LineChart } from 'vue-chart-3';
 
 const { graphSettings } = inject('graphSettings');
 
-const props = defineProps([
-  'graphDataType',
-  'title',
-  'eventByPagesList',
-  'dataType',
-  'sessionByPagesList',
-  'sessionByTagsList'
-]);
+const props = defineProps(['dataGraph']);
 
 const getClickByPage = () => {
-  const clickEvents = props.eventByPagesList.filter((item) => item._id.event === props.dataType);
-
+  const clickEvents = props.dataGraph;
   const urlCounts = {};
+  if (!clickEvents || clickEvents.length <= 0) return { url: 0, occurences: 0 };
   // Compter les occurrences de chaque URL
   clickEvents.forEach((item) => {
     const { page } = item._id;
@@ -34,63 +27,9 @@ const getClickByPage = () => {
   const occurrencesArray = Object.values(urlCounts);
   return { url: urlsArray, occurences: occurrencesArray };
 };
-const getSessionByPages = () => {
-  // const clickEvents = props.eventByPagesList.filter((item) => item._id.event === props.dataType);
-
-  const urlCounts = {};
-  // Compter les occurrences de chaque URL
-  props.sessionByPagesList.forEach((item) => {
-    const page = item._id;
-    const count = item.uniqueVisitors;
-
-    if (!urlCounts[page]) {
-      urlCounts[page] = count;
-    } else {
-      urlCounts[page] += count;
-    }
-  });
-  // Extraire les URLs et les occurrences
-  const urlsArray = Object.keys(urlCounts);
-  const occurrencesArray = Object.values(urlCounts);
-  return { url: urlsArray, occurences: occurrencesArray };
-};
-const getSessionByTags = () => {
-  const urlCounts = {};
-  // Compter les occurrences de chaque URL
-  props.sessionByTagsList.forEach((item) => {
-    const page = item._id;
-    const count = item.uniqueVisitors;
-
-    if (!urlCounts[page]) {
-      urlCounts[page] = count;
-    } else {
-      urlCounts[page] += count;
-    }
-  });
-  // Extraire les URLs et les occurrences
-  const urlsArray = Object.keys(urlCounts);
-  const occurrencesArray = Object.values(urlCounts);
-  return { url: urlsArray, occurences: occurrencesArray };
-};
-
-const dataByDataType = () => {
-  switch (props.dataType) {
-    case 'click':
-      return getClickByPage();
-    case 'newSession':
-      return getClickByPage();
-    case 'sessionByPages':
-      return getSessionByPages();
-    case 'sessionByTags':
-      return getSessionByTags();
-
-    default:
-      return getClickByPage();
-  }
-};
 
 const filterDataForGraphsDonut = () => {
-  const { url, occurences } = dataByDataType();
+  const { url, occurences } = getClickByPage();
   const labels = url;
   const datasetsData = occurences;
 
@@ -98,6 +37,7 @@ const filterDataForGraphsDonut = () => {
     console.log("data length doesn't match");
     return;
   }
+  //graph donut
   return {
     labels: labels,
     datasets: [
@@ -150,7 +90,7 @@ const repeatArrayColors = (desiredLength) => {
   >
     <DoughnutChart class="w-full flex justify-center" :chartData="filterDataForGraphsDonut()" />
     <BarChart class="w-full flex justify-center" :chartData="filterDataForGraphsDonut()" />
-    <ScatterChart
+    <LineChart
       class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphsDonut()"
     />

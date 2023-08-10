@@ -1,12 +1,8 @@
 <script setup>
 import GraphChart from '@/components/GraphView/GraphChart.vue';
-import GraphBarIcon from '@/components/icons/GraphBarIcon.vue';
 import { updateLocalStorage, findDifferentProperties } from '@/utils';
-import GraphDonutIcon from '@/components/icons/GraphDonutIcon.vue';
-import GraphScatterIcon from '@/components/icons/GraphScatterIcon.vue';
 import Button from '@/components/ui/Button.vue';
 import Input from '@/components/ui/Input.vue';
-import { BAR, DONUT } from '@/utils/graphConstant';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
 import { ref, reactive, inject, onMounted, onUnmounted, provide, watch } from 'vue';
@@ -17,12 +13,8 @@ const { user } = inject('user');
 const { socket } = inject('socket');
 
 const tagNameInput = ref('');
-const graphDataType = ref('');
 const dataGraph = ref([]);
 
-const eventByPagesList = ref([]);
-const sessionByPagesList = ref([]);
-const sessionByTagsList = ref([]);
 const tagsList = ref([]);
 
 const isSettingsModalOpened = ref(false);
@@ -32,17 +24,13 @@ const graphSettings = reactive(
     appId: user.value.decodedToken.appId,
     graphValue: 'quantity', //percentages or quantity
     graphSize: 1, //size of graph: 1 to 10
-    graphPeriod: 'D',
+    graphPeriod: 'D', //D, W, M,Y day, week, month, year
     selectedTags: '',
-    event: 'click'
+    event: 'click' //click, newSession, navigation
   }
 );
 
 provide('graphSettings', { graphSettings });
-
-// const chartTypeList = [DONUT, BAR, SCATTER];
-const chartTypeList = [DONUT, BAR];
-const chartTypeIconList = [GraphDonutIcon, GraphBarIcon, GraphScatterIcon];
 
 const openTagsModal = (isOpen) => (isTagsModalOpened.value = isOpen);
 const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
@@ -64,71 +52,9 @@ const fetchAll = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
+    console.log(data);
     // console.log(data.map((e) => e.timestamp));
     dataGraph.value = data;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
-  }
-};
-const fetchEventByPages = async () => {
-  try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/eventByPages/${
-        user.value.decodedToken.appId
-      }`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    eventByPagesList.value = data;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
-  }
-};
-const fetchSessionByPages = async () => {
-  try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/sessionByPages/${
-        user.value.decodedToken.appId
-      }`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    sessionByPagesList.value = data;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
-  }
-};
-const fetchSessionByTags = async () => {
-  try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/sessionByTags/${
-        user.value.decodedToken.appId
-      }`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    sessionByTagsList.value = data;
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -155,10 +81,6 @@ const fetchTags = async () => {
   }
 };
 
-const checkExistingValueInEvent = (evenement) => {
-  return eventByPagesList.value.some((objet) => objet._id.event === evenement);
-};
-
 const createTag = async () => {
   try {
     if (!tagNameInput.value) return;
@@ -183,6 +105,7 @@ const createTag = async () => {
     if (!response.ok) throw new Error('Something went wrong');
     fetchTags();
     tagNameInput.value = '';
+    openTagsModal(false);
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -210,9 +133,10 @@ const handleSelectTag = (tag) => {
   }
   graphSettings.selectedTags = tag.name;
 };
-const handleSelectEvent = (event) => {
-  graphSettings.event = event;
-};
+
+watch(dataGraph, () => {
+  console.log(dataGraph);
+});
 watch(graphSettings, () => {
   const denyFetch = ['graphSize'];
   if (
@@ -226,23 +150,15 @@ watch(graphSettings, () => {
 });
 
 onMounted(() => {
-  fetchEventByPages();
-  fetchSessionByPages();
-  fetchSessionByTags();
   fetchTags();
   fetchAll();
   socket.on('newDataAdded', () => {
-    fetchEventByPages();
-    fetchSessionByPages();
-    fetchSessionByTags();
     fetchAll();
     fetchTags();
   });
 });
 
-onUnmounted(() => {
-  socket.removeAllListeners('newDataAdded');
-});
+onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
@@ -252,7 +168,7 @@ onUnmounted(() => {
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <Button @click="openTagsModal(true)">Open</Button>
+      <Button @click="openTagsModal(true)">Create tags</Button>
       <Button @click="console.log(graphSettings)">Log</Button>
 
       <Modal :toggle="openTagsModal" v-if="isTagsModalOpened" fullHeight="true">
@@ -270,42 +186,12 @@ onUnmounted(() => {
       </Modal>
       <span> What do you want to see? </span>
       <div class="relative">
-        <Button @click="openSettingModal(true)">Open</Button>
+        <Button @click="openSettingModal(true)">Settings</Button>
         <ModalGraphSettings :toggle="openSettingModal" v-if="isSettingsModalOpened" />
-        {{ graphSettings.graphSize }}
       </div>
-      <div class="flex gap-5">
-        <Button
-          :variant="graphSettings.event === 'click' ? 'default' : 'outline'"
-          @click="handleSelectEvent('click')"
-          v-if="checkExistingValueInEvent('click')"
-          >Clicks per pages</Button
-        >
-        <Button
-          :variant="graphSettings.event === 'newSession' ? 'default' : 'outline'"
-          v-if="sessionByPagesList.length > 0"
-          @click="handleSelectEvent('newSession')"
-          >Session by pages</Button
-        >
-        <Button
-          :variant="graphSettings.event === 'navigation' ? 'default' : 'outline'"
-          v-if="sessionByTagsList.length > 0"
-          @click="handleSelectEvent('navigation')"
-          >Clicks by tags</Button
-        >
-      </div>
+      <div class="flex gap-5"></div>
     </div>
     <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
-      <div class="flex flex-col gap-2">
-        <Button
-          @click="() => (graphDataType = chartType)"
-          :key="chartType"
-          v-for="(chartType, index) in chartTypeList"
-          :variant="graphDataType === chartType ? 'default' : 'outline'"
-        >
-          <component :is="chartTypeIconList[index]" height="24" width="24" />
-        </Button>
-      </div>
       <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
         <div
           v-for="tag in tagsList"
@@ -323,13 +209,8 @@ onUnmounted(() => {
       </div>
     </div>
     <GraphChart
-      v-if="!!graphSettings.event"
-      :dataType="graphSettings.event"
+      :dataGraph="dataGraph"
       class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
-      :graphDataType="graphDataType"
-      :eventByPagesList="eventByPagesList"
-      :sessionByPagesList="sessionByPagesList"
-      :sessionByTagsList="sessionByTagsList"
     />
   </div>
 </template>
