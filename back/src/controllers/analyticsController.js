@@ -18,7 +18,7 @@ exports.getAnalyticsByAppId = async (req, res) => {
   try {
     // const analytics = await Analytics.find({ appId: req.params.appId })
     const graphSettings = JSON.parse(req.params.graphSettings)
-    const { appId, graphValue, graphSize, graphPeriod } = graphSettings
+    const { appId, graphValue, graphSize, graphPeriod, selectedTags, event } = graphSettings
 
     const { start, end } = getIsoDateFromTimestamp(graphPeriod)
 
@@ -32,6 +32,8 @@ exports.getAnalyticsByAppId = async (req, res) => {
           },
         },
       },
+      { $match: { event } },
+
       // {
       //   $group: {},
       // },

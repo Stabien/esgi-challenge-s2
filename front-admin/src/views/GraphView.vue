@@ -18,7 +18,6 @@ const { socket } = inject('socket');
 
 const tagNameInput = ref('');
 const graphDataType = ref('');
-const dataType = ref('');
 const dataGraph = ref([]);
 
 const eventByPagesList = ref([]);
@@ -33,11 +32,9 @@ const graphSettings = reactive(
     appId: user.value.decodedToken.appId,
     graphValue: 'quantity', //percentages or quantity
     graphSize: 1, //size of graph: 1 to 10
-    graphPeriod: 'D'
-    // graphPeriod: {
-    //   start: 0,
-    //   end: Date.now()
-    // } //week, day, month, etc...
+    graphPeriod: 'D',
+    selectedTags: '',
+    event: 'click'
   }
 );
 
@@ -163,8 +160,12 @@ const checkExistingValueInEvent = (evenement) => {
 };
 
 const createTag = async () => {
-  if (!tagNameInput.value) return;
   try {
+    if (!tagNameInput.value) return;
+    if (tagsList.value.map((tag) => tag.name).includes(tagNameInput.value)) {
+      toast.error('Tag already exist');
+      return;
+    }
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     var requestOptions = {
@@ -190,6 +191,9 @@ const createTag = async () => {
 
 const deleteTag = async (tagUuid) => {
   try {
+    if (graphSettings.selectedTags === tagsList.value.find((tag) => tag.uuid === tagUuid).name) {
+      graphSettings.selectedTags = '';
+    }
     await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/${tagUuid}`, {
       method: 'DELETE'
     });
@@ -198,7 +202,17 @@ const deleteTag = async (tagUuid) => {
     console.log(error);
   }
 };
-
+const handleSelectTag = (tag) => {
+  console.log('handle select tag');
+  if (graphSettings.selectedTags === tag.name) {
+    graphSettings.selectedTags = '';
+    return;
+  }
+  graphSettings.selectedTags = tag.name;
+};
+const handleSelectEvent = (event) => {
+  graphSettings.event = event;
+};
 watch(graphSettings, () => {
   const denyFetch = ['graphSize'];
   if (
@@ -262,21 +276,21 @@ onUnmounted(() => {
       </div>
       <div class="flex gap-5">
         <Button
-          :variant="dataType === 'click' ? 'default' : 'outline'"
-          @click="() => (dataType = 'click')"
+          :variant="graphSettings.event === 'click' ? 'default' : 'outline'"
+          @click="handleSelectEvent('click')"
           v-if="checkExistingValueInEvent('click')"
           >Clicks per pages</Button
         >
         <Button
-          :variant="dataType === 'sessionByPages' ? 'default' : 'outline'"
+          :variant="graphSettings.event === 'newSession' ? 'default' : 'outline'"
           v-if="sessionByPagesList.length > 0"
-          @click="() => (dataType = 'sessionByPages')"
+          @click="handleSelectEvent('newSession')"
           >Session by pages</Button
         >
         <Button
-          :variant="dataType === 'sessionByTags' ? 'default' : 'outline'"
+          :variant="graphSettings.event === 'navigation' ? 'default' : 'outline'"
           v-if="sessionByTagsList.length > 0"
-          @click="() => (dataType = 'sessionByTags')"
+          @click="handleSelectEvent('navigation')"
           >Clicks by tags</Button
         >
       </div>
@@ -293,14 +307,24 @@ onUnmounted(() => {
         </Button>
       </div>
       <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
-        <div v-for="tag in tagsList" :key="tag" class="bg-palette-primary-100 text-sm p-4 rounded">
-          {{ tag.name || 'empty tag' }} <Button @click="deleteTag(tag.uuid)">Delete</Button>
+        <div
+          v-for="tag in tagsList"
+          :key="tag"
+          :class="
+            graphSettings.selectedTags === tag.name ? 'bg-palette-primary-100' : 'bg-soft-white'
+          "
+          class="text-sm p-4 rounded"
+        >
+          <span @click="handleSelectTag(tag)">
+            {{ tag.name || 'empty tag' }}
+          </span>
+          <Button @click="deleteTag(tag.uuid)">Delete</Button>
         </div>
       </div>
     </div>
     <GraphChart
-      v-if="!!dataType"
-      :dataType="dataType"
+      v-if="!!graphSettings.event"
+      :dataType="graphSettings.event"
       class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
       :graphDataType="graphDataType"
       :eventByPagesList="eventByPagesList"
