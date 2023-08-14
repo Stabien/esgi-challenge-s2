@@ -81,11 +81,11 @@ onMounted(() => {
 
   fetchUserRequest();
 
-  socket.on('updateUserDocument', () => fetchUserRequest());
+  socket.on('updateUserDocumentView', () => fetchUserRequest());
 });
 
 onUnmounted(() => {
-  socket.removeAllListeners('updateUserDocument');
+  socket.removeAllListeners('updateUserDocumentView');
 });
 </script>
 
@@ -126,12 +126,11 @@ onUnmounted(() => {
 
       <div
         :style="{
-          'grid-template-areas': `'email appId' 'firstname lastname''society url' '. buttons'`
+          'grid-template-areas': `'email email' 'firstname lastname''society url' '. buttons'`
         }"
         class="grid grid-cols-2 gap-4"
       >
         <Input :disabled="!isEditing" type="text" label="email" v-model="userRequest.email" />
-        <Input :disabled="!isEditing" type="text" label="appId" v-model="userRequest.appId" />
         <Input
           :disabled="!isEditing"
           type="text"

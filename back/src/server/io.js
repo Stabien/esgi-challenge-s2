@@ -16,7 +16,10 @@ const serverIo = (io) => {
         room = ''
       })
       socket.on('newDataAdded', () => io.to(room).emit('newDataAdded', 'new data added for room '))
-      socket.on('updateUserDocument', (userAppId) => io.to(userAppId).emit('updateUserDocument'))
+      socket.on('updateUserDocument', (userAppId) => {
+        io.to(userAppId).emit('updateUserDocument')
+        io.to(userAppId).emit('updateUserDocumentView')
+      })
     } catch (error) {
       console.log(error)
     }
