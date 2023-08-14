@@ -141,7 +141,10 @@ watch(graphSettings, () => {
   const denyFetch = ['graphSize'];
   if (
     !denyFetch.includes(
-      findDifferentProperties(JSON.parse(localStorage.getItem('graphSettings')), graphSettings)
+      findDifferentProperties(
+        JSON.parse(localStorage.getItem('graphSettings') || '{}'),
+        graphSettings
+      )
     )
   ) {
     fetchAll();
