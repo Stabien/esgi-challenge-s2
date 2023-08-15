@@ -8,29 +8,70 @@ const { graphSettings } = inject('graphSettings');
 const props = defineProps(['dataGraph']);
 
 const getClickByPage = () => {
-  const clickEvents = props.dataGraph;
-  const urlCounts = {};
-  if (!clickEvents || clickEvents.length <= 0) return { url: 0, occurences: 0 };
-  // Compter les occurrences de chaque URL
-  clickEvents.forEach((item) => {
-    const { page } = item._id;
-    const count = item.count;
+  const urlCountMap = {};
 
-    if (!urlCounts[page]) {
-      urlCounts[page] = count;
+  props.dataGraph.forEach((obj) => {
+    if (urlCountMap[obj.url]) {
+      urlCountMap[obj.url]++;
     } else {
-      urlCounts[page] += count;
+      urlCountMap[obj.url] = 1;
     }
   });
-  // Extraire les URLs et les occurrences
-  const urlsArray = Object.keys(urlCounts);
-  const occurrencesArray = Object.values(urlCounts);
-  return { url: urlsArray, occurences: occurrencesArray };
+
+  // Convertir urlCountMap en un tableau d'objets { url, count }
+  const countArray = Object.keys(urlCountMap).map((url) => ({
+    label: url,
+    count: urlCountMap[url]
+  }));
+
+  return {
+    labels: countArray.map((urlCount) => urlCount.label),
+    occurences: countArray.map((urlCount) => urlCount.count)
+  };
+};
+const getEventsByTimestamp = () => {
+  const dataGraphClone = [...props.dataGraph];
+  // Triez le tableau d'objets en fonction du timestamp
+  dataGraphClone.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+  const dateCounts = {};
+
+  dataGraphClone.forEach((obj) => {
+    const date = new Date(obj.timestamp);
+    const day = date.toISOString().split('T')[0];
+
+    if (!dateCounts[day]) {
+      dateCounts[day] = 0;
+    }
+
+    dateCounts[day]++;
+  });
+
+  const countArray = Object.keys(dateCounts).map((date) => ({
+    label: date,
+    count: dateCounts[date]
+  }));
+
+  return {
+    labels: countArray.map((urlCount) => urlCount.label),
+    occurences: countArray.map((urlCount) => urlCount.count)
+  };
+};
+const getLabelsOccurrences = () => {
+  switch (graphSettings.event) {
+    case 'click':
+      return getClickByPage();
+
+    case 'newSession':
+      return getEventsByTimestamp();
+
+    default:
+      return getClickByPage();
+  }
 };
 
-const filterDataForGraphsDonut = () => {
-  const { url, occurences } = getClickByPage();
-  const labels = url;
+const filterDataForGraphs = () => {
+  const { labels, occurences } = getLabelsOccurrences();
   const datasetsData = occurences;
 
   if (labels.length !== datasetsData.length) {
@@ -42,12 +83,17 @@ const filterDataForGraphsDonut = () => {
     labels: labels,
     datasets: [
       {
-        label: props.title || props.dataType,
+        label: graphSettings.event,
         data: datasetsData,
 
         backgroundColor: repeatArrayColors(labels.length)
       }
-    ]
+    ],
+
+    chartOptions: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
   };
 };
 
@@ -88,11 +134,11 @@ const repeatArrayColors = (desiredLength) => {
     class="justify-center grid grid-cols-2 gap-4"
     :class="`w-[${graphSettings.graphSize.toString()}rem]`"
   >
-    <DoughnutChart class="w-full flex justify-center" :chartData="filterDataForGraphsDonut()" />
-    <BarChart class="w-full flex justify-center" :chartData="filterDataForGraphsDonut()" />
+    <DoughnutChart class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
+    <BarChart class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
     <LineChart
       class="w-full flex justify-center row-span-full"
-      :chartData="filterDataForGraphsDonut()"
+      :chartData="filterDataForGraphs()"
     />
   </div>
 </template>
