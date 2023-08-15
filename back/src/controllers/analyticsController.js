@@ -16,13 +16,12 @@ exports.addAnalytics = async (req, res) => {
 
 exports.getAnalyticsByAppId = async (req, res) => {
   try {
-    // const analytics = await Analytics.find({ appId: req.params.appId })
     const graphSettings = JSON.parse(req.params.graphSettings)
     const { appId, graphValue, graphSize, graphPeriod, selectedTags, event } = graphSettings
 
     const { start, end } = getIsoDateFromTimestamp(graphPeriod)
 
-    const analytics = await Analytics.aggregate([
+    const aggregateTunel = [
       { $match: { appId } },
       {
         $match: {
@@ -33,14 +32,11 @@ exports.getAnalyticsByAppId = async (req, res) => {
         },
       },
       { $match: { event } },
+    ]
 
-      // {
-      //   $group: {},
-      // },
-      // {
-      //   $sort: { $timestamp: -1 },
-      // },
-    ])
+    if (!!selectedTags) aggregateTunel.push({ $match: { directiveTag: selectedTags } })
+
+    const analytics = await Analytics.aggregate(aggregateTunel)
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
