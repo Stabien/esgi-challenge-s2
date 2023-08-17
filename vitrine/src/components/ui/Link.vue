@@ -6,7 +6,7 @@ const props = defineProps(['variant', 'class']);
 
 <template>
   <RouterLink>
-    <Button :class="props.class" :variant="variant">
+    <Button :class="props.class" :variant="variant" v-track:LINK.click>
       <slot></slot>
     </Button>
   </RouterLink>
