@@ -179,6 +179,7 @@ onUnmounted(() => {
               <PendingIcon height="24" width="24" class="text-palette-gray-300 mr-2" />
               Go back to pending
             </Button>
+            <Link :to="`/user-view/${userRequest.uuid}`">user view</Link>
           </div>
           <div
             class="flex gap-2 items-end justify-end"

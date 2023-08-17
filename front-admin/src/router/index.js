@@ -41,6 +41,11 @@ const router = createRouter({
       component: () => import('@/views/AdminView.vue')
     },
     {
+      path: '/user-view/:uuid',
+      name: 'user-view',
+      component: () => import('@/views/GraphView.vue')
+    },
+    {
       path: '/account-settings',
       name: 'account-settings',
       component: () => import('@/views/UserView.vue')
@@ -84,7 +89,7 @@ router.beforeEach(async (to) => {
     return '/404';
   if (adminPages.includes(to.name) && user.status !== userStatusAdmin) return '/404';
   if (!user.isLogged && privatePages.includes(to.name)) return '/404';
-  if (user.status !== userStatusWebmaster) console.log('not webmaster');
+  // if (user.status !== userStatusWebmaster) console.log('not webmaster');
 });
 
 export default router;

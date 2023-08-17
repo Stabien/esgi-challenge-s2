@@ -1,24 +1,26 @@
 <script setup>
 import GraphChart from '@/components/GraphView/GraphChart.vue';
+import { useRoute } from 'vue-router';
 import { updateLocalStorage, findDifferentProperties } from '@/utils';
 import Button from '@/components/ui/Button.vue';
-import Input from '@/components/ui/Input.vue';
+// import Input from '@/components/ui/Input.vue';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
 import { ref, reactive, inject, onMounted, onUnmounted, provide, watch } from 'vue';
 
 Chart.register(...registerables);
+const route = useRoute();
+
 const toast = useToast();
 const { user } = inject('user');
 const { socket } = inject('socket');
 
-const tagNameInput = ref('');
+const userRequest = ref();
 const dataGraph = ref([]);
 
 const tagsList = ref([]);
 
 const isSettingsModalOpened = ref(false);
-const isTagsModalOpened = ref(false);
 const graphSettings = reactive(
   JSON.parse(localStorage.getItem('graphSettings')) || {
     appId: user.value.decodedToken.appId,
@@ -32,8 +34,28 @@ const graphSettings = reactive(
 
 provide('graphSettings', { graphSettings });
 
-const openTagsModal = (isOpen) => (isTagsModalOpened.value = isOpen);
 const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
+
+const fetchUserRequest = async () => {
+  try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${route.params.uuid}`,
+      {
+        method: 'GET',
+        headers
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userRequest.value = data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const fetchAll = async () => {
   try {
@@ -41,7 +63,10 @@ const fetchAll = async () => {
     headers.append('Content-Type', 'application/json');
 
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify(graphSettings)}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify({
+        ...graphSettings,
+        appId: userRequest.value ? userRequest.value.appId : graphSettings.appId
+      })}`,
       {
         method: 'GET',
         headers,
@@ -52,7 +77,7 @@ const fetchAll = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     // console.log(data.map((e) => e.timestamp));
     dataGraph.value = data;
   } catch (error) {
@@ -67,75 +92,33 @@ const fetchTags = async () => {
       method: 'GET',
       redirect: 'follow'
     };
+    console.log(userRequest.value);
+    console.log(user.value.decodedToken);
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${user.value.decodedToken.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${
+        userRequest.value ? userRequest.value.uuid : user.value.decodedToken.uuid
+      }`,
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
+    console.log(data);
     tagsList.value = data;
   } catch (error) {
     console.log(error);
     toast.error(error.message);
   }
 };
+provide('tagsList', { tagsList });
 
-const createTag = async () => {
-  try {
-    if (!tagNameInput.value) return;
-    if (tagsList.value.map((tag) => tag.name).includes(tagNameInput.value)) {
-      toast.error('Tag already exist');
-      return;
-    }
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    var requestOptions = {
-      method: 'POST',
-      body: JSON.stringify({
-        name: tagNameInput.value
-      }),
-      headers,
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${user.value.decodedToken.uuid}`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-    fetchTags();
-    tagNameInput.value = '';
-    openTagsModal(false);
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
-  }
+const init = async () => {
+  if (route.params.uuid) await fetchUserRequest();
+  await fetchTags();
+  await fetchAll();
 };
-
-const deleteTag = async (tagUuid) => {
-  try {
-    if (graphSettings.selectedTags === tagsList.value.find((tag) => tag.uuid === tagUuid).name) {
-      graphSettings.selectedTags = '';
-    }
-    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/${tagUuid}`, {
-      method: 'DELETE'
-    });
-    fetchTags();
-  } catch (error) {
-    console.log(error);
-  }
-};
-const handleSelectTag = (tag) => {
-  console.log('handle select tag');
-  if (graphSettings.selectedTags === tag.name) {
-    graphSettings.selectedTags = '';
-    return;
-  }
-  graphSettings.selectedTags = tag.name;
-};
-
 watch(dataGraph, () => {
-  console.log(dataGraph);
+  // console.log(dataGraph);
 });
 watch(graphSettings, () => {
   const denyFetch = ['graphSize'];
@@ -153,11 +136,11 @@ watch(graphSettings, () => {
 });
 
 onMounted(() => {
-  fetchTags();
-  fetchAll();
+  if (route.params.uuid) fetchUserRequest();
+  init();
+
   socket.on('newDataAdded', () => {
-    fetchAll();
-    fetchTags();
+    init();
   });
 });
 
@@ -171,46 +154,19 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <Button @click="openTagsModal(true)">Create tags</Button>
-      <Button @click="console.log(graphSettings)">Log</Button>
+      <Button @click="console.log(userRequest)">Log</Button>
 
-      <Modal :toggle="openTagsModal" v-if="isTagsModalOpened" fullHeight="true">
-        <form @submit.prevent="createTag" class="flex gap-2 items-center">
-          <Input
-            type="text"
-            label="Create your tags"
-            oneLine="true"
-            v-model="tagNameInput"
-            class="w-fit"
-            required
-          />
-          <Button type="submit">Create Tags</Button>
-        </form>
-      </Modal>
       <span> What do you want to see? </span>
       <div class="relative">
         <Button @click="openSettingModal(true)">Settings</Button>
-        <ModalGraphSettings :toggle="openSettingModal" v-if="isSettingsModalOpened" />
-      </div>
-      <div class="flex gap-5"></div>
-    </div>
-    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
-      <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
-        <div
-          v-for="tag in tagsList"
-          :key="tag"
-          :class="
-            graphSettings.selectedTags === tag.name ? 'bg-palette-primary-100' : 'bg-soft-white'
-          "
-          class="text-sm p-4 rounded"
-        >
-          <span @click="handleSelectTag(tag)">
-            {{ tag.name || 'empty tag' }}
-          </span>
-          <Button @click="deleteTag(tag.uuid)">Delete</Button>
-        </div>
+        <ModalGraphSettings
+          :fetchTags="fetchTags"
+          :toggle="openSettingModal"
+          v-if="isSettingsModalOpened"
+        />
       </div>
     </div>
+    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50"></div>
     <GraphChart
       :dataGraph="dataGraph"
       class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"

@@ -1,9 +1,17 @@
 <script setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
+import { useToast } from 'vue-toastification';
+
+const props = defineProps(['fetchTags']);
+const { user } = inject('user');
+const toast = useToast();
+
+const tagNameInput = ref('');
 
 const periodList = ['D', 'W', 'M', 'Y'];
 const eventList = ['click', 'newSession', 'navigation'];
 const { graphSettings } = inject('graphSettings');
+const { tagsList } = inject('tagsList');
 
 const setGraphPeriod = (period) => {
   graphSettings.graphPeriod = period;
@@ -11,6 +19,61 @@ const setGraphPeriod = (period) => {
 const handleSelectEvent = (event) => {
   console.log(event);
   graphSettings.event = event;
+};
+
+const createTag = async () => {
+  try {
+    if (!tagNameInput.value) return;
+    if (tagsList.value.map((tag) => tag.name).includes(tagNameInput.value)) {
+      toast.error('Tag already exist');
+      return;
+    }
+    console.log(tagNameInput);
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    var requestOptions = {
+      method: 'POST',
+      body: JSON.stringify({
+        name: tagNameInput.value
+      }),
+      headers,
+      redirect: 'follow'
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${user.value.decodedToken.uuid}`,
+      requestOptions
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+    props.fetchTags();
+    tagNameInput.value = '';
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
+
+const deleteTag = async (tagUuid) => {
+  try {
+    if (graphSettings.selectedTags === tagsList.value.find((tag) => tag.uuid === tagUuid).name) {
+      graphSettings.selectedTags = '';
+    }
+    console.log('eeee');
+    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/${tagUuid}`, {
+      method: 'DELETE'
+    });
+    console.log('eeeefff');
+    props.fetchTags();
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleSelectTag = (tag) => {
+  console.log('handle select tag');
+  if (graphSettings.selectedTags === tag.name) {
+    graphSettings.selectedTags = '';
+    return;
+  }
+  graphSettings.selectedTags = tag.name;
 };
 </script>
 
@@ -41,6 +104,36 @@ const handleSelectEvent = (event) => {
         @click="handleSelectEvent(event)"
         >{{ event }}</Button
       >
+    </div>
+    <form
+      v-if="user.status !== 'Admin'"
+      @submit.prevent="createTag"
+      class="flex gap-2 items-center"
+    >
+      <Input
+        type="text"
+        label="Create your tags"
+        oneLine="true"
+        v-model="tagNameInput"
+        class="w-fit"
+        required
+      />
+      <Button type="submit">Create Tags</Button>
+    </form>
+    <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
+      <div
+        v-for="tag in tagsList"
+        :key="tag"
+        :class="
+          graphSettings.selectedTags === tag.name ? 'bg-palette-primary-100' : 'bg-soft-white'
+        "
+        class="text-sm p-4 rounded"
+      >
+        <span @click="handleSelectTag(tag)">
+          {{ tag.name || 'empty tag' }}
+        </span>
+        <Button v-if="user.status !== 'Admin'" @click="deleteTag(tag.uuid)">Delete</Button>
+      </div>
     </div>
   </Modal>
 </template>
