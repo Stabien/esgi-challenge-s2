@@ -1,5 +1,6 @@
 <script setup>
 import Button from '@/components/ui/Button.vue';
+import Link from '@/components/ui/Link.vue';
 import { ref, onMounted } from 'vue';
 
 const itemList = ref([]);
@@ -46,7 +47,12 @@ onMounted(() => {
 
 <template>
   <main class="min-h-screen bg-gray-100 p-8">
-    <h1 class="text-3xl font-semibold mb-4">Faux Shop</h1>
+    <h1 class="text-3xl font-semibold mb-4">
+      Fake Shop
+
+      <Link variant="ghost" to="/cart">See my cart</Link>
+    </h1>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <div
         v-for="product in itemList"
