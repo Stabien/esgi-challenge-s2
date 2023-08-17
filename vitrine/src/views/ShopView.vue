@@ -10,7 +10,6 @@ const fetchItems = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
     itemList.value = data;
   } catch (error) {
     console.log(error);
