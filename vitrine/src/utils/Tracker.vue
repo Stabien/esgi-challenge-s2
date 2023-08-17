@@ -13,6 +13,11 @@ export default {
     const socket = io(import.meta.env.VITE_PROD_API_URL);
     socket.on('connect', () => socket.emit('connectedWithAppId', { appId: APP_ID }));
 
+    window.addEventListener('beforeunload', () => {
+      console.log('remove localStorage');
+      window.localStorage.removeItem('Session_ID');
+    });
+
     checkInactivity(APP_ID, socket);
 
     handleSessionId(APP_ID, socket);

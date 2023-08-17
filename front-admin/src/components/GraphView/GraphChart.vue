@@ -1,7 +1,7 @@
 <script setup>
 // import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
 import { defineProps, inject } from 'vue';
-import { DoughnutChart, BarChart, LineChart } from 'vue-chart-3';
+import { DoughnutChart, BarChart, LineChart, PieChart, RadarChart } from 'vue-chart-3';
 
 const { graphSettings } = inject('graphSettings');
 
@@ -145,9 +145,11 @@ const repeatArrayColors = (desiredLength) => {
     class="justify-center grid grid-cols-2 gap-4"
     :class="`w-[${graphSettings.graphSize.toString()}rem]`"
   >
-    <DoughnutChart class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
-    <BarChart class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
-    <LineChart
+    <DoughnutChart v-if="graphSettings.graphList.includes('DoughnutChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
+    <BarChart v-if="graphSettings.graphList.includes('BarChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
+    <PieChart v-if="graphSettings.graphList.includes('PieChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
+    <RadarChart v-if="graphSettings.graphList.includes('RadarChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
+    <LineChart v-if="graphSettings.graphList.includes('LineChart')"
       class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphs()"
     />

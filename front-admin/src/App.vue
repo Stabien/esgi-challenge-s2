@@ -24,6 +24,9 @@ const socket = io(import.meta.env.VITE_PROD_API_URL);
 provide('socket', {
   socket
 });
+socket.onAny((eventName) => {
+  console.log(eventName);
+});
 socket.on('updateUserDocument', async () => {
   //gonna fetch user to update token
   const response = await fetch(

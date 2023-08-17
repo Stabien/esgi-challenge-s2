@@ -17,15 +17,12 @@ export const setSessionID = (APP_ID, socket) => {
     },
     socket
   );
+
   return SessionId;
 };
 
 export const handleSessionId = (APP_ID, socket) => {
   window.localStorage.setItem('url', getURL());
-
-  window.addEventListener('close', () => {
-    window.localStorage.removeItem('Session_ID');
-  });
 
   if (!itemExistsInLocalStorage('Session_ID')) {
     window.localStorage.setItem('Session_ID', Math.floor(Math.random() * Date.now()).toString(36));

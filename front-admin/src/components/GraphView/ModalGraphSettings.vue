@@ -10,6 +10,7 @@ const tagNameInput = ref('');
 
 const periodList = ['D', 'W', 'M', 'Y'];
 const eventList = ['click', 'newSession', 'navigation'];
+const graphListValue = ['DoughnutChart', 'BarChart', 'LineChart', 'PieChart', 'RadarChart'];
 const { graphSettings } = inject('graphSettings');
 const { tagsList } = inject('tagsList');
 
@@ -22,6 +23,13 @@ const setGraphValue = (value) => {
 const handleSelectEvent = (event) => {
   graphSettings.event = event;
 };
+const handleSelectGraphList = (graph) => {
+  if (graphSettings.graphList.includes(graph)) {
+    graphSettings.graphList = graphSettings.graphList.filter((item) => item !== graph);
+    return;
+  }
+  graphSettings.graphList.push(graph);
+};
 
 const createTag = async () => {
   try {
@@ -30,7 +38,6 @@ const createTag = async () => {
       toast.error('Tag already exist');
       return;
     }
-    console.log(tagNameInput);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     var requestOptions = {
@@ -127,6 +134,21 @@ const handleSelectTag = (tag) => {
         @click="setGraphValue('quantity')"
       >
         100
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <div
+        :class="
+          graphSettings.graphList.includes(graph)
+            ? 'bg-palette-primary-500 hover:bg-palette-primary-700 text-soft-white'
+            : 'hover:bg-palette-gray-100'
+        "
+        class="inline-block rounded p-2 cursor-pointer"
+        :key="graph"
+        v-for="graph in graphListValue"
+        @click="handleSelectGraphList(graph)"
+      >
+        {{ graph.replace('Chart', '') }}
       </div>
     </div>
     <form

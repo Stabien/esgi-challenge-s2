@@ -25,10 +25,11 @@ const graphSettings = reactive(
   JSON.parse(localStorage.getItem('graphSettings')) || {
     appId: user.value.decodedToken.appId,
     graphValue: 'quantity', //percentages or quantity
+    graphList: [], //list of selected Graphs
     graphSize: 1, //size of graph: 1 to 10
     graphPeriod: 'D', //D, W, M,Y day, week, month, year
     selectedTags: '',
-    event: 'click' //click, newSession, navigation
+    event: 'click' //click, newSession, navigation,
   }
 );
 
@@ -101,7 +102,6 @@ const fetchTags = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
     tagsList.value = data;
   } catch (error) {
     console.log(error);
@@ -147,12 +147,12 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 
 <template>
   <div
-    class="grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-4 px-4 pb-4 h-screen overflow-hidden"
+    class="grid overflow-y-scroll grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-4 px-4 pb-4 h-screen"
   >
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <Button @click="console.log(userRequest)">Log</Button>
+      <Button @click="console.log(graphSettings.graphList)">Log</Button>
 
       <span> What do you want to see? </span>
       <div class="relative">
