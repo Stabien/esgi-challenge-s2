@@ -25,7 +25,7 @@ onUnmounted(() => window.removeEventListener('click', handleRefClick));
         ? ' w-full h-full top-0 left-0 bg-soft-black flex justify-center items-center bg-opacity-70'
         : ''
     "
-    class="animate-slideDownAndFade z-[999] absolute shadow-default p-4 rounded flex flex-col gap-4"
+    class="animate-slideDownAndFade z-[999] absolute shadow-default p-4 rounded flex flex-col gap-4 bg-soft-white dark:bg-soft-black"
     @click="
       (e) => {
         if (!props.fullHeight || e.target !== modal) return;
@@ -34,7 +34,7 @@ onUnmounted(() => window.removeEventListener('click', handleRefClick));
     "
   >
     <div
-      class="animate-slideDownAndFade z-[999] absolute shadow-default inline-block p-4 rounded bg-white"
+      class="animate-slideDownAndFade z-[999] absolute shadow-default inline-block p-4 rounded bg-soft-white dark:bg-soft-black"
       v-if="props.fullHeight"
     >
       <slot></slot>

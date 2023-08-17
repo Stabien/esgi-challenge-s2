@@ -70,9 +70,20 @@ const getLabelsOccurrences = () => {
   }
 };
 
+const transformValues = (valuesList) => {
+  if (graphSettings.graphValue === 'quantity') return valuesList;
+
+  const totalSum = valuesList.reduce((sum, value) => sum + value, 0);
+
+  // Convertissez les valeurs en pourcentages
+  const percentages = valuesList.map((value) => (value / totalSum) * 100);
+
+  return percentages;
+};
+
 const filterDataForGraphs = () => {
   const { labels, occurences } = getLabelsOccurrences();
-  const datasetsData = occurences;
+  const datasetsData = transformValues(occurences);
 
   if (labels.length !== datasetsData.length) {
     console.log("data length doesn't match");
@@ -83,7 +94,7 @@ const filterDataForGraphs = () => {
     labels: labels,
     datasets: [
       {
-        label: graphSettings.event,
+        label: `${graphSettings.event} by ${graphSettings.graphValue}`,
         data: datasetsData,
 
         backgroundColor: repeatArrayColors(labels.length)

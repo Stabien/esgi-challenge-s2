@@ -16,8 +16,10 @@ const { tagsList } = inject('tagsList');
 const setGraphPeriod = (period) => {
   graphSettings.graphPeriod = period;
 };
+const setGraphValue = (value) => {
+  graphSettings.graphValue = value;
+};
 const handleSelectEvent = (event) => {
-  console.log(event);
   graphSettings.event = event;
 };
 
@@ -57,11 +59,9 @@ const deleteTag = async (tagUuid) => {
     if (graphSettings.selectedTags === tagsList.value.find((tag) => tag.uuid === tagUuid).name) {
       graphSettings.selectedTags = '';
     }
-    console.log('eeee');
     await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/${tagUuid}`, {
       method: 'DELETE'
     });
-    console.log('eeeefff');
     props.fetchTags();
   } catch (error) {
     console.log(error);
@@ -105,6 +105,30 @@ const handleSelectTag = (tag) => {
         >{{ event }}</Button
       >
     </div>
+    <div class="grid grid-cols-2 gap-24 mx-auto">
+      <div
+        :class="
+          graphSettings.graphValue === 'percentages'
+            ? 'border-palette-primary-400 text-palette-primary-400'
+            : 'border-palette-gray-300 text-palette-gray-300'
+        "
+        class="border-2 font-bold w-12 h-12 flex items-center justify-center rounded cursor-pointer"
+        @click="setGraphValue('percentages')"
+      >
+        %
+      </div>
+      <div
+        class="border-2 font-bold w-12 h-12 flex items-center justify-center rounded cursor-pointer"
+        :class="
+          graphSettings.graphValue === 'quantity'
+            ? 'border-palette-primary-400 text-palette-primary-400'
+            : 'border-palette-gray-300 text-palette-gray-300'
+        "
+        @click="setGraphValue('quantity')"
+      >
+        100
+      </div>
+    </div>
     <form
       v-if="user.status !== 'Admin'"
       @submit.prevent="createTag"
@@ -120,19 +144,41 @@ const handleSelectTag = (tag) => {
       />
       <Button type="submit">Create Tags</Button>
     </form>
-    <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
+    <div class="flex gap-2">
       <div
         v-for="tag in tagsList"
         :key="tag"
         :class="
           graphSettings.selectedTags === tag.name ? 'bg-palette-primary-100' : 'bg-soft-white'
         "
-        class="text-sm p-4 rounded"
+        class="text-sm rounded flex items-center justify-between relative dark:text-soft-black"
       >
-        <span @click="handleSelectTag(tag)">
-          {{ tag.name || 'empty tag' }}
+        <span
+          class="cursor-pointer p-1 rounded-l"
+          :class="[
+            graphSettings.selectedTags === tag.name
+              ? 'hover:bg-palette-primary-200 '
+              : 'hover:bg-palette-gray-100',
+            user.status !== 'Admin' ? 'rounded-l' : 'rounded'
+          ]"
+          @click="handleSelectTag(tag)"
+        >
+          {{ tag.name }}
         </span>
-        <Button v-if="user.status !== 'Admin'" @click="deleteTag(tag.uuid)">Delete</Button>
+        <button
+          v-if="user.status !== 'Admin'"
+          @click="deleteTag(tag.uuid)"
+          variant="ghost"
+          size="sm"
+          :class="
+            graphSettings.selectedTags === tag.name
+              ? 'hover:bg-palette-primary-200'
+              : 'hover:bg-palette-gray-100'
+          "
+          class="p-1 rounded-r"
+        >
+          X
+        </button>
       </div>
     </div>
   </Modal>

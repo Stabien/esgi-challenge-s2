@@ -92,8 +92,6 @@ const fetchTags = async () => {
       method: 'GET',
       redirect: 'follow'
     };
-    console.log(userRequest.value);
-    console.log(user.value.decodedToken);
     const response = await fetch(
       `${import.meta.env.VITE_PROD_API_URL}/api/tag/${
         userRequest.value ? userRequest.value.uuid : user.value.decodedToken.uuid
