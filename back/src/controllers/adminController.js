@@ -67,33 +67,3 @@ exports.handleUserStatus = async (req, res) => {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
-
-// exports.validateUser = async (req, res) => {
-//   const { uuid } = req.params
-//   try {
-//     await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
-//     return res.send(200)
-//   } catch (e) {
-//     return res.status(500).json({ error: 'Internal error' })
-//   }
-// }
-
-// exports.pendingUser = async (req, res) => {
-//   const { uuid } = req.params
-//   try {
-//     await Users.update({ status: 'PENDING' }, { where: { uuid } })
-//     return res.send(200)
-//   } catch (e) {
-//     return res.status(500).json({ error: 'Internal error' })
-//   }
-// }
-
-// exports.rejectUser = async (req, res) => {
-//   const { uuid } = req.params
-//   try {
-//     await Users.update({ status: 'REJECTED' }, { where: { uuid } })
-//     return res.send(200)
-//   } catch (e) {
-//     return res.status(500).json({ error: 'Internal error' })
-//   }
-// }
