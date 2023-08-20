@@ -31,7 +31,7 @@ exports.adminAuthentication = async (req, res) => {
 
 exports.getUserRegistrations = async (req, res) => {
   try {
-    const userRegistrations = await Users.findAll()
+    const userRegistrations = await Users.findAll({ attributes: { exclude: ['password'] }})
     return res.status(200).json(userRegistrations)
   } catch (e) {
     return res.status(500).json({ error: 'Internal error' })
@@ -49,32 +49,32 @@ exports.handleUserStatus = async (req, res) => {
   }
 }
 
-exports.validateUser = async (req, res) => {
-  const { uuid } = req.params
-  try {
-    await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
-    return res.send(200)
-  } catch (e) {
-    return res.status(500).json({ error: 'Internal error' })
-  }
-}
+// exports.validateUser = async (req, res) => {
+//   const { uuid } = req.params
+//   try {
+//     await Users.update({ status: 'VALIDATED' }, { where: { uuid } })
+//     return res.send(200)
+//   } catch (e) {
+//     return res.status(500).json({ error: 'Internal error' })
+//   }
+// }
 
-exports.pendingUser = async (req, res) => {
-  const { uuid } = req.params
-  try {
-    await Users.update({ status: 'PENDING' }, { where: { uuid } })
-    return res.send(200)
-  } catch (e) {
-    return res.status(500).json({ error: 'Internal error' })
-  }
-}
+// exports.pendingUser = async (req, res) => {
+//   const { uuid } = req.params
+//   try {
+//     await Users.update({ status: 'PENDING' }, { where: { uuid } })
+//     return res.send(200)
+//   } catch (e) {
+//     return res.status(500).json({ error: 'Internal error' })
+//   }
+// }
 
-exports.rejectUser = async (req, res) => {
-  const { uuid } = req.params
-  try {
-    await Users.update({ status: 'REJECTED' }, { where: { uuid } })
-    return res.send(200)
-  } catch (e) {
-    return res.status(500).json({ error: 'Internal error' })
-  }
-}
+// exports.rejectUser = async (req, res) => {
+//   const { uuid } = req.params
+//   try {
+//     await Users.update({ status: 'REJECTED' }, { where: { uuid } })
+//     return res.send(200)
+//   } catch (e) {
+//     return res.status(500).json({ error: 'Internal error' })
+//   }
+// }
