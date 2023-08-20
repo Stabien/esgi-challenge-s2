@@ -1,4 +1,5 @@
 const transporter = require('../config/mail')
+const fs = require('fs')
 
 exports.generateAppId = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -46,4 +47,15 @@ exports.getIsoDateFromTimestamp = (graphPeriod) => {
   }
   end = currentTime
   return { end, start }
+}
+
+exports.getBase64FileFromPath = (path) => {
+  if (!path) {
+    return null
+  }
+
+  const file = fs.readFileSync(path)
+  const fileBase64 = file.toString('base64')
+
+  return fileBase64
 }

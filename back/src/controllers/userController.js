@@ -97,6 +97,8 @@ exports.registration = async (req, res, next) => {
       return res.status(422).json({ error: 'User already exists' })
     }
 
+    console.log("**** user uuid:", userUuid, " ****")
+
     const newUser = await Users.create({
       uuid: userUuid,
       email,
@@ -115,6 +117,7 @@ exports.registration = async (req, res, next) => {
       path: file.path,
       name: file.originalname,
       type: file.mimetype,
+      userUuid
     })
 
     await newUser.save()

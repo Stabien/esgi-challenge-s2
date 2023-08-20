@@ -35,7 +35,7 @@ const Kbis = sequelize.define(
       type: Sequelize.DataTypes.UUID,
       defaultValue: Sequelize.DataTypes.UUIDV4,
       allowNull: false,
-      references: 'kbis',
+      references: 'user',
       referencesKey: 'uuid',
     },
   },

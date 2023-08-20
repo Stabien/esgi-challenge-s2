@@ -3,6 +3,8 @@ const { config } = require('dotenv')
 const bcrypt = require('bcrypt')
 const Admins = require('../models/admins')
 const Users = require('../models/users')
+const Kbis = require('../models/kbis')
+const { getBase64FileFromPath } = require('../helpers')
 
 config()
 
@@ -31,8 +33,25 @@ exports.adminAuthentication = async (req, res) => {
 
 exports.getUserRegistrations = async (req, res) => {
   try {
-    const userRegistrations = await Users.findAll({ attributes: { exclude: ['password'] }})
-    return res.status(200).json(userRegistrations)
+    const userRegistrations = await Users.findAll({ 
+      include: { 
+        model: Kbis, 
+        as: "kbis" 
+      }, 
+      attributes: { 
+        exclude: ['password'] 
+      }
+    })
+    const response = userRegistrations.map(el => el.get({ plain: true }))
+    const data = response.map(user => {
+      if (!user.kbis) {
+        return user
+      }
+      user.kbis.file = getBase64FileFromPath(user?.kbis?.path)
+      return user
+    })
+
+    return res.status(200).json(data)
   } catch (e) {
     return res.status(500).json({ error: 'Internal error' })
   }

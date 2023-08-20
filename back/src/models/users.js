@@ -60,6 +60,6 @@ const Users = sequelize.define(
   },
 )
 
-Users.hasMany(Kbis)
+Users.hasOne(Kbis, { as: 'kbis', foreignKey: 'userUuid' })
 
 module.exports = Users
