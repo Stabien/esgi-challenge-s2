@@ -27,7 +27,6 @@ const fetchUserRequest = async () => {
       headers
     });
     if (!response.ok) throw new Error('Something went wrong');
-
     const data = await response.json();
     userRequest.value = data;
   } catch (error) {
@@ -94,7 +93,7 @@ onUnmounted(() => {
     <div
       v-if="!!userRequest && !isLoading"
       :style="{
-        'grid-template-columns': '2fr 1fr'
+        'grid-template-columns': '2fr'
       }"
       class="grid border border-palette-gray-300 gap-4 p-4 rounded mx-10 lg:mx-40"
     >
@@ -118,15 +117,10 @@ onUnmounted(() => {
           </span>
         </div>
       </div>
-      <div
-        class="row-span-2 bg-palette-gray-100 h-full w-full flex justify-center items-center rounded"
-      >
-        PDF
-      </div>
 
       <div
         :style="{
-          'grid-template-areas': `'email email' 'firstname lastname''society url' '. buttons'`
+          'grid-template-areas': `'email email' 'firstname lastname''society url' 'pdf buttons'`
         }"
         class="grid grid-cols-2 gap-4"
       >
@@ -151,6 +145,17 @@ onUnmounted(() => {
           label="url"
           v-model="userRequest.url"
         />
+        <Button
+          v-if="userRequest.kbis"
+          :type="'link'"
+          :style="{
+            'grid-area': 'pdf'
+          }"
+          :download="userRequest.kbis.name"
+          :href="`data:application/pdf;base64,${userRequest.kbis.file}`"
+          >Download {{ userRequest.kbis.name }}</Button
+        >
+
         <div
           :style="{
             'grid-area': 'buttons'

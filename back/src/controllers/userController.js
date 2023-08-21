@@ -6,6 +6,8 @@ const Users = require('../models/users')
 const Kbis = require('../models/kbis')
 const { sendEmail } = require('../services')
 const { generateAppId } = require('../helpers')
+const { getBase64FileFromPath } = require('../helpers')
+
 const multer = require('multer')
 
 config()
@@ -18,10 +20,19 @@ const checkIfUserAlreadyExists = async (email) => {
 
 exports.getUserByUuid = async (req, res) => {
   try {
-    const user = await Users.findOne({ where: { uuid: req.params.uuid } })
-    console.log(user.dataValues.kbisUuid)
-    const kbis = await Kbis.findOne({ where: { uuid: user.dataValues.kbisUuid } })
-    console.log(kbis)
+    const user = await Users.findOne({
+      where: { uuid: req.params.uuid },
+      include: {
+        model: Kbis,
+        as: 'kbis',
+      },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
+    if (user.kbis) {
+      user.kbis.dataValues.file = await getBase64FileFromPath(user?.kbis?.path)
+    }
     return res.status(200).json(user)
   } catch (e) {
     return res.status(500).json({ error: 'Internal error' })
@@ -97,7 +108,7 @@ exports.registration = async (req, res, next) => {
       return res.status(422).json({ error: 'User already exists' })
     }
 
-    console.log("**** user uuid:", userUuid, " ****")
+    console.log('**** user uuid:', userUuid, ' ****')
 
     const newUser = await Users.create({
       uuid: userUuid,
@@ -117,7 +128,7 @@ exports.registration = async (req, res, next) => {
       path: file.path,
       name: file.originalname,
       type: file.mimetype,
-      userUuid
+      userUuid,
     })
 
     await newUser.save()
@@ -127,7 +138,7 @@ exports.registration = async (req, res, next) => {
       to: email,
       from: 'noreply@esgi-tracking.fr',
       subject: 'Account activation',
-      text: 'Votre compte est en attente de validation par un administrateur'
+      text: 'Votre compte est en attente de validation par un administrateur',
     })
 
     const response = { ...newUser.dataValues }

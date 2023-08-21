@@ -51,7 +51,7 @@ const openMenu = (isOpen) => (isMenuOpened.value = isOpen);
         <Modal
           :toggle="openMenu"
           v-if="isMenuOpened"
-          class="top-12 right-0 flex flex-col gap-2 p-4 rounded bg-palette-gray-800 text-palette-gray-200"
+          class="top-12 right-0 flex flex-col gap-2 p-4 rounded bg-palette-gray-800 dark:text-palette-gray-200"
         >
           <div
             v-if="!user.decodedToken.isAdmin"

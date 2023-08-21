@@ -22,7 +22,6 @@ const getPendingUserList = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-
     requestList.value = data;
     x.value = data[0];
   } catch (error) {

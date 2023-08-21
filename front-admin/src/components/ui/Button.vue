@@ -2,7 +2,11 @@
 import { cva } from 'class-variance-authority';
 import { cn } from '@/utils';
 
-defineProps({ variant: { default: 'default' }, size: { default: 'default' } });
+defineProps({
+  variant: { default: 'default' },
+  size: { default: 'default' },
+  type: { default: 'button' }
+});
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-md font-medium transition-colors duration-150 disabled:pointer-events-none focus:outline-none disabled:opacity-50 data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800',
@@ -37,7 +41,8 @@ const buttonVariants = cva(
 </script>
 
 <template>
-  <button :class="cn(buttonVariants({ variant, size }))">
+  <a v-if="type === 'link'" :class="cn(buttonVariants({ variant, size }))"> <slot></slot></a>
+  <button v-else :class="cn(buttonVariants({ variant, size }))">
     <slot></slot>
   </button>
 </template>
