@@ -13,6 +13,7 @@ const { adminAuthentication } = require('../controllers/adminController')
 const {
   addAnalytics,
   getAnalyticsByAppId,
+  postGraphSettings,
   getEventByPages,
   getSessionByPages,
   getSessionByTags,
@@ -34,9 +35,14 @@ const routes = (app) => {
   app.route('/api/admin/handleUserStatus/:uuid').put(isAdmin, handleUserStatus)
   app.route('/api/admin/authentication').post(adminAuthentication)
 
+  //add analytics for tracker
   app.route('/api/analytics/add').post(addAnalytics)
+
+  //handle graph settings
+  app.route('/api/analytics/addGraphSettings').post(postGraphSettings)
   app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)
   // app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
+  
   app.route('/api/analytics/eventByPages/:appId').get(getEventByPages)
   app.route('/api/analytics/sessionByPages/:appId').get(getSessionByPages)
   app.route('/api/analytics/sessionByTags/:appId').get(getSessionByTags)

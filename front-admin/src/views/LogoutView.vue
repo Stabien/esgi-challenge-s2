@@ -7,6 +7,7 @@ const router = useRouter();
 
 const logout = () => {
   removeLocalStorageItem('token');
+  removeLocalStorageItem('graphSettings');
   router.push('/');
 };
 onMounted(() => {

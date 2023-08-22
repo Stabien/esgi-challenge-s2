@@ -1,4 +1,5 @@
 const Analytics = require('../models/analytics')
+const Graphs = require('../models/graphs')
 const { getIsoDateFromTimestamp } = require('../helpers')
 
 exports.addAnalytics = async (req, res) => {
@@ -13,7 +14,22 @@ exports.addAnalytics = async (req, res) => {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
-
+exports.postGraphSettings =async(req,res)=>{
+  try {
+    const {userUuid,event,graphPeriod,graphValue,selectedTagUuid} = req.body
+    const newGraphUser = await Graphs.create({
+      userUuid: userUuid,
+      event: event,
+      timeScale:graphPeriod,
+      tagUuid:selectedTagUuid ,
+      timestamp:Date.now() ,
+    })
+    return res.status(200).json()
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
 exports.getAnalyticsByAppId = async (req, res) => {
   try {
     const graphSettings = JSON.parse(req.params.graphSettings)
