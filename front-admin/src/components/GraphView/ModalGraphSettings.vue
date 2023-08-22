@@ -20,6 +20,33 @@ const setGraphPeriod = (period) => {
 const setGraphValue = (value) => {
   graphSettings.graphValue = value;
 };
+
+const saveGraphSettings = async () => {
+  try {
+    const bodyGraphSettings = {
+      userUuid: user.value.decodedToken.uuid,
+      event: graphSettings.event,
+      graphPeriod: graphSettings.graphPeriod,
+      graphValue: graphSettings.graphValue,
+      selectedTagUuid: graphSettings.selectedTags
+    };
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(bodyGraphSettings),
+      headers
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/addGraphSettings`,
+      requestOptions
+    );
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+};
 const handleSelectEvent = (event) => {
   graphSettings.event = event;
   if (event !== 'click') graphSettings.selectedTags = '';
@@ -76,11 +103,12 @@ const deleteTag = async (tagUuid) => {
   }
 };
 const handleSelectTag = (tag) => {
-  if (graphSettings.selectedTags === tag.name) {
+  if (graphSettings.selectedTags === tag.uuid) {
     graphSettings.selectedTags = '';
     return;
   }
-  graphSettings.selectedTags = tag.name;
+  console.log(tag);
+  graphSettings.selectedTags = tag.uuid;
   graphSettings.event = 'click';
 };
 </script>
@@ -170,14 +198,14 @@ const handleSelectTag = (tag) => {
         v-for="tag in tagsList"
         :key="tag"
         :class="
-          graphSettings.selectedTags === tag.name ? 'bg-palette-primary-100' : 'bg-soft-white'
+          graphSettings.selectedTags === tag.uuid ? 'bg-palette-primary-100' : 'bg-soft-white'
         "
         class="text-sm rounded flex items-center justify-between relative dark:text-soft-black"
       >
         <span
           class="cursor-pointer p-1 rounded-l"
           :class="[
-            graphSettings.selectedTags === tag.name
+            graphSettings.selectedTags === tag.uuid
               ? 'hover:bg-palette-primary-200 '
               : 'hover:bg-palette-gray-100',
             user.status !== 'Admin' ? 'rounded-l' : 'rounded'
@@ -192,7 +220,7 @@ const handleSelectTag = (tag) => {
           variant="ghost"
           size="sm"
           :class="
-            graphSettings.selectedTags === tag.name
+            graphSettings.selectedTags === tag.uuid
               ? 'hover:bg-palette-primary-200'
               : 'hover:bg-palette-gray-100'
           "
@@ -201,6 +229,9 @@ const handleSelectTag = (tag) => {
           X
         </button>
       </div>
+    </div>
+    <div>
+      <Button @click="saveGraphSettings">Save</Button>
     </div>
   </Modal>
 </template>
