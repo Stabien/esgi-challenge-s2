@@ -21,7 +21,7 @@ exports.getAnalyticsByAppId = async (req, res) => {
 
     const { start, end } = getIsoDateFromTimestamp(graphPeriod)
 
-    const aggregateTunel = [
+    const aggregateTunnel = [
       { $match: { appId } },
       {
         $match: {
@@ -34,9 +34,10 @@ exports.getAnalyticsByAppId = async (req, res) => {
       { $match: { event } },
     ]
 
-    if (!!selectedTags) aggregateTunel.push({ $match: { directiveTag: selectedTags } })
+    if (!!selectedTags) aggregateTunnel.push({ $match: { directiveTag: selectedTags } })
 
-    const analytics = await Analytics.aggregate(aggregateTunel)
+    const analytics = await Analytics.aggregate(aggregateTunnel)
+    return res.status(200).json({analytics,start, end})
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)

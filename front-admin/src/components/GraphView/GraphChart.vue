@@ -5,7 +5,7 @@ import { DoughnutChart, BarChart, LineChart, PieChart, RadarChart } from 'vue-ch
 
 const { graphSettings } = inject('graphSettings');
 
-const props = defineProps(['dataGraph']);
+const props = defineProps(['dataGraph', 'dataGraphStart', 'dataGraphEnd']);
 
 const getClickByPage = () => {
   const urlCountMap = {};
@@ -31,21 +31,26 @@ const getClickByPage = () => {
 };
 const getEventsByTimestamp = () => {
   const dataGraphClone = [...props.dataGraph];
+  const startDate = new Date(props.dataGraphStart);
+  const endDate = new Date(props.dataGraphEnd);
+  const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+  const dateCounts = {};
+
   // Triez le tableau d'objets en fonction du timestamp
   dataGraphClone.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 
-  const dateCounts = {};
+  for (let i = 0; i < daysInRange; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(currentDate.getDate() + i);
+    dateCounts[currentDate.toISOString().split('T')[0]] = 0;
+  }
 
-  dataGraphClone.forEach((obj) => {
-    const date = new Date(obj.timestamp);
-    const day = date.toISOString().split('T')[0];
-
-    if (!dateCounts[day]) {
-      dateCounts[day] = 0;
+  for (const entry of dataGraphClone) {
+    const entryDate = new Date(entry.timestamp).toISOString().split('T')[0];
+    if (entryDate in dateCounts) {
+      dateCounts[entryDate]++;
     }
-
-    dateCounts[day]++;
-  });
+  }
 
   const countArray = Object.keys(dateCounts).map((date) => ({
     label: date,
@@ -145,11 +150,28 @@ const repeatArrayColors = (desiredLength) => {
     class="justify-center grid grid-cols-2 gap-4"
     :class="`w-[${graphSettings.graphSize.toString()}rem]`"
   >
-    <DoughnutChart v-if="graphSettings.graphList.includes('DoughnutChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
-    <BarChart v-if="graphSettings.graphList.includes('BarChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
-    <PieChart v-if="graphSettings.graphList.includes('PieChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
-    <RadarChart v-if="graphSettings.graphList.includes('RadarChart')" class="w-full flex justify-center" :chartData="filterDataForGraphs()" />
-    <LineChart v-if="graphSettings.graphList.includes('LineChart')"
+    <DoughnutChart
+      v-if="graphSettings.graphList.includes('DoughnutChart')"
+      class="w-full flex justify-center"
+      :chartData="filterDataForGraphs()"
+    />
+    <BarChart
+      v-if="graphSettings.graphList.includes('BarChart')"
+      class="w-full flex justify-center"
+      :chartData="filterDataForGraphs()"
+    />
+    <PieChart
+      v-if="graphSettings.graphList.includes('PieChart')"
+      class="w-full flex justify-center"
+      :chartData="filterDataForGraphs()"
+    />
+    <RadarChart
+      v-if="graphSettings.graphList.includes('RadarChart')"
+      class="w-full flex justify-center"
+      :chartData="filterDataForGraphs()"
+    />
+    <LineChart
+      v-if="graphSettings.graphList.includes('LineChart')"
       class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphs()"
     />

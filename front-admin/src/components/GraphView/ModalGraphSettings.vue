@@ -22,6 +22,7 @@ const setGraphValue = (value) => {
 };
 const handleSelectEvent = (event) => {
   graphSettings.event = event;
+  if (event !== 'click') graphSettings.selectedTags = '';
 };
 const handleSelectGraphList = (graph) => {
   if (graphSettings.graphList.includes(graph)) {
@@ -75,19 +76,17 @@ const deleteTag = async (tagUuid) => {
   }
 };
 const handleSelectTag = (tag) => {
-  console.log('handle select tag');
   if (graphSettings.selectedTags === tag.name) {
     graphSettings.selectedTags = '';
     return;
   }
   graphSettings.selectedTags = tag.name;
+  graphSettings.event = 'click';
 };
 </script>
 
 <template>
   <Modal class="bg-white right-40">
-    {{ graphSettings.graphSize }}
-    <input type="range" min="1" max="10" v-model="graphSettings.graphSize" />
     <div class="flex justify-between">
       <div
         v-for="period in periodList"

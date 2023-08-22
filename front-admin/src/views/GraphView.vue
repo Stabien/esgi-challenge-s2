@@ -17,6 +17,8 @@ const { socket } = inject('socket');
 
 const userRequest = ref();
 const dataGraph = ref([]);
+const dataGraphStart = ref();
+const dataGraphEnd = ref();
 
 const tagsList = ref([]);
 
@@ -78,9 +80,9 @@ const fetchAll = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    // console.log(data);
-    // console.log(data.map((e) => e.timestamp));
-    dataGraph.value = data;
+    dataGraph.value = data.analytics;
+    dataGraphStart.value = data.start;
+    dataGraphEnd.value = data.end;
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -115,9 +117,7 @@ const init = async () => {
   await fetchTags();
   await fetchAll();
 };
-watch(dataGraph, () => {
-  // console.log(dataGraph);
-});
+
 watch(graphSettings, () => {
   const denyFetch = ['graphSize'];
   if (
@@ -167,6 +167,8 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
     <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50"></div>
     <GraphChart
       :dataGraph="dataGraph"
+      :dataGraphStart="dataGraphStart"
+      :dataGraphEnd="dataGraphEnd"
       class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
     />
   </div>
