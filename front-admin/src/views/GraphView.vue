@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button.vue';
 // import Input from '@/components/ui/Input.vue';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
-import { ref, reactive, inject, onMounted, onUnmounted, provide, watch } from 'vue';
+import { ref, inject, onMounted, onUnmounted, provide, watch } from 'vue';
 
 Chart.register(...registerables);
 const route = useRoute();
@@ -23,19 +23,7 @@ const dataGraphEnd = ref();
 const tagsList = ref([]);
 
 const isSettingsModalOpened = ref(false);
-const graphSettings = reactive(
-  JSON.parse(localStorage.getItem('graphSettings')) || {
-    appId: user.value.decodedToken.appId,
-    graphValue: 'quantity', //percentages or quantity
-    selectedGraph: 'BarChart', //list of selected Graphs
-    graphSize: 1, //size of graph: 1 to 10
-    graphPeriod: 'D', //D, W, M,Y day, week, month, year
-    selectedTags: '',
-    event: 'click' //click, newSession, navigation,
-  }
-);
-
-provide('graphSettings', { graphSettings });
+const { graphSettings } = inject('graphSettings');
 
 const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
 

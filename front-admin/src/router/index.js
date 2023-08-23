@@ -31,6 +31,16 @@ const router = createRouter({
       component: () => import('@/views/GraphView.vue')
     },
     {
+      path: '/heatmap',
+      name: 'heatmap',
+      component: () => import('@/views/HeatmapView.vue')
+    },
+    {
+      path: '/heatmapPath/:path',
+      name: 'heatmapPath',
+      component: () => import('@/views/HeatmapPathView.vue')
+    },
+    {
       path: '/request/:uid',
       name: 'request',
       component: () => import('@/views/UserView.vue')
@@ -79,7 +89,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const user = getConnectionProviderValue();
   const publicPages = ['login', 'join'];
-  const privatePages = ['account-settings', 'graph', 'admin'];
+  const privatePages = ['account-settings', 'graph', 'admin', 'heatmap', 'heatmapPath'];
   const webMasterPages = ['graph'];
   const adminPages = ['admin'];
 

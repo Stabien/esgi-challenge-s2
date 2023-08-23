@@ -1,7 +1,7 @@
 import { getURL } from './handleUrl';
 
 export const exportData = async (
-  { appId, event, url, sessionId, htmlElement, directiveTag, timestamp },
+  { appId, event, url, sessionId, htmlElement, directiveTag, timestamp, x, y },
   socket
 ) => {
   try {
@@ -16,7 +16,9 @@ export const exportData = async (
         sessionId,
         htmlElement,
         directiveTag,
-        timestamp
+        timestamp,
+        x,
+        y
       }),
       headers
     };
@@ -24,14 +26,20 @@ export const exportData = async (
       `${import.meta.env.VITE_PROD_API_URL}/api/analytics/add`,
       requestOptions
     );
-    if (!response.ok) throw new Error('Something went wrong');
     socket.emit('newDataAdded');
   } catch (error) {
     console.log(error);
   }
 };
 
-export const handleEvent = (element, eventName, directiveBindingArgument, APP_ID, socket) => {
+export const handleEvent = (
+  element,
+  eventName,
+  directiveBindingArgument,
+  APP_ID,
+  socket,
+  event
+) => {
   const htmlElement = element.tagName;
   exportData(
     {
@@ -41,7 +49,9 @@ export const handleEvent = (element, eventName, directiveBindingArgument, APP_ID
       sessionId: window.localStorage.getItem('Session_ID'),
       htmlElement: htmlElement,
       directiveTag: directiveBindingArgument,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      x: eventName === 'click' ? event.pageX : undefined,
+      y: eventName === 'click' ? event.pageY : undefined
     },
     socket
   );
