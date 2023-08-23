@@ -27,7 +27,7 @@ const graphSettings = reactive(
   JSON.parse(localStorage.getItem('graphSettings')) || {
     appId: user.value.decodedToken.appId,
     graphValue: 'quantity', //percentages or quantity
-    graphList: [], //list of selected Graphs
+    selectedGraph: 'BarChart', //list of selected Graphs
     graphSize: 1, //size of graph: 1 to 10
     graphPeriod: 'D', //D, W, M,Y day, week, month, year
     selectedTags: '',
@@ -152,8 +152,6 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <Button @click="console.log(graphSettings.graphList)">Log</Button>
-
       <span> What do you want to see? </span>
       <div class="relative">
         <Button @click="openSettingModal(true)">Settings</Button>

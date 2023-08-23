@@ -151,27 +151,27 @@ const repeatArrayColors = (desiredLength) => {
     :class="`w-[${graphSettings.graphSize.toString()}rem]`"
   >
     <DoughnutChart
-      v-if="graphSettings.graphList.includes('DoughnutChart')"
+      v-if="graphSettings.selectedGraph === 'DoughnutChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <BarChart
-      v-if="graphSettings.graphList.includes('BarChart')"
+      v-if="graphSettings.selectedGraph === 'BarChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <PieChart
-      v-if="graphSettings.graphList.includes('PieChart')"
+      v-if="graphSettings.selectedGraph === 'PieChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <RadarChart
-      v-if="graphSettings.graphList.includes('RadarChart')"
+      v-if="graphSettings.selectedGraph === 'RadarChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <LineChart
-      v-if="graphSettings.graphList.includes('LineChart')"
+      v-if="graphSettings.selectedGraph === 'LineChart'"
       class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphs()"
     />

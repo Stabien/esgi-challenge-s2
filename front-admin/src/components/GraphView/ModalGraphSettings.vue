@@ -10,7 +10,7 @@ const tagNameInput = ref('');
 
 const periodList = ['D', 'W', 'M', 'Y'];
 const eventList = ['click', 'newSession', 'navigation'];
-const graphListValue = ['DoughnutChart', 'BarChart', 'LineChart', 'PieChart', 'RadarChart'];
+const selectedGraphValue = ['BarChart', 'DoughnutChart', 'LineChart', 'PieChart', 'RadarChart'];
 const { graphSettings } = inject('graphSettings');
 const { tagsList } = inject('tagsList');
 
@@ -28,6 +28,7 @@ const saveGraphSettings = async () => {
       event: graphSettings.event,
       graphPeriod: graphSettings.graphPeriod,
       graphValue: graphSettings.graphValue,
+      selectedGraph: graphSettings.selectedGraph,
       selectedTagUuid: graphSettings.selectedTags
     };
     const headers = new Headers();
@@ -52,11 +53,12 @@ const handleSelectEvent = (event) => {
   if (event !== 'click') graphSettings.selectedTags = '';
 };
 const handleSelectGraphList = (graph) => {
-  if (graphSettings.graphList.includes(graph)) {
-    graphSettings.graphList = graphSettings.graphList.filter((item) => item !== graph);
+  if (graphSettings.selectedGraph === graph) {
+    graphSettings.selectedGraph = 'BarChart';
+    // graphSettings.selectedGraph = graphSettings.selectedGraph.filter((item) => item !== graph);
     return;
   }
-  graphSettings.graphList.push(graph);
+  graphSettings.selectedGraph = graph;
 };
 
 const createTag = async () => {
@@ -163,19 +165,20 @@ const handleSelectTag = (tag) => {
         100
       </div>
     </div>
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-center">
       <div
         :class="
-          graphSettings.graphList.includes(graph)
+          graphSettings.selectedGraph === graph
             ? 'bg-palette-primary-500 hover:bg-palette-primary-700 text-soft-white'
             : 'hover:bg-palette-gray-100'
         "
-        class="inline-block rounded p-2 cursor-pointer"
+        class="flex flex-col rounded p-2 cursor-pointer"
         :key="graph"
-        v-for="graph in graphListValue"
+        v-for="(graph, index) in selectedGraphValue"
         @click="handleSelectGraphList(graph)"
       >
         {{ graph.replace('Chart', '') }}
+        <span class="text-xs" v-if="index === 0"> default</span>
       </div>
     </div>
     <form
