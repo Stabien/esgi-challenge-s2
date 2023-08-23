@@ -13,7 +13,7 @@ export default {
     const socket = io(import.meta.env.VITE_PROD_API_URL);
     socket.on('connect', () => socket.emit('connectedWithAppId', { appId: APP_ID }));
 
-    handleRefresh();
+    handleRefresh(APP_ID, socket);
     checkInactivity(APP_ID, socket);
     handleSessionId(APP_ID, socket);
 
@@ -24,8 +24,8 @@ export default {
     VueInstance.directive('track', {
       mounted: (el, binding) => {
         Object.entries(binding.modifiers).forEach(function (modifier) {
-          el.addEventListener(`${modifier[0]}`, () =>
-            handleEvent(el, modifier[0], binding.arg, APP_ID, socket)
+          el.addEventListener(`${modifier[0]}`, (event) =>
+            handleEvent(el, modifier[0], binding.arg, APP_ID, socket, event)
           );
         });
       }

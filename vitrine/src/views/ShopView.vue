@@ -63,7 +63,6 @@ onMounted(() => {
           <img :src="product.image" :alt="product.title" class="w-full h-40 object-contain" />
           <h3 class="text-lg font-semibold mt-2">{{ product.title }}</h3>
           <p class="text-gray-600">${{ product.price.toFixed(2) }}</p>
-          <p class="text-sm text-gray-500 mt-2">{{ product.description }}</p>
           <div class="flex items-center mt-2">
             <span class="text-indigo-600 font-semibold">{{ product.rating.rate }}</span>
             <span class="text-gray-600 ml-1">({{ product.rating.count }} reviews)</span>

@@ -63,7 +63,83 @@ exports.getAnalyticsByAppId = async (req, res) => {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
+exports.getHeatmapPossibility=async(req,res)=>{
+  try {
+    const graphSettings = JSON.parse(req.params.graphSettings)
+    const { appId,  graphPeriod, selectedTags, event } = graphSettings
+    const { start, end } = getIsoDateFromTimestamp(graphPeriod)
 
+    const aggregateTunnel = [
+      { $match: { appId } },
+      {
+        $match: {
+          timestamp: {
+            $gte: new Date(start),
+            $lt: new Date(end),
+          },
+        },
+      },
+      { $match: { event:'click' } }, 
+      {
+        $match: {
+          x: { $exists: true },
+          y: { $exists: true }
+        }
+      },{
+        $group: {
+          _id: null,
+          uniqueUrls: { $addToSet: "$url" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          uniqueUrls: 1
+        }
+      },
+    ]
+    const analytics = await Analytics.aggregate(aggregateTunnel)
+    return res.status(200).json(analytics)
+
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.getHeatmapData = async(req,res)=>{
+  try {
+    const graphSettings = JSON.parse(req.params.graphSettings)
+    const { appId,  graphPeriod, selectedTags, event,url } = graphSettings
+    const { start, end } = getIsoDateFromTimestamp(graphPeriod)
+    console.log(url);
+
+    const aggregateTunnel = [
+      { $match: { appId } },
+      {
+        $match: {
+          timestamp: {
+            $gte: new Date(start),
+            $lt: new Date(end),
+          },
+        },
+      },
+      { $match: { event:'click' } }, 
+      { $match: { url:url } }, 
+      {
+        $match: {
+          x: { $exists: true },
+          y: { $exists: true }
+        }
+      },
+    ]
+    const analytics = await Analytics.aggregate(aggregateTunnel)
+    return res.status(200).json(analytics)
+
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
 exports.getEventByPages = async (req, res) => {
   try {
     const { appId } = req.params

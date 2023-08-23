@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router';
 import Layout from '@/components/Layout.vue';
 import { updateLocalStorage } from '@/utils';
 import { getConnectionProviderValue } from '@/utils';
-import { provide, ref, watch, onMounted } from 'vue';
+import { provide, ref, watch, onMounted, reactive } from 'vue';
 import { io } from 'socket.io-client';
 
 //verify if already connected
@@ -53,6 +53,21 @@ const handleSocketRoom = (userValue) =>
 
 watch(user, (u) => handleSocketRoom(u));
 onMounted(() => handleSocketRoom(user.value));
+
+//Graph settings
+const graphSettings = reactive(
+  JSON.parse(localStorage.getItem('graphSettings')) || {
+    appId: user.value.decodedToken.appId,
+    graphValue: 'quantity', //percentages or quantity
+    selectedGraph: 'BarChart', //list of selected Graphs
+    graphSize: 1, //size of graph: 1 to 10
+    graphPeriod: 'D', //D, W, M,Y day, week, month, year
+    selectedTags: '',
+    event: 'click' //click, newSession, navigation,
+  }
+);
+
+provide('graphSettings', { graphSettings });
 </script>
 
 <template>

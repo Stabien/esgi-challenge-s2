@@ -13,6 +13,8 @@ const { adminAuthentication } = require('../controllers/adminController')
 const {
   addAnalytics,
   getAnalyticsByAppId,
+  getHeatmapPossibility,
+  getHeatmapData,
   postGraphSettings,
   getEventByPages,
   getSessionByPages,
@@ -40,7 +42,11 @@ const routes = (app) => {
 
   //handle graph settings
   app.route('/api/analytics/addGraphSettings').post(postGraphSettings)
+
+  //get analitycs
   app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)
+  app.route('/api/analytics/heatmap/:graphSettings').get(getHeatmapPossibility)
+  app.route('/api/analytics/heatmapUrl/:graphSettings').get(getHeatmapData)
   // app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
   
   app.route('/api/analytics/eventByPages/:appId').get(getEventByPages)
