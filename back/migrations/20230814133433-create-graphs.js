@@ -14,18 +14,18 @@ module.exports = {
       event: {
         type: Sequelize.STRING
       },
-      timeScale: {
+      time_scale: {
         type: Sequelize.STRING
       },
       tag_uuid: {
         type: Sequelize.DataTypes.UUID,
         allowNull: true,
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

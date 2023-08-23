@@ -24,9 +24,21 @@ module.exports = sequelize.define(
       type: String,
     },
     tagUuid: Sequelize.DataTypes.UUID,
-    timestamp: {
-      required: true,
-      type: Date,
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
     },
-  }
+    data_type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    graph_type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  }, 
+  {
+    underscored: true,
+    timestamps: true,
+  },
 )
