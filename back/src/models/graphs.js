@@ -2,7 +2,7 @@ const sequelize = require('../config/sequelize')
 const Sequelize = require('sequelize')
 
 module.exports = sequelize.define(
-  'admins',
+  'graphs',
   {
     uuid: {
       type: Sequelize.DataTypes.UUID,
