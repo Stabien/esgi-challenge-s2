@@ -17,7 +17,7 @@ exports.addAnalytics = async (req, res) => {
 
 exports.postGraphSettings =async(req,res)=>{
   try {
-    const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType} = req.body
+    const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType, tagUuid} = req.body
     const newGraphUser = await Graphs.create({
       userUuid,
       event,
