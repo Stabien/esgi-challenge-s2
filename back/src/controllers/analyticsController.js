@@ -17,7 +17,7 @@ exports.addAnalytics = async (req, res) => {
 
 exports.postGraphSettings =async(req,res)=>{
   try {
-    const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType, tagUuid} = req.body
+    const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType} = req.body
     const newGraphUser = await Graphs.create({
       userUuid,
       event,
@@ -29,6 +29,19 @@ exports.postGraphSettings =async(req,res)=>{
     })
     await newGraphUser.save()
     return res.status(200).json({ newGraphUser })
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.getGraphSettings=async(req,res)=>{
+  try {
+    const { params } = req
+
+    console.log(params.uuid);
+    const graphs = await Graphs.findAll({ where: { userUuid:params.uuid } })
+    return res.status(200).json(graphs)
   } catch (error) {
     console.log(error)
     return res.status(500).json({ error: 'Internal error' })

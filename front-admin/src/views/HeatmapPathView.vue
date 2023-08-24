@@ -1,12 +1,15 @@
 <script setup>
 import { onMounted, ref, inject, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
+
 const userRequest = ref();
 const isLoading = ref(false);
 const maxHeight = ref(720);
 const path = route.params.path.replaceAll('-', '/');
+const { user } = inject('user');
 const { socket } = inject('socket');
 const { graphSettings } = inject('graphSettings');
 
@@ -16,7 +19,9 @@ const fetchUserRequest = async () => {
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/${route.params.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
       {
         method: 'GET',
         headers
@@ -51,13 +56,12 @@ const fetchHeatmapData = async (isFetchImage = true) => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
     await generateHeatmap(data);
-    const maxY = [...data].reduce(
-      (max, obj) => (obj.y > max ? obj.y : max),
-      Number.MIN_SAFE_INTEGER
-    );
-    console.log(maxY);
+    // const maxY = [...data].reduce(
+    //   (max, obj) => (obj.y > max ? obj.y : max),
+    //   Number.MIN_SAFE_INTEGER
+    // );
+
     // if (maxY > maxHeight.value) {
     //   maxHeight.value = maxY;
     // }
@@ -96,22 +100,26 @@ const generateHeatmap = (data) => {
     context.closePath();
   });
 };
-const generateImage = () => {
-  console.log('gona fetch');
-  const websiteUrl = `http://44.211.138.101:3001${path}`; // URL du site Web à capturer
-  //   const websiteUrl = 'https://unsplash.com/fr'; // URL du site Web à capturer
-  const imageSize = { w: 1280, h: maxHeight.value }; // Taille de l'image
-  const apiKey = 'NThkODRhNzJkNTVjNDBmODhkZDlhOWU4MjUzYTY2NDU=';
-  // eslint-disable-next-line no-undef
-  GrabzIt(apiKey)
-    .ConvertURL(websiteUrl, { width: imageSize.w, height: imageSize.h })
-    .AddTo('image-container');
+const generateImage = async () => {
+  try {
+    const websiteUrl = `${userRequest.value.url}${path}`; // URL du site Web à capturer
+    const imageSize = { w: 1280, h: maxHeight.value }; // Taille de l'image
+
+    // eslint-disable-next-line no-undef
+    const img = await GrabzIt(import.meta.env.VITE_GRABZIT_KEY).ConvertURL(websiteUrl, {
+      width: imageSize.w,
+      height: imageSize.h
+    });
+    img.AddTo('image-container');
+  } catch (error) {
+    console.log(error);
+  }
 
   // NThkODRhNzJkNTVjNDBmODhkZDlhOWU4MjUzYTY2NDU=
   // NRd8Pz9fRAk/dg8/Pz8/WD96Pz9sPz8/Pz8/QkEGPz8=
 };
 const init = async () => {
-  if (route.params.uuid) await fetchUserRequest();
+  await fetchUserRequest();
   fetchHeatmapData();
 };
 
@@ -127,9 +135,13 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
-  <main v-show="!isLoading">
-    <Link to="/heatmap"><ArrowLeft /></Link>
-    <div>{{ path }}</div>
+  <main v-show="!isLoading" class="mx-4">
+    <div class="flex gap-12 items-center">
+      <Button variant="ghost" @click="router.go(-1)"><ArrowLeft /></Button>
+      <h1 v-if="userRequest" class="text-palette-primary-500 font-bold">
+        {{ userRequest.url }}{{ path }}
+      </h1>
+    </div>
     <div
       class="relative mx-auto"
       :style="{
@@ -137,9 +149,11 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
         height: `${maxHeight}px`
       }"
     >
-      <div id="image-container" class="opacity-50 absolute object-contain top-0 left-0 z-10"></div>
+      <div id="image-container" class="opacity-ss0 absolute object-contain top-0 left-0 z-10">
+        <!-- <LoadingIcon class="self" /> -->
+      </div>
       <canvas
-        class="absolute top-0 left-0 z-20"
+        class="absolute opacity-70 top-0 left-0 z-20"
         id="heatmapCanvas"
         width="1280"
         :height="maxHeight"
