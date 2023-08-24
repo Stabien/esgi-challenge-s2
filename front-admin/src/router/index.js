@@ -41,6 +41,17 @@ const router = createRouter({
       component: () => import('@/views/HeatmapPathView.vue')
     },
     {
+      path: '/user-heatmap/:uuid',
+      name: 'user-heatmap',
+      component: () => import('@/views/HeatmapView.vue')
+    },
+    {
+      path: '/user-heatmapPath/:uuid/:path',
+      name: 'user-heatmapPath',
+      props: true,
+      component: () => import('@/views/HeatmapPathView.vue')
+    },
+    {
       path: '/request/:uid',
       name: 'request',
       component: () => import('@/views/UserView.vue')

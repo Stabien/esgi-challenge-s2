@@ -6,6 +6,7 @@ const route = useRoute();
 
 const { graphSettings } = inject('graphSettings');
 const { socket } = inject('socket');
+const { user } = inject('user');
 
 const userRequest = ref();
 const heatmapPossibilityList = ref([]);
@@ -16,7 +17,9 @@ const fetchUserRequest = async () => {
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/${route.params.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
       {
         method: 'GET',
         headers
@@ -61,7 +64,7 @@ const fetchHeatmapsPossibility = async () => {
 };
 
 const init = async () => {
-  if (route.params.uuid) await fetchUserRequest();
+  await fetchUserRequest();
   fetchHeatmapsPossibility();
 };
 
@@ -80,14 +83,27 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
-  <main>
-    <Link
-      :to="`/heatmapPath/${possibility.replaceAll('/', '-')}`"
-      v-for="possibility in heatmapPossibilityList"
-      :key="possibility"
-    >
-      {{ possibility }}
-    </Link>
-    <!-- <canvas class="bg-red-500" id="heatmapCanvas" width="1920" height="8080" /> -->
+  <main class="mx-4">
+    <h1 class="text-soft-black dark:text-soft-white text-2xl mb-8">
+      Click to see the heatmap of the specified page :
+      <span v-if="userRequest" class="text-palette-primary-500 font-bold">
+        {{ userRequest.url }}
+      </span>
+    </h1>
+    <div class="flex gap-8 flex-wrap">
+      <Link
+        variant="ghost"
+        v-for="possibility in heatmapPossibilityList.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0))"
+        :key="possibility"
+        :to="
+          route.params.uuid
+            ? `/user-heatmapPath/${route.params.uuid}/${possibility.replaceAll('/', '-')}`
+            : `/heatmapPath/${possibility.replaceAll('/', '-')}`
+        "
+        class=""
+      >
+        {{ possibility }}
+      </Link>
+    </div>
   </main>
 </template>

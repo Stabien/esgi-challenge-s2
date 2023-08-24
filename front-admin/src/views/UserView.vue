@@ -185,6 +185,7 @@ onUnmounted(() => {
               Go back to pending
             </Button>
             <Link :to="`/user-view/${userRequest.uuid}`">user view</Link>
+            <Link :to="`/user-heatmap/${userRequest.uuid}`">user heatmap</Link>
           </div>
           <div
             class="flex gap-2 items-end justify-end"
