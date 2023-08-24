@@ -2,7 +2,7 @@
 import { inject, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
-const props = defineProps(['fetchTags']);
+const props = defineProps(['fetchTags', 'fetchUserGraphList']);
 const { user } = inject('user');
 const toast = useToast();
 
@@ -45,12 +45,9 @@ const saveGraphSettings = async () => {
       body: JSON.stringify(bodyGraphSettings),
       headers
     };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings`,
-      requestOptions
-    );
-    console.log(response);
+    await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings`, requestOptions);
     graphNameInput.value = '';
+    props.fetchUserGraphList();
   } catch (error) {
     console.log(error);
   }

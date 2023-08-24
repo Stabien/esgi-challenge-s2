@@ -176,6 +176,7 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
       <div class="relative">
         <Button @click="openSettingModal(true)">Settings</Button>
         <ModalGraphSettings
+          :fetchUserGraphList="fetchUserGraphList"
           :fetchTags="fetchTags"
           :toggle="openSettingModal"
           v-if="isSettingsModalOpened"
