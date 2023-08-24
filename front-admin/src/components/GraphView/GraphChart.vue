@@ -1,16 +1,70 @@
 <script setup>
 // import { DONUT, BAR, SCATTER } from '@/utils/graphConstant';
-import { defineProps, inject } from 'vue';
+import { defineProps, inject, ref, onMounted, onUnmounted } from 'vue';
 import { DoughnutChart, BarChart, LineChart, PieChart, RadarChart } from 'vue-chart-3';
+import { useRoute } from 'vue-router';
 
-const { graphSettings } = inject('graphSettings');
+const route = useRoute();
+const userRequest = ref();
+const dataGraph = ref([]);
+const dataGraphStart = ref();
+const dataGraphEnd = ref();
+const dataSelectedTag = ref();
+const { user } = inject('user');
+const { socket } = inject('socket');
 
-const props = defineProps(['dataGraph', 'dataGraphStart', 'dataGraphEnd']);
+const props = defineProps(['graphSettings']);
 
+const fetchSelectedTag = async () => {
+  try {
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/tagUuid/${props.graphSettings.tagUuid}`,
+      requestOptions
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    dataSelectedTag.value = data.name;
+  } catch (error) {
+    console.log(error);
+  }
+};
+const fetchAll = async () => {
+  try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify({
+        ...props.graphSettings,
+        selectedTags: dataSelectedTag.value,
+        appId: userRequest.value.appId
+      })}`,
+      {
+        method: 'GET',
+        headers,
+        // body: JSON.stringify(props.graphSettings.value),
+        redirect: 'follow'
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    dataGraph.value = data.analytics;
+    dataGraphStart.value = data.start;
+    dataGraphEnd.value = data.end;
+  } catch (error) {
+    console.log(error);
+    // toast.error(error.message);
+  }
+};
 const getClickByPage = () => {
   const urlCountMap = {};
 
-  props.dataGraph.forEach((obj) => {
+  dataGraph.value.forEach((obj) => {
     if (urlCountMap[obj.url]) {
       urlCountMap[obj.url]++;
     } else {
@@ -30,9 +84,9 @@ const getClickByPage = () => {
   };
 };
 const getEventsByTimestamp = () => {
-  const dataGraphClone = [...props.dataGraph];
-  const startDate = new Date(props.dataGraphStart);
-  const endDate = new Date(props.dataGraphEnd);
+  const dataGraphClone = [dataGraph.value];
+  const startDate = new Date(dataGraphStart.value);
+  const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
   const dateCounts = {};
 
@@ -63,7 +117,7 @@ const getEventsByTimestamp = () => {
   };
 };
 const getLabelsOccurrences = () => {
-  switch (graphSettings.event) {
+  switch (props.graphSettings.event) {
     case 'click':
       return getClickByPage();
 
@@ -74,9 +128,31 @@ const getLabelsOccurrences = () => {
       return getClickByPage();
   }
 };
+const fetchUserRequest = async () => {
+  try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
+      {
+        method: 'GET',
+        headers
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userRequest.value = data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const transformValues = (valuesList) => {
-  if (graphSettings.graphValue === 'quantity') return valuesList;
+  if (props.graphSettings.data_type === 'quantity') return valuesList;
 
   const totalSum = valuesList.reduce((sum, value) => sum + value, 0);
 
@@ -91,7 +167,7 @@ const filterDataForGraphs = () => {
   const datasetsData = transformValues(occurences);
 
   if (labels.length !== datasetsData.length) {
-    console.log("data length doesn't match");
+    console.error("data length doesn't match");
     return;
   }
   //graph donut
@@ -99,7 +175,9 @@ const filterDataForGraphs = () => {
     labels: labels,
     datasets: [
       {
-        label: `${graphSettings.event} by ${graphSettings.graphValue}`,
+        label: `${props.graphSettings.name} ${
+          dataSelectedTag.value ? `(tag :${dataSelectedTag.value})` : ''
+        } `,
         data: datasetsData,
 
         backgroundColor: repeatArrayColors(labels.length)
@@ -143,35 +221,47 @@ const repeatArrayColors = (desiredLength) => {
   // Tronquer l'array résultant pour correspondre à la longueur souhaitée
   return repeatedArray.slice(0, desiredLength);
 };
+
+const init = async () => {
+  await fetchUserRequest();
+  if (props.graphSettings.tagUuid) await fetchSelectedTag();
+  await fetchAll();
+};
+onMounted(() => {
+  init();
+
+  socket.on('newDataAdded', () => {
+    init();
+  });
+});
+
+onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
-  <div
-    class="justify-center grid grid-cols-2 gap-4"
-    :class="`w-[${graphSettings.graphSize.toString()}rem]`"
-  >
+  <div class="justify-center grid grid-cols-2 gap-4">
     <DoughnutChart
-      v-if="graphSettings.selectedGraph === 'DoughnutChart'"
+      v-if="props.graphSettings.graph_type === 'DoughnutChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <BarChart
-      v-if="graphSettings.selectedGraph === 'BarChart'"
+      v-if="props.graphSettings.graph_type === 'BarChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <PieChart
-      v-if="graphSettings.selectedGraph === 'PieChart'"
+      v-if="props.graphSettings.graph_type === 'PieChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <RadarChart
-      v-if="graphSettings.selectedGraph === 'RadarChart'"
+      v-if="props.graphSettings.graph_type === 'RadarChart'"
       class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <LineChart
-      v-if="graphSettings.selectedGraph === 'LineChart'"
+      v-if="props.graphSettings.graph_type === 'LineChart'"
       class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphs()"
     />

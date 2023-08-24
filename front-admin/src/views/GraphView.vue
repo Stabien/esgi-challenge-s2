@@ -23,7 +23,6 @@ const userGraphList = ref([]);
 const selectedUserGraphList = ref([]);
 
 const handleSelectUserGraph = (graph) => {
-  console.log(graph);
   if (selectedUserGraphList.value.includes(graph)) {
     selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph);
     return;
@@ -43,7 +42,6 @@ const fetchUserGraphList = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
     userGraphList.value = data;
   } catch (error) {
     console.log(error);
@@ -154,7 +152,7 @@ watch(graphSettings, () => {
 });
 
 onMounted(() => {
-  if (route.params.uuid) fetchUserRequest();
+  fetchUserRequest();
   init();
 
   socket.on('newDataAdded', () => {
@@ -195,18 +193,16 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
         :key="graph"
       >
         {{ graph.name }}
-        {{
-          new Date(graph.updatedAt)
-            // .format('DD/MM/YYYY')
-            .toLocaleString('en-GB', { timeZone: 'UTC' })
-        }}
+        {{ new Date(graph.updatedAt).toLocaleString('en-GB', { timeZone: 'UTC' }) }}
       </div>
     </div>
-    <GraphChart
-      :dataGraph="dataGraph"
-      :dataGraphStart="dataGraphStart"
-      :dataGraphEnd="dataGraphEnd"
-      class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
-    />
+    <div>
+      <GraphChart
+        v-for="graph in selectedUserGraphList"
+        :key="graph"
+        :graphSettings="graph"
+        class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
+      />
+    </div>
   </div>
 </template>
