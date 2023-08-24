@@ -7,6 +7,7 @@ const { user } = inject('user');
 const toast = useToast();
 
 const tagNameInput = ref('');
+const graphNameInput = ref('');
 
 const periodList = ['D', 'W', 'M', 'Y'];
 const eventList = ['click', 'newSession', 'navigation'];
@@ -23,12 +24,17 @@ const setGraphValue = (value) => {
 
 const saveGraphSettings = async () => {
   try {
+    if (!graphNameInput.value) {
+      toast.error('You need a graph name');
+      return;
+    }
     const bodyGraphSettings = {
+      name: graphNameInput.value,
       userUuid: user.value.decodedToken.uuid,
       event: graphSettings.event,
       graphPeriod: graphSettings.graphPeriod,
-      graphValue: graphSettings.graphValue,
-      selectedGraph: graphSettings.selectedGraph,
+      dataType: graphSettings.graphValue,
+      graphType: graphSettings.selectedGraph,
       selectedTagUuid: graphSettings.selectedTags
     };
     const headers = new Headers();
@@ -40,10 +46,11 @@ const saveGraphSettings = async () => {
       headers
     };
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/addGraphSettings`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings`,
       requestOptions
     );
     console.log(response);
+    graphNameInput.value = '';
   } catch (error) {
     console.log(error);
   }
@@ -109,7 +116,6 @@ const handleSelectTag = (tag) => {
     graphSettings.selectedTags = '';
     return;
   }
-  console.log(tag);
   graphSettings.selectedTags = tag.uuid;
   graphSettings.event = 'click';
 };
@@ -233,6 +239,15 @@ const handleSelectTag = (tag) => {
         </button>
       </div>
     </div>
+    <Input
+      v-if="user.status !== 'Admin'"
+      type="text"
+      label="Name of the graph"
+      oneLine="true"
+      v-model="graphNameInput"
+      class="w-fit"
+      required
+    />
     <div>
       <Button @click="saveGraphSettings">Save</Button>
     </div>

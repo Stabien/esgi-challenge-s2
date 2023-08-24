@@ -16,10 +16,39 @@ const { user } = inject('user');
 const { socket } = inject('socket');
 
 const userRequest = ref();
-const dataGraph = ref([]);
 const dataGraphStart = ref();
 const dataGraphEnd = ref();
+const dataGraph = ref([]);
+const userGraphList = ref([]);
+const selectedUserGraphList = ref([]);
 
+const handleSelectUserGraph = (graph) => {
+  console.log(graph);
+  if (selectedUserGraphList.value.includes(graph)) {
+    selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph);
+    return;
+  }
+  selectedUserGraphList.value.push(graph);
+};
+const fetchUserGraphList = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
+      {
+        method: 'GET'
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    console.log(data);
+    userGraphList.value = data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const tagsList = ref([]);
 
 const isSettingsModalOpened = ref(false);
@@ -33,7 +62,9 @@ const fetchUserRequest = async () => {
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/${route.params.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
       {
         method: 'GET',
         headers
@@ -101,7 +132,8 @@ const fetchTags = async () => {
 provide('tagsList', { tagsList });
 
 const init = async () => {
-  if (route.params.uuid) await fetchUserRequest();
+  await fetchUserRequest();
+  await fetchUserGraphList();
   await fetchTags();
   await fetchAll();
 };
@@ -150,7 +182,25 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
         />
       </div>
     </div>
-    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50"></div>
+    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
+      <div
+        :class="
+          selectedUserGraphList.includes(graph)
+            ? 'bg-palette-primary-500'
+            : 'bg-palette-primary-100'
+        "
+        @click="handleSelectUserGraph(graph)"
+        v-for="graph in userGraphList"
+        :key="graph"
+      >
+        {{ graph.name }}
+        {{
+          new Date(graph.updatedAt)
+            // .format('DD/MM/YYYY')
+            .toLocaleString('en-GB', { timeZone: 'UTC' })
+        }}
+      </div>
+    </div>
     <GraphChart
       :dataGraph="dataGraph"
       :dataGraphStart="dataGraphStart"

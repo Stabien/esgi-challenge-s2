@@ -16,6 +16,7 @@ const {
   getHeatmapPossibility,
   getHeatmapData,
   postGraphSettings,
+  getGraphSettings,
   getEventByPages,
   getSessionByPages,
   getSessionByTags,
@@ -41,7 +42,8 @@ const routes = (app) => {
   app.route('/api/analytics/add').post(addAnalytics)
 
   //handle graph settings
-  app.route('/api/analytics/addGraphSettings').post(postGraphSettings)
+  app.route('/api/analytics/GraphSettings').post(postGraphSettings)
+  app.route('/api/analytics/GraphSettings/:uuid').get(getGraphSettings)
 
   //get analitycs
   app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)
