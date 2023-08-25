@@ -18,17 +18,59 @@ exports.addAnalytics = async (req, res) => {
 exports.postGraphSettings =async(req,res)=>{
   try {
     const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType} = req.body
-    const newGraphUser = await Graphs.create({
+    const graph={
       userUuid,
       event,
       name,
       timeScale: graphPeriod,
-      tagUuid: selectedTagUuid,
+      tagUuid: !!selectedTagUuid?selectedTagUuid:null,
       data_type: dataType,
       graph_type: graphType
-    })
+    }
+    console.log(graph);
+    const newGraphUser = await Graphs.create(graph)
     await newGraphUser.save()
     return res.status(200).json({ newGraphUser })
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.getGraphSettings=async(req,res)=>{
+  try {
+    const { params } = req
+
+    console.log(params.uuid);
+    const graphs = await Graphs.findAll({ where: { userUuid:params.uuid } })
+    return res.status(200).json(graphs)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.putGraphSettings=async(req,res)=>{
+  try {
+    const { uuid } = req.params
+
+    await Graphs.update(req.body, { where: { uuid } })
+    return res.send(200)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.deleteGraphSettings=async(req,res)=>{
+  try {
+
+    const { uuid } = req.params
+    const tag = await Graphs.destroy({
+      where: {
+        uuid: uuid,
+      },
+    })
+    return res.status(201).json(tag)
+
   } catch (error) {
     console.log(error)
     return res.status(500).json({ error: 'Internal error' })

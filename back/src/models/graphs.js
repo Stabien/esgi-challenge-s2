@@ -23,7 +23,10 @@ module.exports = sequelize.define(
       required: true,
       type: String,
     },
-    tagUuid: Sequelize.DataTypes.UUID,
+    tagUuid: {
+      type: Sequelize.DataTypes.UUID,
+      allowNull: true
+    },
     name: {
       type: Sequelize.STRING,
       allowNull: false,

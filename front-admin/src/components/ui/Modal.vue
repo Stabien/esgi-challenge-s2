@@ -34,7 +34,7 @@ onUnmounted(() => window.removeEventListener('click', handleRefClick));
     "
   >
     <div
-      class="animate-slideDownAndFade z-[999] absolute shadow-default inline-block p-4 rounded bg-soft-white dark:bg-soft-black"
+      class="w-full animate-slideDownAndFade z-[999] absolute shadow-default inline-block p-4 rounded bg-soft-white dark:bg-soft-black"
       v-if="props.fullHeight"
     >
       <slot></slot>

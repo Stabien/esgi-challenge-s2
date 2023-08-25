@@ -16,14 +16,43 @@ const { user } = inject('user');
 const { socket } = inject('socket');
 
 const userRequest = ref();
-const dataGraph = ref([]);
-const dataGraphStart = ref();
-const dataGraphEnd = ref();
-
+const userGraphList = ref([]);
+const selectedUserGraphList = ref([]);
 const tagsList = ref([]);
-
 const isSettingsModalOpened = ref(false);
 const { graphSettings } = inject('graphSettings');
+
+const updateSelectedGraph = (newSelectedGraph) => {
+  selectedUserGraphList.value = newSelectedGraph;
+};
+
+const handleSelectUserGraph = (graph) => {
+  if (selectedUserGraphList.value.some((selectedGraph) => selectedGraph.uuid === graph.uuid)) {
+    selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph);
+    return;
+  }
+  selectedUserGraphList.value.push(graph);
+};
+const fetchUserGraphList = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
+      {
+        method: 'GET'
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
+    updateSelectedGraph([]);
+    // [...new Set(firstArray.concat(secondArray))]
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
 
@@ -33,7 +62,9 @@ const fetchUserRequest = async () => {
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/${route.params.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
       {
         method: 'GET',
         headers
@@ -45,35 +76,6 @@ const fetchUserRequest = async () => {
     userRequest.value = data;
   } catch (error) {
     console.log(error);
-  }
-};
-
-const fetchAll = async () => {
-  try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify({
-        ...graphSettings,
-        appId: userRequest.value ? userRequest.value.appId : graphSettings.appId
-      })}`,
-      {
-        method: 'GET',
-        headers,
-        // body: JSON.stringify(graphSettings.value),
-        redirect: 'follow'
-      }
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    dataGraph.value = data.analytics;
-    dataGraphStart.value = data.start;
-    dataGraphEnd.value = data.end;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
   }
 };
 
@@ -101,9 +103,9 @@ const fetchTags = async () => {
 provide('tagsList', { tagsList });
 
 const init = async () => {
-  if (route.params.uuid) await fetchUserRequest();
+  await fetchUserRequest();
+  await fetchUserGraphList();
   await fetchTags();
-  await fetchAll();
 };
 
 watch(graphSettings, () => {
@@ -116,13 +118,13 @@ watch(graphSettings, () => {
       )
     )
   ) {
-    fetchAll();
+    // fetchAll();
   }
   updateLocalStorage('graphSettings', JSON.stringify(graphSettings));
 });
 
 onMounted(() => {
-  if (route.params.uuid) fetchUserRequest();
+  fetchUserRequest();
   init();
 
   socket.on('newDataAdded', () => {
@@ -144,18 +146,28 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
       <div class="relative">
         <Button @click="openSettingModal(true)">Settings</Button>
         <ModalGraphSettings
+          :fetchUserGraphList="fetchUserGraphList"
           :fetchTags="fetchTags"
           :toggle="openSettingModal"
           v-if="isSettingsModalOpened"
         />
       </div>
     </div>
-    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50"></div>
-    <GraphChart
-      :dataGraph="dataGraph"
-      :dataGraphStart="dataGraphStart"
-      :dataGraphEnd="dataGraphEnd"
-      class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
-    />
+    <div
+      class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50 flex flex-col gap-4"
+    >
+      <GraphListItem
+        @update:childSelectedGraph="updateSelectedGraph"
+        :fetchGraphs="fetchUserGraphList"
+        :handleSelectUserGraph="handleSelectUserGraph"
+        :selectedUserGraphList="selectedUserGraphList"
+        :graph="graph"
+        v-for="graph in userGraphList"
+        :key="graph"
+      />
+    </div>
+    <div class="grid grid-cols-12 gap-4 h-min">
+      <GraphChart v-for="graph in selectedUserGraphList" :key="graph" :graphSettings="graph" />
+    </div>
   </div>
 </template>

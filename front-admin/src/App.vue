@@ -58,13 +58,21 @@ onMounted(() => handleSocketRoom(user.value));
 const graphSettings = reactive(
   JSON.parse(localStorage.getItem('graphSettings')) || {
     appId: user.value.decodedToken.appId,
-    graphValue: 'quantity', //percentages or quantity
-    selectedGraph: 'BarChart', //list of selected Graphs
+    data_type: 'quantity', //percentages or quantity
+    graph_type: 'BarChart', //list of selected Graphs
     graphSize: 1, //size of graph: 1 to 10
-    graphPeriod: 'D', //D, W, M,Y day, week, month, year
-    selectedTags: '',
+    timeScale: 'D', //D, W, M,Y day, week, month, year
+    tagUuid: '',
     event: 'click' //click, newSession, navigation,
   }
+  //   appId: user.value.decodedToken.appId,
+  //   graphValue: 'quantity', //percentages or quantity
+  //   selectedGraph: 'BarChart', //list of selected Graphs
+  //   graphSize: 1, //size of graph: 1 to 10
+  //   graphPeriod: 'D', //D, W, M,Y day, week, month, year
+  //   selectedTags: '',
+  //   event: 'click' //click, newSession, navigation,
+  // }
 );
 
 provide('graphSettings', { graphSettings });

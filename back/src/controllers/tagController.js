@@ -10,6 +10,15 @@ exports.getTagsByUserUuid = async (req, res) => {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
+exports.getTagsByTagUuid = async (req, res) => {
+  const { uuid: tagUuid } = req.params
+  try {
+    const tags = await Tags.findOne({ where: { uuid:tagUuid } })
+    return res.status(200).json(tags)
+  } catch (e) {
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
 
 exports.addTag = async (req, res) => {
   const { body } = req

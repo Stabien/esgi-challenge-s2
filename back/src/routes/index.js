@@ -16,11 +16,12 @@ const {
   getHeatmapPossibility,
   getHeatmapData,
   postGraphSettings,
-  getEventByPages,
-  getSessionByPages,
-  getSessionByTags,
+  getGraphSettings,
+  putGraphSettings,
+deleteGraphSettings
+  
 } = require('../controllers/analyticsController')
-const { addTag, deleteTag, getTagsByUserUuid } = require('../controllers/tagController')
+const { addTag, deleteTag, getTagsByTagUuid,getTagsByUserUuid } = require('../controllers/tagController')
 
 /** Router */
 const routes = (app) => {
@@ -41,7 +42,8 @@ const routes = (app) => {
   app.route('/api/analytics/add').post(addAnalytics)
 
   //handle graph settings
-  app.route('/api/analytics/addGraphSettings').post(postGraphSettings)
+  app.route('/api/analytics/GraphSettings').post(postGraphSettings)
+  app.route('/api/analytics/GraphSettings/:uuid').get(getGraphSettings).put(putGraphSettings).delete(deleteGraphSettings)
 
   //get analitycs
   app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)
@@ -49,11 +51,9 @@ const routes = (app) => {
   app.route('/api/analytics/heatmapUrl/:graphSettings').get(getHeatmapData)
   // app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
   
-  app.route('/api/analytics/eventByPages/:appId').get(getEventByPages)
-  app.route('/api/analytics/sessionByPages/:appId').get(getSessionByPages)
-  app.route('/api/analytics/sessionByTags/:appId').get(getSessionByTags)
 
   app.route('/api/tag/:uuid').get(getTagsByUserUuid).post(addTag).delete(deleteTag)
+  app.route('/api/tagUuid/:uuid').get(getTagsByTagUuid)
 }
 
 module.exports = routes
