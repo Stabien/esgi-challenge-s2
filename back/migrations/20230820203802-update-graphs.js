@@ -27,6 +27,14 @@ module.exports = {
         allowNull: false,
       },
     )
+    await queryInterface.addColumn(
+      'graphs',
+      'graph_size',
+      {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+    )
   },
   async down (queryInterface, Sequelize) {
     await queryInterface.removeColumn('graphs', 'name'),

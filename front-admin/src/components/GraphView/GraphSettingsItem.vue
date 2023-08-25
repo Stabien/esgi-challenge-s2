@@ -13,13 +13,16 @@ const { tagsList } = inject('tagsList');
 const { user } = inject('user');
 
 const periodList = ['D', 'W', 'M', 'Y'];
+const sizeList = ['1-3', '1-2', '2-3', 'full'];
 const eventList = ['click', 'newSession', 'navigation'];
 const selectedGraphValue = ['BarChart', 'DoughnutChart', 'LineChart', 'PieChart', 'RadarChart'];
 
+const setGraphSize = (size) => {
+  const updatedObject = { ...props.graphSettings, graph_size: size };
+  emit('update:childObject', updatedObject);
+};
 const setGraphPeriod = (period) => {
-  // props.graphSettings.value.timeScale = period;
   const updatedObject = { ...props.graphSettings, timeScale: period };
-  console.log(updatedObject);
   emit('update:childObject', updatedObject);
 };
 const setGraphValue = (value) => {
@@ -91,6 +94,8 @@ const handleSelectTag = (tag) => {
   const updatedObject = { ...props.graphSettings };
   if (props.graphSettings.tagUuid === tag.uuid) {
     updatedObject.tagUuid = null;
+    emit('update:childObject', updatedObject);
+
     return;
   }
   updatedObject.tagUuid = tag.uuid;
@@ -101,6 +106,21 @@ const handleSelectTag = (tag) => {
 </script>
 
 <template>
+  <div class="flex justify-between">
+    <div
+      v-for="size in sizeList"
+      :key="size"
+      :class="
+        props.graphSettings.graph_size === size
+          ? 'text-palette-primary-500 border border-palette-primary-500 '
+          : 'text-palette-gray-300'
+      "
+      class="rounded transition-all font-bold w-8 h-8 cursor-pointer flex justify-center items-center"
+      @click="setGraphSize(size)"
+    >
+      {{ size.replace('-', ':') }}
+    </div>
+  </div>
   <div class="flex justify-between">
     <div
       v-for="period in periodList"

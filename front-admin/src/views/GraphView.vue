@@ -27,11 +27,11 @@ const updateSelectedGraph = (newSelectedGraph) => {
 };
 
 const handleSelectUserGraph = (graph) => {
-  if (selectedUserGraphList.value.some((selectedGraph) => selectedGraph.uuid === graph.uuid)) {
-    selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph);
+  if (selectedUserGraphList.value.some((selectedGraph) => selectedGraph === graph.uuid)) {
+    selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph.uuid);
     return;
   }
-  selectedUserGraphList.value.push(graph);
+  selectedUserGraphList.value.push(graph.uuid);
 };
 const fetchUserGraphList = async () => {
   try {
@@ -47,7 +47,6 @@ const fetchUserGraphList = async () => {
 
     const data = await response.json();
     userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
-    updateSelectedGraph([]);
     // [...new Set(firstArray.concat(secondArray))]
   } catch (error) {
     console.log(error);
@@ -166,8 +165,12 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
         :key="graph"
       />
     </div>
-    <div class="grid grid-cols-12 gap-4 h-min">
-      <GraphChart v-for="graph in selectedUserGraphList" :key="graph" :graphSettings="graph" />
+    <div class="grid grid-cols-12 grid-flow-dense gap-4 h-min">
+      <GraphChart
+        v-for="graph in userGraphList.filter((item) => selectedUserGraphList.includes(item.uuid))"
+        :key="graph"
+        :graphSettings="graph"
+      />
     </div>
   </div>
 </template>

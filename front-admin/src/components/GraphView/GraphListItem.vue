@@ -88,7 +88,7 @@ const deleteGraph = async () => {
   <div class="relative">
     <Button
       :variant="
-        props.selectedUserGraphList.some((selectedGraph) => selectedGraph.uuid === props.graph.uuid)
+        props.selectedUserGraphList.some((selectedGraph) => selectedGraph === props.graph.uuid)
           ? 'default'
           : 'outline'
       "
@@ -107,9 +107,10 @@ const deleteGraph = async () => {
         }}
       </span>
       <div
+        @click.stop="openModal(!isModalOpen)"
         class="hidden group-hover:inline-flex justify-center items-center hover:bg-palette-primary-100 px-2 relative"
       >
-        <DotsIcon width="16" height="16" @click.stop="openModal(!isModalOpen)" />
+        <DotsIcon width="16" height="16" />
       </div>
     </Button>
     <Modal :toggle="closeModal" v-if="isModalOpen" class="left-24 bg-white right-40 w-[500px]">

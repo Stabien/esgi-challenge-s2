@@ -17,6 +17,7 @@ const graphSettings = ref(
     graphSize: 1, //size of graph: 1 to 10
     timeScale: 'D', //D, W, M,Y day, week, month, year
     tagUuid: '',
+    graph_size: 'full',
     event: 'click' //click, newSession, navigation,
   }
 );
@@ -39,6 +40,7 @@ const saveGraphSettings = async () => {
       graphPeriod: graphSettings.value.timeScale,
       dataType: graphSettings.value.data_type,
       graphType: graphSettings.value.graph_type,
+      graphSize: graphSettings.value.graph_size,
       selectedTagUuid: graphSettings.value.tagUuid
     };
     const headers = new Headers();

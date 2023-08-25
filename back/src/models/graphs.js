@@ -39,6 +39,10 @@ module.exports = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    graph_size: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   }, 
   {
     underscored: true,

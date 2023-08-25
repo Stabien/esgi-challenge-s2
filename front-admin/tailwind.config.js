@@ -81,7 +81,8 @@ module.exports = {
       },
       gridTemplateColumns: {
         '1/3': '1fr 2fr',
-        graph: '100px 100px 40px'
+        graph: '100px 100px 40px',
+        graphGrid: 'repeat(auto-fit, minmax(calc(25% - 10px), 1fr));'
       },
       boxShadow: {
         default: '0 0 8px 1px rgba(0,0,0,.25)'

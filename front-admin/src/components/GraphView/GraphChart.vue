@@ -10,7 +10,6 @@ const dataGraph = ref([]);
 const dataGraphStart = ref();
 const dataGraphEnd = ref();
 const dataSelectedTag = ref();
-const size = ref('8');
 const { user } = inject('user');
 const { socket } = inject('socket');
 
@@ -32,6 +31,20 @@ const fetchSelectedTag = async () => {
     dataSelectedTag.value = data.name;
   } catch (error) {
     console.log(error);
+  }
+};
+
+const handleSize = () => {
+  switch (props.graphSettings.graph_size) {
+    case '1-3':
+      return 'col-span-4';
+    case '2-3':
+      return 'col-span-8';
+    case '1-2':
+      return 'col-span-6';
+
+    default:
+      return 'col-span-full';
   }
 };
 const fetchAll = async () => {
@@ -85,7 +98,7 @@ const getClickByPage = () => {
   };
 };
 const getEventsByTimestamp = () => {
-  const dataGraphClone = [dataGraph.value];
+  const dataGraphClone = [...dataGraph.value];
   const startDate = new Date(dataGraphStart.value);
   const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
@@ -240,10 +253,7 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
-  <div class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4" :class="`col-span-8`">
-    <input type="range" min="1" max="10" gap="1" v-model="size" />
-
-    <Button>{{ size }}</Button>
+  <div class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4" :class="handleSize()">
     <DoughnutChart
       v-if="props.graphSettings.graph_type === 'DoughnutChart'"
       :chartData="filterDataForGraphs()"

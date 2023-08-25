@@ -1,4 +1,5 @@
 const Analytics = require('../models/analytics')
+const Tags = require('../models/tags')
 const Graphs = require('../models/graphs')
 const { getIsoDateFromTimestamp } = require('../helpers')
 
@@ -17,7 +18,7 @@ exports.addAnalytics = async (req, res) => {
 
 exports.postGraphSettings =async(req,res)=>{
   try {
-    const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType} = req.body
+    const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType,graphSize} = req.body
     const graph={
       userUuid,
       event,
@@ -25,7 +26,9 @@ exports.postGraphSettings =async(req,res)=>{
       timeScale: graphPeriod,
       tagUuid: !!selectedTagUuid?selectedTagUuid:null,
       data_type: dataType,
-      graph_type: graphType
+      graph_type: graphType,
+      graph_size:graphSize
+
     }
     console.log(graph);
     const newGraphUser = await Graphs.create(graph)
@@ -41,7 +44,6 @@ exports.getGraphSettings=async(req,res)=>{
   try {
     const { params } = req
 
-    console.log(params.uuid);
     const graphs = await Graphs.findAll({ where: { userUuid:params.uuid } })
     return res.status(200).json(graphs)
   } catch (error) {
@@ -80,9 +82,9 @@ exports.deleteGraphSettings=async(req,res)=>{
 exports.getAnalyticsByAppId = async (req, res) => {
   try {
     const graphSettings = JSON.parse(req.params.graphSettings)
-    const { appId, graphValue, graphSize, graphPeriod, selectedTags, event } = graphSettings
+    const { appId, timeScale, tagUuid, event } = graphSettings
 
-    const { start, end } = getIsoDateFromTimestamp(graphPeriod)
+    const { start, end } = getIsoDateFromTimestamp(timeScale)
 
     const aggregateTunnel = [
       { $match: { appId } },
@@ -97,11 +99,13 @@ exports.getAnalyticsByAppId = async (req, res) => {
       { $match: { event } },
     ]
 
-    if (!!selectedTags) aggregateTunnel.push({ $match: { directiveTag: selectedTags } })
+    if (!!tagUuid) {
+      const tags = await Tags.findOne({ where: { uuid:tagUuid } })
+      aggregateTunnel.push({ $match: { directiveTag: tags.dataValues.name } })
+    }
 
     const analytics = await Analytics.aggregate(aggregateTunnel)
     return res.status(200).json({analytics,start, end})
-    return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'Internal error' })
