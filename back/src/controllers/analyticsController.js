@@ -49,6 +49,33 @@ exports.getGraphSettings=async(req,res)=>{
     return res.status(500).json({ error: 'Internal error' })
   }
 }
+exports.putGraphSettings=async(req,res)=>{
+  try {
+    const { uuid } = req.params
+
+    await Graphs.update(req.body, { where: { uuid } })
+    return res.send(200)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.deleteGraphSettings=async(req,res)=>{
+  try {
+
+    const { uuid } = req.params
+    const tag = await Graphs.destroy({
+      where: {
+        uuid: uuid,
+      },
+    })
+    return res.status(201).json(tag)
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
 
 exports.getAnalyticsByAppId = async (req, res) => {
   try {

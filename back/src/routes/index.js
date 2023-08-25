@@ -17,6 +17,8 @@ const {
   getHeatmapData,
   postGraphSettings,
   getGraphSettings,
+  putGraphSettings,
+deleteGraphSettings
   
 } = require('../controllers/analyticsController')
 const { addTag, deleteTag, getTagsByTagUuid,getTagsByUserUuid } = require('../controllers/tagController')
@@ -41,7 +43,7 @@ const routes = (app) => {
 
   //handle graph settings
   app.route('/api/analytics/GraphSettings').post(postGraphSettings)
-  app.route('/api/analytics/GraphSettings/:uuid').get(getGraphSettings)
+  app.route('/api/analytics/GraphSettings/:uuid').get(getGraphSettings).put(putGraphSettings).delete(deleteGraphSettings)
 
   //get analitycs
   app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)

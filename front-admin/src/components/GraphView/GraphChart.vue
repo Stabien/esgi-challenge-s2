@@ -10,6 +10,7 @@ const dataGraph = ref([]);
 const dataGraphStart = ref();
 const dataGraphEnd = ref();
 const dataSelectedTag = ref();
+const size = ref('8');
 const { user } = inject('user');
 const { socket } = inject('socket');
 
@@ -239,30 +240,28 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
-  <div class="justify-center grid grid-cols-2 gap-4">
+  <div class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4" :class="`col-span-8`">
+    <input type="range" min="1" max="10" gap="1" v-model="size" />
+
+    <Button>{{ size }}</Button>
     <DoughnutChart
       v-if="props.graphSettings.graph_type === 'DoughnutChart'"
-      class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <BarChart
       v-if="props.graphSettings.graph_type === 'BarChart'"
-      class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <PieChart
       v-if="props.graphSettings.graph_type === 'PieChart'"
-      class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <RadarChart
       v-if="props.graphSettings.graph_type === 'RadarChart'"
-      class="w-full flex justify-center"
       :chartData="filterDataForGraphs()"
     />
     <LineChart
       v-if="props.graphSettings.graph_type === 'LineChart'"
-      class="w-full flex justify-center row-span-full"
       :chartData="filterDataForGraphs()"
     />
   </div>

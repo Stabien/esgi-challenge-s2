@@ -16,14 +16,18 @@ const { user } = inject('user');
 const { socket } = inject('socket');
 
 const userRequest = ref();
-const dataGraphStart = ref();
-const dataGraphEnd = ref();
-const dataGraph = ref([]);
 const userGraphList = ref([]);
 const selectedUserGraphList = ref([]);
+const tagsList = ref([]);
+const isSettingsModalOpened = ref(false);
+const { graphSettings } = inject('graphSettings');
+
+const updateSelectedGraph = (newSelectedGraph) => {
+  selectedUserGraphList.value = newSelectedGraph;
+};
 
 const handleSelectUserGraph = (graph) => {
-  if (selectedUserGraphList.value.includes(graph)) {
+  if (selectedUserGraphList.value.some((selectedGraph) => selectedGraph.uuid === graph.uuid)) {
     selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph);
     return;
   }
@@ -42,15 +46,13 @@ const fetchUserGraphList = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    userGraphList.value = data;
+    userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
+    updateSelectedGraph([]);
+    // [...new Set(firstArray.concat(secondArray))]
   } catch (error) {
     console.log(error);
   }
 };
-const tagsList = ref([]);
-
-const isSettingsModalOpened = ref(false);
-const { graphSettings } = inject('graphSettings');
 
 const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
 
@@ -74,35 +76,6 @@ const fetchUserRequest = async () => {
     userRequest.value = data;
   } catch (error) {
     console.log(error);
-  }
-};
-
-const fetchAll = async () => {
-  try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify({
-        ...graphSettings,
-        appId: userRequest.value ? userRequest.value.appId : graphSettings.appId
-      })}`,
-      {
-        method: 'GET',
-        headers,
-        // body: JSON.stringify(graphSettings.value),
-        redirect: 'follow'
-      }
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    dataGraph.value = data.analytics;
-    dataGraphStart.value = data.start;
-    dataGraphEnd.value = data.end;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
   }
 };
 
@@ -133,7 +106,6 @@ const init = async () => {
   await fetchUserRequest();
   await fetchUserGraphList();
   await fetchTags();
-  await fetchAll();
 };
 
 watch(graphSettings, () => {
@@ -146,7 +118,7 @@ watch(graphSettings, () => {
       )
     )
   ) {
-    fetchAll();
+    // fetchAll();
   }
   updateLocalStorage('graphSettings', JSON.stringify(graphSettings));
 });
@@ -181,28 +153,21 @@ onUnmounted(() => socket.removeAllListeners('newDataAdded'));
         />
       </div>
     </div>
-    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
-      <div
-        :class="
-          selectedUserGraphList.includes(graph)
-            ? 'bg-palette-primary-500'
-            : 'bg-palette-primary-100'
-        "
-        @click="handleSelectUserGraph(graph)"
+    <div
+      class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50 flex flex-col gap-4"
+    >
+      <GraphListItem
+        @update:childSelectedGraph="updateSelectedGraph"
+        :fetchGraphs="fetchUserGraphList"
+        :handleSelectUserGraph="handleSelectUserGraph"
+        :selectedUserGraphList="selectedUserGraphList"
+        :graph="graph"
         v-for="graph in userGraphList"
         :key="graph"
-      >
-        {{ graph.name }}
-        {{ new Date(graph.updatedAt).toLocaleString('en-GB', { timeZone: 'UTC' }) }}
-      </div>
-    </div>
-    <div>
-      <GraphChart
-        v-for="graph in selectedUserGraphList"
-        :key="graph"
-        :graphSettings="graph"
-        class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
       />
+    </div>
+    <div class="grid grid-cols-12 gap-4 h-min">
+      <GraphChart v-for="graph in selectedUserGraphList" :key="graph" :graphSettings="graph" />
     </div>
   </div>
 </template>
