@@ -3,6 +3,19 @@ import SquareImg from '@/components/SquareImg.vue';
 import { urlImg } from '@/utils/constant';
 import { getRandomItem } from '@/utils';
 // import { Tracker } from 'tracker-vite';
+import {onMounted} from "vue";
+import {exportData} from "../utils/trackerUtils/handleEvents";
+import {getURL} from "../utils/trackerUtils/handleUrl";
+
+onMounted(() => {
+exportData({
+    appId: import.meta.env.VITE_TRACKER_APPID,
+    event: 'print',
+    url: getURL(),
+    sessionId: window.localStorage.getItem("Session_ID"),
+    timestamp: Date.now()
+  })
+});
 </script>
 
 <template>

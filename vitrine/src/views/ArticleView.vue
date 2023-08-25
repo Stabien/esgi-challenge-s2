@@ -4,8 +4,21 @@ import ArrowLeft from '@/components/icons/ArrowLeft.vue'
 import Link from '@/components/ui/Link.vue'
 
 import { useRoute } from 'vue-router'
+import {onMounted} from "vue";
+import {exportData} from "../utils/trackerUtils/handleEvents";
+import {getURL} from "../utils/trackerUtils/handleUrl";
 const route = useRoute()
 const articleItem = blogArray.find((blog) => blog.image === route.params.name)
+
+onMounted(() => {
+  exportData({
+    appId: import.meta.env.VITE_TRACKER_APPID,
+    event: 'print',
+    url: getURL(),
+    sessionId: window.localStorage.getItem("Session_ID"),
+    timestamp: Date.now()
+  })
+});
 </script>
 
 <template>
