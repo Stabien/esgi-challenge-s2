@@ -27,19 +27,20 @@ const setGraphPeriod = (period) => {
 };
 const setGraphValue = (value) => {
   const updatedObject = { ...props.graphSettings };
-  if (updatedObject.event === 'CTR') {
-    updatedObject.data_type = 'percentages';
-    emit('update:childObject', updatedObject);
-    return;
+  updatedObject.data_type = value;
+
+  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+    updatedObject.graph_type = 'BarChart';
   }
 
-  updatedObject.data_type = value;
   emit('update:childObject', updatedObject);
 };
 const handleSelectEvent = (event) => {
   const updatedObject = { ...props.graphSettings, event: event };
   if (event === 'newSession' || event === 'print') updatedObject.tagUuid = null;
-  if (event === 'CTR') updatedObject.data_type = 'percentages';
+  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+    updatedObject.graph_type = 'BarChart';
+  }
 
   emit('update:childObject', updatedObject);
 };
@@ -64,6 +65,9 @@ const handleSelectGraphList = (graph) => {
     updatedObject.graph_type = 'BarChart';
   } else {
     updatedObject.graph_type = graph;
+  }
+  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+    updatedObject.graph_type = 'BarChart';
   }
 
   emit('update:childObject', updatedObject);

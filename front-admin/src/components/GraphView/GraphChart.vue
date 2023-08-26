@@ -184,33 +184,76 @@ const getCTRBy = () => {
   const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
 
-  const displayCounts = {};
-  const clickRatios = {};
+  console.log(props.graphSettings);
+  if (props.graphSettings.data_type === 'percentages') {
+    const displayCounts = {};
+    const clickRatios = {};
 
-  for (const display of dataGraphPrint) {
-    const displayDate = new Date(display.timestamp).toISOString().split('T')[0];
-    if (!displayCounts[displayDate]) {
-      displayCounts[displayDate] = 0; // Initialize to 0
+    for (const display of dataGraphPrint) {
+      const displayDate = new Date(display.timestamp).toISOString().split('T')[0];
+      if (!displayCounts[displayDate]) {
+        displayCounts[displayDate] = 0; // Initialize to 0
+      }
+      displayCounts[displayDate]++;
     }
-    displayCounts[displayDate]++;
+
+    for (let i = 0; i < daysInRange; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + i);
+      const clickDate = currentDate.toISOString().split('T')[0];
+      const displayCount = displayCounts[clickDate] || 1; // Default to 1 if no display count
+      const clickOccurrences = dataGraphClick.filter(
+        (click) =>
+          click.timestamp.split('T')[0] === clickDate && click.directiveTag === 'CART_BUTTON'
+      ).length; // Count occurrences manually
+      const ratio = (clickOccurrences / displayCount) * 100;
+      clickRatios[clickDate] = ratio;
+    }
+
+    const labels = Object.keys(clickRatios);
+    const occurrences = Object.values(clickRatios);
+    return { labels, occurrences };
+  } else {
+    const displayCounts = {};
+
+    for (const display of dataGraphPrint) {
+      const displayDate = new Date(display.timestamp).toISOString().split('T')[0];
+      if (!displayCounts[displayDate]) {
+        displayCounts[displayDate] = 0; // Initialize to 0
+      }
+      displayCounts[displayDate]++;
+    }
+
+    const clickCounts = {};
+    const printCounts = {};
+
+    for (let i = 0; i < daysInRange; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + i);
+      const clickDate = currentDate.toISOString().split('T')[0];
+
+      const clickOccurrences = dataGraphClick.filter(
+        (click) =>
+          click.timestamp.split('T')[0] === clickDate && click.directiveTag === 'CART_BUTTON'
+      ).length; // Count occurrences manually
+
+      const printOccurrences = dataGraphPrint.filter(
+        (print) =>
+          print.timestamp.split('T')[0] === clickDate && print.directiveTag === 'CART_BUTTON'
+      ).length; // Count occurrences manually
+
+      clickCounts[clickDate] = clickOccurrences;
+      printCounts[clickDate] = printOccurrences;
+    }
+
+    const dates = Object.keys(clickCounts).flatMap((date) => [date, date]);
+    const occurrences = Object.values(printCounts).flatMap((print, index) => [
+      print,
+      clickCounts[dates[index * 2]]
+    ]);
+    console.log(dates, occurrences);
+    return { labels: dates, occurrences };
   }
-
-  for (let i = 0; i < daysInRange; i++) {
-    const currentDate = new Date(startDate);
-    currentDate.setDate(currentDate.getDate() + i);
-    const clickDate = currentDate.toISOString().split('T')[0];
-    const displayCount = displayCounts[clickDate] || 1; // Default to 1 if no display count
-    const clickOccurrences = dataGraphClick.filter(
-      (click) => click.timestamp.split('T')[0] === clickDate && click.directiveTag === 'CART_BUTTON'
-    ).length; // Count occurrences manually
-    const ratio = (clickOccurrences / displayCount) * 100;
-    clickRatios[clickDate] = ratio;
-  }
-
-  const labels = Object.keys(clickRatios);
-  const occurrences = Object.values(clickRatios);
-
-  return { labels, occurrences };
 };
 
 const getLabelsOccurrences = () => {
