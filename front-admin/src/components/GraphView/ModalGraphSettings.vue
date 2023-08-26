@@ -33,6 +33,10 @@ const saveGraphSettings = async () => {
       toast.error('You need a graph name');
       return;
     }
+    if (graphSettings.value.event === 'CTR' && !graphSettings.value.tagUuid) {
+      toast.error('You need to pick a tag for CTR');
+      return;
+    }
     const bodyGraphSettings = {
       name: graphNameInput.value,
       userUuid: user.value.decodedToken.uuid,

@@ -15,6 +15,28 @@ const { socket } = inject('socket');
 
 const props = defineProps(['graphSettings']);
 
+const fetchUserRequest = async () => {
+  try {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
+      }`,
+      {
+        method: 'GET',
+        headers
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userRequest.value = data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const fetchSelectedTag = async () => {
   try {
     var requestOptions = {
@@ -75,9 +97,10 @@ const fetchAll = async () => {
     // toast.error(error.message);
   }
 };
+
 const getClickByPage = () => {
   const urlCountMap = {};
-
+  console.log(dataGraph.value);
   dataGraph.value.forEach((obj) => {
     if (urlCountMap[obj.url]) {
       urlCountMap[obj.url]++;
@@ -94,7 +117,29 @@ const getClickByPage = () => {
 
   return {
     labels: countArray.map((urlCount) => urlCount.label),
-    occurences: countArray.map((urlCount) => urlCount.count)
+    occurrences: countArray.map((urlCount) => urlCount.count)
+  };
+};
+const getPrintByPage = () => {
+  const urlCountMap = {};
+  console.log(dataGraph);
+  dataGraph.value.forEach((obj) => {
+    if (urlCountMap[obj.url]) {
+      urlCountMap[obj.url]++;
+    } else {
+      urlCountMap[obj.url] = 1;
+    }
+  });
+
+  // Convertir urlCountMap en un tableau d'objets { url, count }
+  const countArray = Object.keys(urlCountMap).map((url) => ({
+    label: url,
+    count: urlCountMap[url]
+  }));
+
+  return {
+    labels: countArray.map((urlCount) => urlCount.label),
+    occurrences: countArray.map((urlCount) => urlCount.count)
   };
 };
 const getEventsByTimestamp = () => {
@@ -127,9 +172,47 @@ const getEventsByTimestamp = () => {
 
   return {
     labels: countArray.map((urlCount) => urlCount.label),
-    occurences: countArray.map((urlCount) => urlCount.count)
+    occurrences: countArray.map((urlCount) => urlCount.count)
   };
 };
+const getCTRBy = () => {
+  const dataGraphClone = [...dataGraph.value];
+  const dataGraphClick = dataGraphClone.filter((data) => data.event === 'click');
+  const dataGraphPrint = dataGraphClone.filter((data) => data.event === 'print');
+
+  const startDate = new Date(dataGraphStart.value);
+  const endDate = new Date(dataGraphEnd.value);
+  const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+
+  const displayCounts = {};
+  const clickRatios = {};
+
+  for (const display of dataGraphPrint) {
+    const displayDate = new Date(display.timestamp).toISOString().split('T')[0];
+    if (!displayCounts[displayDate]) {
+      displayCounts[displayDate] = 0; // Initialize to 0
+    }
+    displayCounts[displayDate]++;
+  }
+
+  for (let i = 0; i < daysInRange; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(currentDate.getDate() + i);
+    const clickDate = currentDate.toISOString().split('T')[0];
+    const displayCount = displayCounts[clickDate] || 1; // Default to 1 if no display count
+    const clickOccurrences = dataGraphClick.filter(
+      (click) => click.timestamp.split('T')[0] === clickDate && click.directiveTag === 'CART_BUTTON'
+    ).length; // Count occurrences manually
+    const ratio = (clickOccurrences / displayCount) * 100;
+    clickRatios[clickDate] = ratio;
+  }
+
+  const labels = Object.keys(clickRatios);
+  const occurrences = Object.values(clickRatios);
+
+  return { labels, occurrences };
+};
+
 const getLabelsOccurrences = () => {
   switch (props.graphSettings.event) {
     case 'click':
@@ -138,47 +221,29 @@ const getLabelsOccurrences = () => {
     case 'newSession':
       return getEventsByTimestamp();
 
+    case 'print':
+      return getPrintByPage();
+    case 'CTR':
+      return getCTRBy();
+
     default:
       return getClickByPage();
   }
 };
-const fetchUserRequest = async () => {
-  try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
-        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
-      }`,
-      {
-        method: 'GET',
-        headers
-      }
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    userRequest.value = data;
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const transformValues = (valuesList) => {
-  if (props.graphSettings.data_type === 'quantity') return valuesList;
+  if (props.graphSettings.data_type === 'quantity' || props.graphSettings.event === 'CTR')
+    return valuesList;
 
   const totalSum = valuesList.reduce((sum, value) => sum + value, 0);
-
   // Convertissez les valeurs en pourcentages
   const percentages = valuesList.map((value) => (value / totalSum) * 100);
-
   return percentages;
 };
 
 const filterDataForGraphs = () => {
-  const { labels, occurences } = getLabelsOccurrences();
-  const datasetsData = transformValues(occurences);
+  const { labels, occurrences } = getLabelsOccurrences();
+  const datasetsData = transformValues(occurrences);
 
   if (labels.length !== datasetsData.length) {
     console.error("data length doesn't match");
@@ -189,7 +254,9 @@ const filterDataForGraphs = () => {
     labels: labels,
     datasets: [
       {
-        label: `${props.graphSettings.name} ${
+        label: `${props.graphSettings.name}, from ${new Date(
+          dataGraphStart.value
+        ).toDateString()} to ${new Date(dataGraphEnd.value).toDateString()} ${
           dataSelectedTag.value ? `(tag :${dataSelectedTag.value})` : ''
         } `,
         data: datasetsData,

@@ -14,7 +14,7 @@ const { user } = inject('user');
 
 const periodList = ['D', 'W', 'M', 'Y'];
 const sizeList = ['1-3', '1-2', '2-3', 'full'];
-const eventList = ['click', 'newSession', 'navigation'];
+const eventList = ['click', 'newSession', 'print', 'CTR'];
 const selectedGraphValue = ['BarChart', 'DoughnutChart', 'LineChart', 'PieChart', 'RadarChart'];
 
 const setGraphSize = (size) => {
@@ -26,12 +26,34 @@ const setGraphPeriod = (period) => {
   emit('update:childObject', updatedObject);
 };
 const setGraphValue = (value) => {
-  const updatedObject = { ...props.graphSettings, data_type: value };
+  const updatedObject = { ...props.graphSettings };
+  if (updatedObject.event === 'CTR') {
+    updatedObject.data_type = 'percentages';
+    emit('update:childObject', updatedObject);
+    return;
+  }
+
+  updatedObject.data_type = value;
   emit('update:childObject', updatedObject);
 };
 const handleSelectEvent = (event) => {
   const updatedObject = { ...props.graphSettings, event: event };
-  if (event !== 'click') updatedObject.tagUuid = null;
+  if (event === 'newSession' || event === 'print') updatedObject.tagUuid = null;
+  if (event === 'CTR') updatedObject.data_type = 'percentages';
+
+  emit('update:childObject', updatedObject);
+};
+const handleSelectTag = (tag) => {
+  const updatedObject = { ...props.graphSettings };
+  if (props.graphSettings.tagUuid === tag.uuid) {
+    updatedObject.tagUuid = null;
+    emit('update:childObject', updatedObject);
+
+    return;
+  }
+  updatedObject.tagUuid = tag.uuid;
+  if (updatedObject.event === 'newSession' || updatedObject.event === 'print')
+    updatedObject.event = 'click';
 
   emit('update:childObject', updatedObject);
 };
@@ -89,19 +111,6 @@ const deleteTag = async (tagUuid) => {
   } catch (error) {
     console.log(error);
   }
-};
-const handleSelectTag = (tag) => {
-  const updatedObject = { ...props.graphSettings };
-  if (props.graphSettings.tagUuid === tag.uuid) {
-    updatedObject.tagUuid = null;
-    emit('update:childObject', updatedObject);
-
-    return;
-  }
-  updatedObject.tagUuid = tag.uuid;
-  updatedObject.event = 'click';
-
-  emit('update:childObject', updatedObject);
 };
 </script>
 

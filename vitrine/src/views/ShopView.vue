@@ -2,8 +2,8 @@
 import Button from '@/components/ui/Button.vue';
 import Link from '@/components/ui/Link.vue';
 import { ref, onMounted } from 'vue';
-import {exportData} from "../utils/trackerUtils/handleEvents";
-import {getURL} from "../utils/trackerUtils/handleUrl";
+import { exportData } from '../utils/trackerUtils/handleEvents';
+import { getURL } from '../utils/trackerUtils/handleUrl';
 
 const itemList = ref([]);
 const cart = ref([]);
@@ -49,9 +49,10 @@ onMounted(() => {
     appId: import.meta.env.VITE_TRACKER_APPID,
     event: 'print',
     url: getURL(),
-    sessionId: window.localStorage.getItem("Session_ID"),
-    timestamp: Date.now()
-  })
+    sessionId: window.localStorage.getItem('Session_ID'),
+    timestamp: Date.now(),
+    directiveTag: 'CART_BUTTON'
+  });
 });
 </script>
 
@@ -60,7 +61,7 @@ onMounted(() => {
     <h1 class="text-3xl font-semibold mb-4">
       Fake Shop
 
-      <Link variant="ghost" to="/cart">See my cart</Link>
+      <Link v-track:CART_BUTTON.click variant="ghost" to="/cart">See my cart</Link>
     </h1>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
