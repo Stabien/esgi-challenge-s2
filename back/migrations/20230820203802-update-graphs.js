@@ -39,6 +39,8 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     await queryInterface.removeColumn('graphs', 'name'),
     await queryInterface.removeColumn('graphs', 'data_type'),
-    await queryInterface.removeColumn('graphs', 'graph_type')
+    await queryInterface.removeColumn('graphs', 'graph_type'),
+    await queryInterface.removeColumn('graphs', 'graph_type')  
   }
 };
+
