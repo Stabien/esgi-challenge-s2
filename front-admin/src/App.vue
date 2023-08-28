@@ -62,7 +62,7 @@ const graphSettings = reactive(
     graph_type: 'BarChart', //list of selected Graphs
     graphSize: 1, //size of graph: 1 to 10
     timeScale: 'D', //D, W, M,Y day, week, month, year
-    tagUuid: '',
+    tagUuid: [],
     event: 'click' //click, newSession, navigation,
   }
   //   appId: user.value.decodedToken.appId,

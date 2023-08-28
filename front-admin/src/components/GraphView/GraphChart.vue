@@ -9,7 +9,7 @@ const userRequest = ref();
 const dataGraph = ref([]);
 const dataGraphStart = ref();
 const dataGraphEnd = ref();
-const dataSelectedTag = ref();
+const dataSelectedTag = ref([]);
 const { user } = inject('user');
 const { socket } = inject('socket');
 
@@ -50,7 +50,7 @@ const fetchSelectedTag = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    dataSelectedTag.value = data.name;
+    dataSelectedTag.value = data;
   } catch (error) {
     console.log(error);
   }
@@ -76,7 +76,6 @@ const fetchAll = async () => {
     const response = await fetch(
       `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify({
         ...props.graphSettings,
-        selectedTags: dataSelectedTag.value,
         appId: userRequest.value.appId
       })}`,
       {
@@ -184,7 +183,6 @@ const getCTRBy = () => {
   const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
 
-  console.log(props.graphSettings);
   if (props.graphSettings.data_type === 'percentages') {
     const displayCounts = {};
     const clickRatios = {};
@@ -255,7 +253,17 @@ const getCTRBy = () => {
     return { labels: dates, occurrences };
   }
 };
+const getFunnel = () => {
+  const dataGraphClone = [...dataGraph.value];
+  const startDate = new Date(dataGraphStart.value);
+  const endDate = new Date(dataGraphEnd.value);
+  const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
 
+  dataSelectedTag.value.forEach((tag) => {
+    const dataByTag = dataGraphClone.filter((data) => data.directiveTag === tag);
+    console.log(dataByTag);
+  });
+};
 const getLabelsOccurrences = () => {
   switch (props.graphSettings.event) {
     case 'click':
@@ -268,6 +276,8 @@ const getLabelsOccurrences = () => {
       return getPrintByPage();
     case 'CTR':
       return getCTRBy();
+    case 'funnel':
+      return getFunnel();
 
     default:
       return getClickByPage();
@@ -350,6 +360,8 @@ const init = async () => {
   await fetchUserRequest();
   if (props.graphSettings.tagUuid) await fetchSelectedTag();
   await fetchAll();
+  const x = await filterDataForGraphs();
+  console.log(x);
 };
 onMounted(() => {
   init();

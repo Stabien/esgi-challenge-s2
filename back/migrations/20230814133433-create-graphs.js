@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -12,26 +12,26 @@ module.exports = {
         type: Sequelize.DataTypes.UUID,
       },
       event: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       time_scale: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       tag_uuid: {
-        type: Sequelize.DataTypes.UUID,
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.UUID),
         allowNull: true,
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
-    });
+        type: Sequelize.DATE,
+      },
+    })
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('graphs');
-  }
-};
+    await queryInterface.dropTable('graphs')
+  },
+}
