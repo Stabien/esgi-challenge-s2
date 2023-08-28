@@ -2,6 +2,7 @@ const sequelize = require('../config/sequelize')
 const Sequelize = require('sequelize')
 const Kbis = require('./kbis')
 const Graphs = require('./graphs')
+const Alerts = require('./alerts')
 
 const Users = sequelize.define(
   'users',
@@ -63,5 +64,6 @@ const Users = sequelize.define(
 
 Users.hasOne(Kbis, { as: 'kbis', foreignKey: 'userUuid' })
 Users.hasMany(Graphs, { foreignKey: 'userUuid' })
+Users.hasMany(Alerts, { foreignKey: 'userUuid'})
 
 module.exports = Users
