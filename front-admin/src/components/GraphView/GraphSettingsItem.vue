@@ -29,7 +29,10 @@ const setGraphValue = (value) => {
   const updatedObject = { ...props.graphSettings };
   updatedObject.data_type = value;
 
-  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+  if (
+    (updatedObject.event === 'CTR' || updatedObject.event === 'funnel') &&
+    updatedObject.data_type === 'quantity'
+  ) {
     updatedObject.graph_type = 'BarChart';
   }
 
@@ -72,7 +75,10 @@ const handleSelectGraphList = (graph) => {
   } else {
     updatedObject.graph_type = graph;
   }
-  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+  if (
+    (updatedObject.event === 'CTR' || updatedObject.event === 'funnel') &&
+    updatedObject.data_type === 'quantity'
+  ) {
     updatedObject.graph_type = 'BarChart';
   }
 

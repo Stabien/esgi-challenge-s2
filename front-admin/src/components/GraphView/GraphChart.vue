@@ -254,15 +254,97 @@ const getCTRBy = () => {
   }
 };
 const getFunnel = () => {
-  const dataGraphClone = [...dataGraph.value];
+  const data = [...dataGraph.value];
   const startDate = new Date(dataGraphStart.value);
   const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+  const directiveTags = dataSelectedTag.value;
 
-  dataSelectedTag.value.forEach((tag) => {
-    const dataByTag = dataGraphClone.filter((data) => data.directiveTag === tag);
-    console.log(dataByTag);
+  const displayCounts = {};
+  for (const display of data) {
+    const displayDate = new Date(display.timestamp).toISOString().split('T')[0];
+    if (!displayCounts[displayDate]) {
+      displayCounts[displayDate] = 0; // Initialize to 0
+    }
+    displayCounts[displayDate]++;
+  }
+  const resultArray = [];
+
+  directiveTags.forEach((tag, directiveTagIndex) => {
+    resultArray[directiveTagIndex] = {
+      labels: [],
+      occurrences: []
+    };
+    const dataByTag = data.filter((item) => item.directiveTag === tag);
+    const occurrencesByTag = {};
+
+    for (let i = 0; i < daysInRange; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + i);
+      const dateString = currentDate.toISOString().split('T')[0];
+
+      const occurrences = dataByTag.reduce((total, entry) => {
+        if (entry.timestamp.split('T')[0] === dateString) {
+          return total + 1;
+        }
+        return total;
+      }, 0);
+
+      occurrencesByTag[dateString] = occurrences;
+    }
+    const sortedDates = Object.keys(occurrencesByTag).sort((a, b) => a.localeCompare(b));
+    const sortedOccurrences = sortedDates.map((date) => occurrencesByTag[date]);
+
+    resultArray[directiveTagIndex].labels = sortedDates;
+    resultArray[directiveTagIndex].occurrences = sortedOccurrences;
   });
+
+  if (props.graphSettings.data_type === 'percentages') {
+    const mixedLabels = [];
+    const mixedOccurrences = [];
+    if (resultArray.length <= 0)
+      return {
+        labels: mixedLabels,
+        occurrences: mixedOccurrences
+      };
+
+    for (let i = 0; i < resultArray[0].labels.length; i++) {
+      const baseValue = resultArray[0].occurrences[i];
+
+      resultArray.forEach((result, index) => {
+        console.log(index);
+        if (i < result.labels.length) {
+          mixedLabels.push(result.labels[i]);
+
+          if (baseValue === 0) {
+            mixedOccurrences.push(0);
+          } else {
+            const percentage = index === 0 ? 100 : (result.occurrences[i] / baseValue) * 100;
+            console.log(percentage);
+            mixedOccurrences.push(percentage);
+          }
+        }
+      });
+    }
+
+    return {
+      labels: mixedLabels,
+      occurrences: mixedOccurrences
+    };
+  } else {
+    const mixedLabels = [];
+    const mixedOccurrences = [];
+    const maxLength = Math.max(...resultArray.map((result) => result.labels.length));
+    for (let i = 0; i < maxLength; i++) {
+      for (const result of resultArray) {
+        if (i < result.labels.length) {
+          mixedLabels.push(result.labels[i]);
+          mixedOccurrences.push(result.occurrences[i]);
+        }
+      }
+    }
+    return { labels: mixedLabels, occurrences: mixedOccurrences };
+  }
 };
 const getLabelsOccurrences = () => {
   switch (props.graphSettings.event) {
@@ -285,7 +367,11 @@ const getLabelsOccurrences = () => {
 };
 
 const transformValues = (valuesList) => {
-  if (props.graphSettings.data_type === 'quantity' || props.graphSettings.event === 'CTR')
+  if (
+    props.graphSettings.data_type === 'quantity' ||
+    props.graphSettings.event === 'CTR' ||
+    props.graphSettings.event === 'funnel'
+  )
     return valuesList;
 
   const totalSum = valuesList.reduce((sum, value) => sum + value, 0);
@@ -360,8 +446,6 @@ const init = async () => {
   await fetchUserRequest();
   if (props.graphSettings.tagUuid) await fetchSelectedTag();
   await fetchAll();
-  const x = await filterDataForGraphs();
-  console.log(x);
 };
 onMounted(() => {
   init();
