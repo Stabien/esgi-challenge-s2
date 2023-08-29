@@ -3,8 +3,6 @@ const Tags = require('../models/tags')
 const Graphs = require('../models/graphs')
 const { getIsoDateFromTimestamp } = require('../helpers')
 
-
-
 exports.postGraphSettings =async(req,res)=>{
   try {
     const {userUuid , event, graphPeriod, selectedTagUuid, name, dataType, graphType,graphSize} = req.body

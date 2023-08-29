@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.DataTypes.UUID,
       },
       tag_uuid: {
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.UUID,
         allowNull: true,
       },
       type: {

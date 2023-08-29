@@ -22,6 +22,7 @@ deleteGraphSettings
   
 } = require('../controllers/analyticsController')
 const { addTag, deleteTag, getTagsByTagUuid,getTagsByUserUuid } = require('../controllers/tagController')
+const { addAlert, getAlertsByUserUuid } = require('../controllers/alertsController')
 
 /** Router */
 const routes = (app) => {
@@ -54,6 +55,10 @@ const routes = (app) => {
 
   app.route('/api/tag/:uuid').get(getTagsByUserUuid).post(addTag).delete(deleteTag)
   app.route('/api/tagUuid/:uuid').get(getTagsByTagUuid)
+
+  // alerts
+  app.route('/api/alerts').post(addAlert)
+  app.route('/api/alerts/:userUuid').get(getAlertsByUserUuid)
 }
 
 module.exports = routes
