@@ -1,17 +1,20 @@
 <script setup>
-import { teamList } from '@/utils/constant'
-import {onMounted} from "vue";
-import {exportData} from "../utils/trackerUtils/handleEvents";
-import {getURL} from "../utils/trackerUtils/handleUrl";
+import { teamList } from '@/utils/constant';
+import { onMounted } from 'vue';
+import { getURL } from '../utils/trackerUtils/handleUrl';
 
 onMounted(() => {
-  exportData({
-    appId: import.meta.env.VITE_TRACKER_APPID,
-    event: 'print',
-    url: getURL(),
-    sessionId: window.localStorage.getItem("Session_ID"),
-    timestamp: Date.now()
-  })
+  document.dispatchEvent(
+    new CustomEvent('print', {
+      detail: {
+        appId: import.meta.env.VITE_TRACKER_APPID,
+        event: 'print',
+        url: getURL(),
+        sessionId: window.localStorage.getItem('Session_ID'),
+        timestamp: Date.now()
+      }
+    })
+  );
 });
 </script>
 
