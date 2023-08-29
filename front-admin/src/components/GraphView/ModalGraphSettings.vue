@@ -16,7 +16,7 @@ const graphSettings = ref(
     graph_type: 'BarChart', //list of selected Graphs
     graphSize: 1, //size of graph: 1 to 10
     timeScale: 'D', //D, W, M,Y day, week, month, year
-    tagUuid: '',
+    tagUuid: [],
     graph_size: 'full',
     event: 'click' //click, newSession, navigation,
   }
@@ -28,7 +28,6 @@ const updateParentObject = (newObject) => {
 
 const saveGraphSettings = async () => {
   try {
-    console.log(graphNameInput.value);
     if (!graphNameInput.value) {
       toast.error('You need a graph name');
       return;

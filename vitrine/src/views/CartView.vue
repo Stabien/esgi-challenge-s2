@@ -1,8 +1,7 @@
 <script setup>
 import Button from '@/components/ui/Button.vue';
-import {onMounted, ref} from 'vue';
-import {exportData} from "../utils/trackerUtils/handleEvents";
-import {getURL} from "../utils/trackerUtils/handleUrl";
+import { onMounted, ref } from 'vue';
+import { getURL } from '../utils/trackerUtils/handleUrl';
 const cart = ref([]);
 // Load cart from localStorage on component mount
 if (localStorage.getItem('cart')) {
@@ -10,13 +9,17 @@ if (localStorage.getItem('cart')) {
 }
 
 onMounted(() => {
-  exportData({
-    appId: import.meta.env.VITE_TRACKER_APPID,
-    event: 'print',
-    url: getURL(),
-    sessionId: window.localStorage.getItem("Session_ID"),
-    timestamp: Date.now()
-  })
+  document.dispatchEvent(
+    new CustomEvent('print', {
+      detail: {
+        appId: import.meta.env.VITE_TRACKER_APPID,
+        event: 'print',
+        url: getURL(),
+        sessionId: window.localStorage.getItem('Session_ID'),
+        timestamp: Date.now()
+      }
+    })
+  );
 });
 </script>
 

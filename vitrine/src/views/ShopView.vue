@@ -2,7 +2,6 @@
 import Button from '@/components/ui/Button.vue';
 import Link from '@/components/ui/Link.vue';
 import { ref, onMounted } from 'vue';
-import { exportData } from '../utils/trackerUtils/handleEvents';
 import { getURL } from '../utils/trackerUtils/handleUrl';
 
 const itemList = ref([]);
@@ -45,14 +44,18 @@ onMounted(() => {
     cart.value = JSON.parse(localStorage.getItem('cart'));
   }
 
-  exportData({
-    appId: import.meta.env.VITE_TRACKER_APPID,
-    event: 'print',
-    url: getURL(),
-    sessionId: window.localStorage.getItem('Session_ID'),
-    timestamp: Date.now(),
-    directiveTag: 'CART_BUTTON'
-  });
+  document.dispatchEvent(
+    new CustomEvent('print', {
+      detail: {
+        appId: import.meta.env.VITE_TRACKER_APPID,
+        event: 'print',
+        url: getURL(),
+        sessionId: window.localStorage.getItem('Session_ID'),
+        timestamp: Date.now(),
+        directiveTag: 'SHOP'
+      }
+    })
+  );
 });
 </script>
 

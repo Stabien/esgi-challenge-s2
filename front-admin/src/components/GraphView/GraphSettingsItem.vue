@@ -14,7 +14,7 @@ const { user } = inject('user');
 
 const periodList = ['D', 'W', 'M', 'Y'];
 const sizeList = ['1-3', '1-2', '2-3', 'full'];
-const eventList = ['click', 'newSession', 'print', 'CTR'];
+const eventList = ['click', 'newSession', 'print', 'CTR', 'funnel'];
 const selectedGraphValue = ['BarChart', 'DoughnutChart', 'LineChart', 'PieChart', 'RadarChart'];
 
 const setGraphSize = (size) => {
@@ -29,7 +29,10 @@ const setGraphValue = (value) => {
   const updatedObject = { ...props.graphSettings };
   updatedObject.data_type = value;
 
-  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+  if (
+    (updatedObject.event === 'CTR' || updatedObject.event === 'funnel') &&
+    updatedObject.data_type === 'quantity'
+  ) {
     updatedObject.graph_type = 'BarChart';
   }
 
@@ -37,8 +40,11 @@ const setGraphValue = (value) => {
 };
 const handleSelectEvent = (event) => {
   const updatedObject = { ...props.graphSettings, event: event };
-  if (event === 'newSession' || event === 'print') updatedObject.tagUuid = null;
-  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+  if (event === 'newSession' || event === 'print' || event !== 'funnel') updatedObject.tagUuid = [];
+  if (
+    (updatedObject.event === 'CTR' || updatedObject.event === 'funnel') &&
+    updatedObject.data_type === 'quantity'
+  ) {
     updatedObject.graph_type = 'BarChart';
   }
 
@@ -46,13 +52,16 @@ const handleSelectEvent = (event) => {
 };
 const handleSelectTag = (tag) => {
   const updatedObject = { ...props.graphSettings };
-  if (props.graphSettings.tagUuid === tag.uuid) {
-    updatedObject.tagUuid = null;
+  if (updatedObject.event !== 'funnel') updatedObject.tagUuid = [];
+  if (props.graphSettings.tagUuid.includes(tag.uuid)) {
+    updatedObject.tagUuid = updatedObject.tagUuid.filter((item) => item !== tag.uuid);
     emit('update:childObject', updatedObject);
-
     return;
   }
-  updatedObject.tagUuid = tag.uuid;
+
+  updatedObject.tagUuid.push(tag.uuid);
+
+  //can't select tags for print and newSession
   if (updatedObject.event === 'newSession' || updatedObject.event === 'print')
     updatedObject.event = 'click';
 
@@ -66,7 +75,10 @@ const handleSelectGraphList = (graph) => {
   } else {
     updatedObject.graph_type = graph;
   }
-  if (updatedObject.event === 'CTR' && updatedObject.data_type === 'quantity') {
+  if (
+    (updatedObject.event === 'CTR' || updatedObject.event === 'funnel') &&
+    updatedObject.data_type === 'quantity'
+  ) {
     updatedObject.graph_type = 'BarChart';
   }
 
@@ -104,8 +116,9 @@ const createTag = async () => {
 
 const deleteTag = async (tagUuid) => {
   try {
-    if (props.graphSettings.tagUuid === tagsList.value.find((tag) => tag.uuid === tagUuid).name) {
-      const updatedObject = { ...props.graphSettings, tagUuid: null };
+    console.log('delete?');
+    if (props.graphSettings.tagUuid.includes(tagsList.value.find((tag) => tag.uuid === tagUuid))) {
+      const updatedObject = { ...props.graphSettings, tagUuid: [] };
       emit('update:childObject', updatedObject);
     }
     await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/tag/${tagUuid}`, {
@@ -217,13 +230,22 @@ const deleteTag = async (tagUuid) => {
     <div
       v-for="tag in tagsList"
       :key="tag"
-      :class="props.graphSettings.tagUuid === tag.uuid ? 'bg-palette-primary-100' : 'bg-soft-white'"
-      class="text-sm rounded flex items-center justify-between relative dark:text-soft-black"
+      :class="
+        props.graphSettings.tagUuid.includes(tag.uuid) ? 'bg-palette-primary-100' : 'bg-soft-white'
+      "
+      class="text-sm rounded flex items-center justify-between dark:text-soft-black relative"
     >
+      <span
+        v-if="
+          props.graphSettings.tagUuid.includes(tag.uuid) && props.graphSettings.event === 'funnel'
+        "
+        class="absolute -left-2 -top-2 bg-palette-primary-500 h-4 w-4 flex items-center justify-center rounded-full text-white"
+        >{{ props.graphSettings.tagUuid.findIndex((t) => t === tag.uuid) + 1 }}</span
+      >
       <span
         class="cursor-pointer p-1 rounded-l"
         :class="[
-          props.graphSettings.tagUuid === tag.uuid
+          props.graphSettings.tagUuid.includes(tag.uuid)
             ? 'hover:bg-palette-primary-200 '
             : 'hover:bg-palette-gray-100',
           user.status !== 'Admin' ? 'rounded-l' : 'rounded'
@@ -238,7 +260,7 @@ const deleteTag = async (tagUuid) => {
         variant="ghost"
         size="sm"
         :class="
-          props.graphSettings.tagUuid === tag.uuid
+          props.graphSettings.tagUuid.includes(tag.uuid)
             ? 'hover:bg-palette-primary-200'
             : 'hover:bg-palette-gray-100'
         "

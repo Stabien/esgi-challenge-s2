@@ -9,7 +9,7 @@ const userRequest = ref();
 const dataGraph = ref([]);
 const dataGraphStart = ref();
 const dataGraphEnd = ref();
-const dataSelectedTag = ref();
+const dataSelectedTag = ref([]);
 const { user } = inject('user');
 const { socket } = inject('socket');
 
@@ -50,7 +50,7 @@ const fetchSelectedTag = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    dataSelectedTag.value = data.name;
+    dataSelectedTag.value = data;
   } catch (error) {
     console.log(error);
   }
@@ -76,7 +76,6 @@ const fetchAll = async () => {
     const response = await fetch(
       `${import.meta.env.VITE_PROD_API_URL}/api/analytics/${JSON.stringify({
         ...props.graphSettings,
-        selectedTags: dataSelectedTag.value,
         appId: userRequest.value.appId
       })}`,
       {
@@ -100,7 +99,6 @@ const fetchAll = async () => {
 
 const getClickByPage = () => {
   const urlCountMap = {};
-  console.log(dataGraph.value);
   dataGraph.value.forEach((obj) => {
     if (urlCountMap[obj.url]) {
       urlCountMap[obj.url]++;
@@ -122,7 +120,6 @@ const getClickByPage = () => {
 };
 const getPrintByPage = () => {
   const urlCountMap = {};
-  console.log(dataGraph);
   dataGraph.value.forEach((obj) => {
     if (urlCountMap[obj.url]) {
       urlCountMap[obj.url]++;
@@ -184,7 +181,6 @@ const getCTRBy = () => {
   const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
 
-  console.log(props.graphSettings);
   if (props.graphSettings.data_type === 'percentages') {
     const displayCounts = {};
     const clickRatios = {};
@@ -251,11 +247,100 @@ const getCTRBy = () => {
       print,
       clickCounts[dates[index * 2]]
     ]);
-    console.log(dates, occurrences);
     return { labels: dates, occurrences };
   }
 };
+const getFunnel = () => {
+  const data = [...dataGraph.value];
+  const startDate = new Date(dataGraphStart.value);
+  const endDate = new Date(dataGraphEnd.value);
+  const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+  const directiveTags = dataSelectedTag.value;
 
+  const displayCounts = {};
+  for (const display of data) {
+    const displayDate = new Date(display.timestamp).toISOString().split('T')[0];
+    if (!displayCounts[displayDate]) {
+      displayCounts[displayDate] = 0; // Initialize to 0
+    }
+    displayCounts[displayDate]++;
+  }
+  const resultArray = [];
+
+  directiveTags.forEach((tag, directiveTagIndex) => {
+    resultArray[directiveTagIndex] = {
+      labels: [],
+      occurrences: []
+    };
+    const dataByTag = data.filter((item) => item.directiveTag === tag);
+    const occurrencesByTag = {};
+
+    for (let i = 0; i < daysInRange; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + i);
+      const dateString = currentDate.toISOString().split('T')[0];
+
+      const occurrences = dataByTag.reduce((total, entry) => {
+        if (entry.timestamp.split('T')[0] === dateString) {
+          return total + 1;
+        }
+        return total;
+      }, 0);
+
+      occurrencesByTag[dateString] = occurrences;
+    }
+    const sortedDates = Object.keys(occurrencesByTag).sort((a, b) => a.localeCompare(b));
+    const sortedOccurrences = sortedDates.map((date) => occurrencesByTag[date]);
+
+    resultArray[directiveTagIndex].labels = sortedDates;
+    resultArray[directiveTagIndex].occurrences = sortedOccurrences;
+  });
+
+  if (props.graphSettings.data_type === 'percentages') {
+    const mixedLabels = [];
+    const mixedOccurrences = [];
+    if (resultArray.length <= 0)
+      return {
+        labels: mixedLabels,
+        occurrences: mixedOccurrences
+      };
+
+    for (let i = 0; i < resultArray[0].labels.length; i++) {
+      const baseValue = resultArray[0].occurrences[i];
+
+      resultArray.forEach((result, index) => {
+        if (i < result.labels.length) {
+          mixedLabels.push(result.labels[i]);
+
+          if (baseValue === 0) {
+            mixedOccurrences.push(0);
+          } else {
+            const percentage = index === 0 ? 100 : (result.occurrences[i] / baseValue) * 100;
+            mixedOccurrences.push(percentage);
+          }
+        }
+      });
+    }
+
+    return {
+      labels: mixedLabels,
+      occurrences: mixedOccurrences
+    };
+  } else {
+    const mixedLabels = [];
+    const mixedOccurrences = [];
+    const maxLength = Math.max(...resultArray.map((result) => result.labels.length));
+    for (let i = 0; i < maxLength; i++) {
+      for (const result of resultArray) {
+        if (i < result.labels.length) {
+          mixedLabels.push(result.labels[i]);
+          mixedOccurrences.push(result.occurrences[i]);
+        }
+      }
+    }
+    return { labels: mixedLabels, occurrences: mixedOccurrences };
+  }
+};
 const getLabelsOccurrences = () => {
   switch (props.graphSettings.event) {
     case 'click':
@@ -268,6 +353,8 @@ const getLabelsOccurrences = () => {
       return getPrintByPage();
     case 'CTR':
       return getCTRBy();
+    case 'funnel':
+      return getFunnel();
 
     default:
       return getClickByPage();
@@ -275,7 +362,11 @@ const getLabelsOccurrences = () => {
 };
 
 const transformValues = (valuesList) => {
-  if (props.graphSettings.data_type === 'quantity' || props.graphSettings.event === 'CTR')
+  if (
+    props.graphSettings.data_type === 'quantity' ||
+    props.graphSettings.event === 'CTR' ||
+    props.graphSettings.event === 'funnel'
+  )
     return valuesList;
 
   const totalSum = valuesList.reduce((sum, value) => sum + value, 0);

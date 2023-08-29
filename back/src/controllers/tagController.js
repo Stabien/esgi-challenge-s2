@@ -11,15 +11,19 @@ exports.getTagsByUserUuid = async (req, res) => {
   }
 }
 exports.getTagsByTagUuid = async (req, res) => {
-  const { uuid: tagUuid } = req.params
   try {
-    const tags = await Tags.findOne({ where: { uuid:tagUuid } })
-    return res.status(200).json(tags)
+    const { uuid: tagUuid } = req.params
+    const tagList = tagUuid.split(',')
+    const tagNameList = []
+    for (const tag of tagList) {
+      const tags = await Tags.findOne({ where: { uuid: tag } })
+      tagNameList.push(tags.dataValues.name)
+    }
+    return res.status(200).json(tagNameList)
   } catch (e) {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
-
 exports.addTag = async (req, res) => {
   const { body } = req
   const { uuid: userUuid } = req.params
