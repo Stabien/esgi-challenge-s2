@@ -99,7 +99,6 @@ const fetchAll = async () => {
 
 const getClickByPage = () => {
   const urlCountMap = {};
-  console.log(dataGraph.value);
   dataGraph.value.forEach((obj) => {
     if (urlCountMap[obj.url]) {
       urlCountMap[obj.url]++;
@@ -121,7 +120,6 @@ const getClickByPage = () => {
 };
 const getPrintByPage = () => {
   const urlCountMap = {};
-  console.log(dataGraph);
   dataGraph.value.forEach((obj) => {
     if (urlCountMap[obj.url]) {
       urlCountMap[obj.url]++;
@@ -249,7 +247,6 @@ const getCTRBy = () => {
       print,
       clickCounts[dates[index * 2]]
     ]);
-    console.log(dates, occurrences);
     return { labels: dates, occurrences };
   }
 };
@@ -312,7 +309,6 @@ const getFunnel = () => {
       const baseValue = resultArray[0].occurrences[i];
 
       resultArray.forEach((result, index) => {
-        console.log(index);
         if (i < result.labels.length) {
           mixedLabels.push(result.labels[i]);
 
@@ -320,7 +316,6 @@ const getFunnel = () => {
             mixedOccurrences.push(0);
           } else {
             const percentage = index === 0 ? 100 : (result.occurrences[i] / baseValue) * 100;
-            console.log(percentage);
             mixedOccurrences.push(percentage);
           }
         }
