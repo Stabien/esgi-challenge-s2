@@ -67,6 +67,16 @@ const router = createRouter({
       component: () => import('@/views/GraphView.vue')
     },
     {
+      path: '/alerts',
+      name: 'alerts',
+      component: () => import('@/views/AlertsView.vue')
+    },
+    {
+      path: '/alerts-view/:uuid',
+      name: 'alerts-view',
+      component: () => import('@/views/AlertsView.vue')
+    },
+    {
       path: '/account-settings',
       name: 'account-settings',
       component: () => import('@/views/UserView.vue')
