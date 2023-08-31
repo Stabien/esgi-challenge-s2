@@ -39,6 +39,9 @@ module.exports = sequelize.define(
     timeScale: {
       type: Sequelize.STRING
     },
+    appId: {
+      type: Sequelize.STRING
+    }
   },
   {
     underscored: true,

@@ -35,6 +35,9 @@ module.exports = {
       time_scale: {
         type: Sequelize.STRING
       },
+      app_id: {
+        type: Sequelize.STRING
+      }
     });
   },
   async down(queryInterface, Sequelize) {
