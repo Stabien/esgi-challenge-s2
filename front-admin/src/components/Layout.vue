@@ -93,6 +93,16 @@ const openMenu = (isOpen) => (isMenuOpened.value = isOpen);
             label="Heatmap"
           />
           <LinkMenu
+            to="/alerts"
+            v-if="
+              user.isLogged &&
+              user.isActive === userStatusValidated &&
+              user.status === userStatusWebmaster
+            "
+            :icon="GraphBarIcon"
+            label="Alerts"
+          />
+          <LinkMenu
             v-if="user.isLogged && user.status === userStatusAdmin"
             to="/admin"
             :icon="AdminIcon"
