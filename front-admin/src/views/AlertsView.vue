@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject, provide } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
@@ -8,21 +8,31 @@ const route = useRoute();
 const { user } = inject('user');
 
 const userRequest = ref();
+const isModalOpen = ref(false);
 const userAlerts = ref([]);
 const tagsList = ref([]);
 const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 const alertSettings = ref({
+  appId: user.value.decodedToken.appId,
+  data_type: 'quantity', //percentages or quantity
+  graph_type: 'BarChart', //list of selected Graphs
+  graphSize: 1, //size of graph: 1 to 10
+  timeScale: 'D', //D, W, M,Y day, week, month, year
+  tagUuid: [],
+  event: 'click',
+
   userUuid: user.value.decodedToken.uuid,
-  tagUuid: '',
   type: 'email', //email or http
-  email: '', //size of graph: 1 to 10
-  uri: '', //D, W, M,Y day, week, month, year
-  time_before_new_alert: '',
-  data_type: '',
-  time_scale: '' //click, newSession, navigation,
+  email: '',
+  uri: '',
+  time_before_new_alert: 0,
+  time_scale: 'day',
+  valueToTrigger: 0
 });
+provide('tagsList', { tagsList });
+
+const toggleModalOpen = (isOpen) => (isModalOpen.value = isOpen);
 
 const updateParentObject = (newObject) => {
   alertSettings.value = newObject;
@@ -109,6 +119,7 @@ const postUserAlerts = async () => {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
+    console.log(alertSettings.value);
     await fetch(`${import.meta.env.VITE_PROD_API_URL}/api/alerts`, {
       method: 'POST',
       body: JSON.stringify(alertSettings.value),
@@ -138,14 +149,24 @@ onMounted(() => {
 
 <template>
   <main>
-    <form @submit.prevent="postUserAlerts">
-      <AlertsItem
-        :tagsList="tagsList"
-        @update:childObject="updateParentObject"
-        :alertSettings="alertSettings"
-      />
-      <Button type="submit"> Save</Button>
-    </form>
+    <Button @click="() => toggleModalOpen(!isModalOpen)"> Tooggle</Button>
+    <Modal :toggle="() => toggleModalOpen(false)" v-if="isModalOpen">
+      <form class="flex flex-col gap-2" @submit.prevent="postUserAlerts">
+        <GraphSettingsItem
+          :hideGraphData="true"
+          :hideSize="true"
+          @update:childObject="updateParentObject"
+          :graphSettings="alertSettings"
+          :fetchTags="fetchTags"
+        />
+        <AlertsItem
+          :tagsList="tagsList"
+          @update:childObject="updateParentObject"
+          :alertSettings="alertSettings"
+        />
+        <Button type="submit"> Save</Button>
+      </form>
+    </Modal>
     <div v-for="alert in userAlerts" :key="alert.uuid">{{ alert.email }}</div>
   </main>
 </template>

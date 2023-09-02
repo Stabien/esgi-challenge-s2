@@ -2,7 +2,13 @@
 import { defineProps, ref, inject, defineEmits } from 'vue';
 import { useToast } from 'vue-toastification';
 
-const props = defineProps(['showFormTags', 'graphSettings', 'fetchTags']);
+const props = defineProps([
+  'showFormTags',
+  'hideGraphData',
+  'hideSize',
+  'graphSettings',
+  'fetchTags'
+]);
 const toast = useToast();
 // eslint-disable-next-line vue/valid-define-emits
 const emit = defineEmits();
@@ -132,7 +138,7 @@ const deleteTag = async (tagUuid) => {
 </script>
 
 <template>
-  <div class="flex justify-between">
+  <div :class="props.hideSize ? 'hidden' : ''" class="flex justify-between">
     <div
       v-for="size in sizeList"
       :key="size"
@@ -163,13 +169,19 @@ const deleteTag = async (tagUuid) => {
     </div>
   </div>
   <div class="flex gap-2 justify-between">
-    <Button
+    <div
       v-for="event in eventList"
       :key="event"
-      :variant="props.graphSettings.event === event ? 'default' : 'outline'"
+      :class="
+        props.graphSettings.event === event
+          ? 'text-palette-primary-500 border border-palette-primary-500 '
+          : 'text-palette-gray-300'
+      "
+      class="rounded transition-all font-bold p-1 cursor-pointer flex justify-center items-center"
       @click="handleSelectEvent(event)"
-      >{{ event }}</Button
     >
+      {{ event }}
+    </div>
   </div>
   <div class="grid grid-cols-2 gap-24 mx-auto">
     <div
@@ -195,7 +207,7 @@ const deleteTag = async (tagUuid) => {
       100
     </div>
   </div>
-  <div class="flex gap-2 items-center">
+  <div :class="props.hideGraphData ? 'hidden' : ''" class="flex gap-2 items-center">
     <div
       :class="
         props.graphSettings.graph_type === graph
@@ -254,7 +266,7 @@ const deleteTag = async (tagUuid) => {
       >
         {{ tag.name }}
       </span>
-      <button
+      <div
         v-if="user.status !== 'Admin' && props.showFormTags"
         @click="deleteTag(tag.uuid)"
         variant="ghost"
@@ -267,7 +279,7 @@ const deleteTag = async (tagUuid) => {
         class="p-1 rounded-r"
       >
         X
-      </button>
+      </div>
     </div>
   </div>
 </template>

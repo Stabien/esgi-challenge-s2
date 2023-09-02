@@ -15,8 +15,8 @@ exports.getAlertsByUserUuid = async (req, res) => {
 exports.addAlert = async (req, res) => {
   const { body } = req
   const uuid = randomUUID()
-  const dataAlert = { uuid, ...body, user_uuid: body.userUuid, tag_uuid: body.tagUuid }
-
+  const dataAlert = { uuid, ...body,
+    dataType:body.data_type, timeScale:body.time_scale,timeBeforeNewAlert:body.time_before_new_alert,user_uuid: body.userUuid, tag_uuid: body.tagUuid }
   try {
     const alert = await Alerts.create(dataAlert)
     alert.save()

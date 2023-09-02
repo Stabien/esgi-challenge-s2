@@ -8,11 +8,14 @@ module.exports = {
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4,
       },
+      app_id: {
+        type: Sequelize.STRING
+      },
       user_uuid: {
         type: Sequelize.DataTypes.UUID,
       },
       tag_uuid: {
-        type: Sequelize.DataTypes.UUID,
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.UUID),
         allowNull: true,
       },
       type: {
@@ -35,9 +38,7 @@ module.exports = {
       time_scale: {
         type: Sequelize.STRING
       },
-      app_id: {
-        type: Sequelize.STRING
-      }
+      
     });
   },
   async down(queryInterface, Sequelize) {
