@@ -2,7 +2,8 @@ const sequelize = require('../config/sequelize')
 const Sequelize = require('sequelize')
 
 module.exports = sequelize.define(
-  'alerts', {
+  'alerts',
+  {
     uuid: {
       type: Sequelize.DataTypes.UUID,
       primaryKey: true,
@@ -20,28 +21,37 @@ module.exports = sequelize.define(
       allowNull: true,
     },
     type: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
     },
     uri: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
     },
     timeBeforeNewAlert: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+    },
+    valueToTrigger: {
+      type: Sequelize.STRING,
     },
     dataType: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
     },
     timeScale: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+    },
+    event: {
+      type: Sequelize.STRING,
+    },
+    name: {
+      type: Sequelize.STRING,
     },
     appId: {
-      type: Sequelize.STRING
-    }
+      type: Sequelize.STRING,
+    },
   },
   {
     underscored: true,

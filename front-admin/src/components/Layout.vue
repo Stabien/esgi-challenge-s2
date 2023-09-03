@@ -9,6 +9,8 @@ import UserIcon from '@/components/icons/UserIcon.vue';
 import { inject, ref } from 'vue';
 import { getLogo, getRandomColorsAvatar } from '@/utils';
 import SwitchDarkMode from '@/components/ui/SwitchDarkMode.vue';
+import SpeakerIcon from './icons/SpeakerIcon.vue';
+import HeatmapIcon from './icons/HeatmapIcon.vue';
 
 const { user } = inject('user');
 
@@ -89,7 +91,7 @@ const openMenu = (isOpen) => (isMenuOpened.value = isOpen);
               user.isActive === userStatusValidated &&
               user.status === userStatusWebmaster
             "
-            :icon="GraphBarIcon"
+            :icon="HeatmapIcon"
             label="Heatmap"
           />
           <LinkMenu
@@ -99,7 +101,7 @@ const openMenu = (isOpen) => (isMenuOpened.value = isOpen);
               user.isActive === userStatusValidated &&
               user.status === userStatusWebmaster
             "
-            :icon="GraphBarIcon"
+            :icon="SpeakerIcon"
             label="Alerts"
           />
           <LinkMenu

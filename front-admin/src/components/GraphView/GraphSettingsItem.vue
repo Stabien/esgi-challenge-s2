@@ -135,6 +135,8 @@ const deleteTag = async (tagUuid) => {
     console.log(error);
   }
 };
+
+console.log(props.graphSettings);
 </script>
 
 <template>

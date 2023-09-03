@@ -2,6 +2,7 @@
 import { onMounted, ref, inject, provide } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import AlertsRow from '../components/GraphView/AlertsRow.vue';
 
 const toast = useToast();
 const route = useRoute();
@@ -21,7 +22,7 @@ const alertSettings = ref({
   timeScale: 'D', //D, W, M,Y day, week, month, year
   tagUuid: [],
   event: 'click',
-
+  name: '',
   userUuid: user.value.decodedToken.uuid,
   type: 'email', //email or http
   email: '',
@@ -95,7 +96,6 @@ const fetchUsersAlerts = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    console.log(data);
     userAlerts.value = data;
   } catch (error) {
     console.log(error);
@@ -104,6 +104,10 @@ const fetchUsersAlerts = async () => {
 
 const postUserAlerts = async () => {
   try {
+    if (alertSettings.value.name === '') {
+      toast.error("you need an alert's name");
+      return;
+    }
     if (alertSettings.value.type === 'email') {
       if (!emailRegex.test(alertSettings.value.email)) {
         toast.error('Email is not valid');
@@ -167,6 +171,20 @@ onMounted(() => {
         <Button type="submit"> Save</Button>
       </form>
     </Modal>
-    <div v-for="alert in userAlerts" :key="alert.uuid">{{ alert.email }}</div>
+    <AlertsRow
+      v-for="alert in userAlerts.map(
+        ({ tag_uuid, timeBeforeNewAlert, timeScale, dataType, ...rest }) => ({
+          tagUuid: tag_uuid,
+          data_type: dataType,
+          time_scale: timeScale,
+          time_before_new_alert: timeBeforeNewAlert,
+          ...rest
+        })
+      )"
+      :key="alert.uuid"
+      :alert="alert"
+      :fetchAlerts="fetchUsersAlerts"
+      :fetchTags="fetchTags"
+    />
   </main>
 </template>

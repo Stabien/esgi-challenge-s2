@@ -2,7 +2,8 @@
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps(['tagsList', 'alertSettings']);
-
+console.log(props.alertSettings);
+console.log(props.tagsList);
 // eslint-disable-next-line vue/valid-define-emits
 const emit = defineEmits();
 const alertType = ['email', 'http'];
@@ -18,6 +19,10 @@ const setEmail = (email) => {
 };
 const setUri = (uri) => {
   const updatedObject = { ...props.alertSettings, uri: uri };
+  emitAlert(updatedObject);
+};
+const setName = (name) => {
+  const updatedObject = { ...props.alertSettings, name: name };
   emitAlert(updatedObject);
 };
 
@@ -111,4 +116,10 @@ const emitAlert = (updatedObject) => emit('update:childObject', updatedObject);
       @input="(e) => setValueToTrigger(e.target.value)"
     />
   </div>
+  <input
+    placeholder="Alert's name"
+    type="text"
+    :value="props.alertSettings.name"
+    @input="(e) => setName(e.target.value)"
+  />
 </template>

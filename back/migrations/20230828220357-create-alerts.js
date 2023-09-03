@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -9,7 +9,7 @@ module.exports = {
         defaultValue: Sequelize.DataTypes.UUIDV4,
       },
       app_id: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       user_uuid: {
         type: Sequelize.DataTypes.UUID,
@@ -19,29 +19,39 @@ module.exports = {
         allowNull: true,
       },
       type: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       uri: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      event: {
+        type: Sequelize.STRING,
+      },
+
       time_before_new_alert: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       data_type: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       time_scale: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
-      
-    });
+      value_to_trigger: {
+        type: Sequelize.STRING,
+      },
+    })
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('alerts');
-  }
-};
+    await queryInterface.dropTable('alerts')
+  },
+}

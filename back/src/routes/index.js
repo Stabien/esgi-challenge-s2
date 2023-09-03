@@ -18,11 +18,20 @@ const {
   postGraphSettings,
   getGraphSettings,
   putGraphSettings,
-deleteGraphSettings
-  
+  deleteGraphSettings,
 } = require('../controllers/analyticsController')
-const { addTag, deleteTag, getTagsByTagUuid,getTagsByUserUuid } = require('../controllers/tagController')
-const { addAlert, getAlertsByUserUuid } = require('../controllers/alertsController')
+const {
+  addTag,
+  deleteTag,
+  getTagsByTagUuid,
+  getTagsByUserUuid,
+} = require('../controllers/tagController')
+const {
+  addAlert,
+  getAlertsByUserUuid,
+  putAlerts,
+  deleteAlerts,
+} = require('../controllers/alertsController')
 
 /** Router */
 const routes = (app) => {
@@ -44,21 +53,25 @@ const routes = (app) => {
 
   //handle graph settings
   app.route('/api/analytics/GraphSettings').post(postGraphSettings)
-  app.route('/api/analytics/GraphSettings/:uuid').get(getGraphSettings).put(putGraphSettings).delete(deleteGraphSettings)
+  app
+    .route('/api/analytics/GraphSettings/:uuid')
+    .get(getGraphSettings)
+    .put(putGraphSettings)
+    .delete(deleteGraphSettings)
 
   //get analitycs
   app.route('/api/analytics/:graphSettings').get(getAnalyticsByAppId)
   app.route('/api/analytics/heatmap/:graphSettings').get(getHeatmapPossibility)
   app.route('/api/analytics/heatmapUrl/:graphSettings').get(getHeatmapData)
   // app.route('/api/analytics/:appId').get(getAnalyticsByAppId)
-  
 
   app.route('/api/tag/:uuid').get(getTagsByUserUuid).post(addTag).delete(deleteTag)
   app.route('/api/tagUuid/:uuid').get(getTagsByTagUuid)
 
   // alerts
   app.route('/api/alerts').post(addAlert)
-  app.route('/api/alerts/:userUuid').get(getAlertsByUserUuid)
+  app.route('/api/alerts/:userUuid').get(getAlertsByUserUuid).put(putAlerts).delete(deleteAlerts)
+  //for update and delete it's alert uuid for the front
 }
 
 module.exports = routes
