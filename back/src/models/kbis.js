@@ -1,7 +1,7 @@
 const sequelize = require('../config/sequelize')
 const Sequelize = require('sequelize')
 
-module.exports = sequelize.define(
+const Kbis = sequelize.define(
   'kbis',
   {
     uuid: {
@@ -33,9 +33,8 @@ module.exports = sequelize.define(
     },
     userUuid: {
       type: Sequelize.DataTypes.UUID,
-      defaultValue: Sequelize.DataTypes.UUIDV4,
       allowNull: false,
-      references: 'kbis',
+      references: 'user',
       referencesKey: 'uuid',
     },
   },
@@ -44,3 +43,4 @@ module.exports = sequelize.define(
     timestamps: true,
   },
 )
+module.exports = Kbis

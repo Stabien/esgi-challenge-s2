@@ -1,21 +1,6 @@
 <script setup>
 import RegisterWithPassword from '@/components/RegisterWithPassword.vue';
 import { randomInt } from '@/utils';
-
-import { inject, watch, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-
-const { user } = inject('user');
-const router = useRouter();
-const redirect = () => {
-  if (user.value.isLogged) router.push('/');
-};
-watch(user.value, () => {
-  redirect();
-});
-onMounted(() => {
-  redirect();
-});
 </script>
 
 <template>

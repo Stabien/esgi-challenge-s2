@@ -5,6 +5,9 @@ module.exports = {
   darkMode: ['class', '[data-mode="dark"]'],
 
   theme: {
+    boxShadow: {
+      default: '0 0 8px 1px rgba(0,0,0,.25)'
+    },
     extend: {
       colors: {
         cobalt: { 400: '#6562E4', 500: '#3B37DD' },
@@ -77,7 +80,12 @@ module.exports = {
         gridular: ['Gridular']
       },
       gridTemplateColumns: {
-        '1/3': '1fr 2fr'
+        '1/3': '1fr 2fr',
+        graph: '100px 100px 40px',
+        graphGrid: 'repeat(auto-fit, minmax(calc(25% - 10px), 1fr));'
+      },
+      boxShadow: {
+        default: '0 0 8px 1px rgba(0,0,0,.25)'
       }
     }
   },

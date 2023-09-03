@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { updateLocalStorage } from '@/utils';
 import Button from '@/components/ui/Button.vue';
 import Input from '@/components/ui/Input.vue';
 import { useToast } from 'vue-toastification';
@@ -46,8 +47,10 @@ const register = async () => {
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
-    toast('Your account has been created, please login');
-    router.push('/login');
+    const data = await response.json();
+    updateLocalStorage('token', data.token);
+    toast('Your are now logged');
+    router.push('/');
   } catch (error) {
     console.log(error);
     toast.error(error.message);
@@ -80,7 +83,7 @@ const register = async () => {
       dataCy="firstname"
       type="text"
       label="Firstname"
-      v-model="form.firstName"
+      v-model="form.firstname"
       required="true"
     />
     <Input dataCy="lastname" type="text" label="Lastname" v-model="form.lastname" required="true" />

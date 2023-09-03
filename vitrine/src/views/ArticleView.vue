@@ -1,11 +1,27 @@
 <script setup>
-import { blogArray } from '@/utils/constant'
-import ArrowLeft from '@/components/icons/ArrowLeft.vue'
-import Link from '@/components/ui/Link.vue'
+import { blogArray } from '@/utils/constant';
+import ArrowLeft from '@/components/icons/ArrowLeft.vue';
+import Link from '@/components/ui/Link.vue';
 
-import { useRoute } from 'vue-router'
-const route = useRoute()
-const articleItem = blogArray.find((blog) => blog.image === route.params.name)
+import { useRoute } from 'vue-router';
+import { onMounted } from 'vue';
+import { getURL } from '../utils/trackerUtils/handleUrl';
+const route = useRoute();
+const articleItem = blogArray.find((blog) => blog.image === route.params.name);
+
+onMounted(() => {
+  document.dispatchEvent(
+    new CustomEvent('print', {
+      detail: {
+        appId: import.meta.env.VITE_TRACKER_APPID,
+        event: 'print',
+        url: getURL(),
+        sessionId: window.localStorage.getItem('Session_ID'),
+        timestamp: Date.now()
+      }
+    })
+  );
+});
 </script>
 
 <template>

@@ -1,5 +1,21 @@
 <script setup>
-import { teamList } from '@/utils/constant'
+import { teamList } from '@/utils/constant';
+import { onMounted } from 'vue';
+import { getURL } from '../utils/trackerUtils/handleUrl';
+
+onMounted(() => {
+  document.dispatchEvent(
+    new CustomEvent('print', {
+      detail: {
+        appId: import.meta.env.VITE_TRACKER_APPID,
+        event: 'print',
+        url: getURL(),
+        sessionId: window.localStorage.getItem('Session_ID'),
+        timestamp: Date.now()
+      }
+    })
+  );
+});
 </script>
 
 <template>

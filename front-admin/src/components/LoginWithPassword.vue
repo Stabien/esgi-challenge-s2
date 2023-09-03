@@ -10,10 +10,13 @@ const toast = useToast();
 
 const email = ref('');
 const pwd = ref('');
+const isLoading = ref(false);
 const router = useRouter();
 
 const login = async () => {
   try {
+    isLoading.value = true;
+
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     var requestOptions = {
@@ -38,6 +41,7 @@ const login = async () => {
     console.log(error);
     toast.error(error.message);
   }
+  isLoading.value = false;
 };
 </script>
 
@@ -48,6 +52,9 @@ const login = async () => {
     <input data-cy="emailInput" type="email" v-model="email" />
     <label for="password">Password</label>
     <input data-cy="passwordInput" type="password" v-model="pwd" />
-    <Button data-cy="submit" type="submit">Login</Button>
+    <Button data-cy="submit" type="submit">
+      <LoadingIcon v-if="isLoading" />
+      {{ isLoading ? 'Loading' : 'Login' }}</Button
+    >
   </form>
 </template>

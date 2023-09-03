@@ -4,6 +4,7 @@ import { numberOfLogo } from '@/utils/constant';
 import jwt_decode from 'jwt-decode';
 import { userStatusWebmaster, userStatusAdmin, userStatusVisitor } from '@/utils/userConstant';
 import { userStatusValidated } from './userConstant';
+import colors from 'nice-color-palettes';
 
 export const cn = (...inputs) => {
   return twMerge(cx(inputs));
@@ -38,7 +39,6 @@ export const getConnectionProviderValue = () => {
     return { isLogged: false, status: userStatusVisitor, decodedToken: {} };
   }
 
-
   return {
     isLogged: !!decodedNewToken,
     status: decodedNewToken.isAdmin ? userStatusAdmin : userStatusWebmaster,
@@ -59,6 +59,14 @@ export const getLogo = () => {
 export const setLogo = () => {
   const randomNumber = randomInt(1, numberOfLogo);
   localStorage.setItem('logoNumber', randomNumber);
+
+  var link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = getLogo();
 };
 
 export const getOcto = (ecart = 20) => {
@@ -102,4 +110,24 @@ export const errorHandler = (error) => {
     default:
       return 'Something went wrong';
   }
+};
+
+export const getRandomColorsAvatar = () => {
+  if (!localStorage.getItem('avatarColors'))
+    localStorage.setItem(
+      'avatarColors',
+      JSON.stringify(colors[Math.floor(Math.random() * colors.length)])
+    );
+
+  return JSON.parse(localStorage.getItem('avatarColors'));
+};
+
+export const findDifferentProperties = (obj1, obj2) => {
+  let keyFound = false;
+  Object.keys(obj1).forEach((key) => {
+    if (obj1[key] !== obj2[key]) {
+      return (keyFound = key);
+    }
+  });
+  return keyFound || -1;
 };

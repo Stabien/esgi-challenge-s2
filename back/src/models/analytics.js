@@ -22,6 +22,8 @@ const analyticsSchema = new mongoose.Schema({
     required: true,
     type: Date,
   },
+  x:Number,
+  y:Number,
   directiveTag: String,
   htmlElement: String,
 })

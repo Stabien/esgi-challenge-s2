@@ -25,7 +25,10 @@ html {
 .origin-center {
   @apply -translate-x-1/2  -translate-y-1/2;
 }
+.absolute-center {
+  @apply left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+}
 input,
 select {
-  @apply bg-transparent border rounded bg-palette-gray-100 border-palette-gray-100 focus:bg-transparent dark:focus:bg-transparent dark:bg-palette-gray-900 outline-none p-2;
+  @apply bg-transparent disabled:cursor-default disabled:bg-palette-gray-100 disabled:border-palette-gray-100 border rounded bg-palette-gray-50 border-palette-gray-50 focus:bg-transparent dark:focus:bg-transparent dark:bg-palette-gray-900 outline-none p-2;
 }

@@ -1,24 +1,9 @@
 <script setup>
-import { inject, watch, ref, onMounted } from 'vue';
+import { inject, ref } from 'vue';
 import { userStatusAdmin } from '@/utils/userConstant';
 import RequestRow from '@/components/AdminView/RequestRow.vue';
-import { useRouter } from 'vue-router';
 
 const { user } = inject('user');
-const router = useRouter();
-
-const redirect = () => {
-  if (user.value.status !== userStatusAdmin) {
-    router.push('/404');
-    return;
-  }
-};
-onMounted(() => {
-  redirect();
-});
-watch(user.value, () => {
-  redirect();
-});
 
 const requestList = ref([]);
 const x = ref(null);
@@ -37,7 +22,6 @@ const getPendingUserList = async () => {
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-
     requestList.value = data;
     x.value = data[0];
   } catch (error) {
@@ -49,7 +33,7 @@ getPendingUserList();
 </script>
 
 <template>
-  <div v-if="user.status === userStatusAdmin" class="p-8">
+  <div v-if="user.status === userStatusAdmin" class="p-8 mx-40">
     <h1 class="text-palette-primary-500 font-bold text-4xl mb-8">Admin</h1>
     <section class="flex flex-col gap-2" v-if="requestList.length > 0">
       <RequestRow
@@ -65,6 +49,8 @@ getPendingUserList();
         :getPendingUserList="getPendingUserList"
       />
     </section>
-    <div v-else>LOADING</div>
+    <div v-else class="flex items-center justify-center">
+      <LoadingIcon class="h-40 w-40 text-palette-primary-500" />
+    </div>
   </div>
 </template>

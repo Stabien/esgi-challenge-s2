@@ -4,9 +4,11 @@ const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 const Users = require('../models/users')
 const Kbis = require('../models/kbis')
-const { sendEmail } = require('../helpers')
+const { sendEmail } = require('../services')
 const { generateAppId } = require('../helpers')
-const multer = require('multer');
+const { getBase64FileFromPath } = require('../helpers')
+
+const multer = require('multer')
 
 config()
 
@@ -18,7 +20,27 @@ const checkIfUserAlreadyExists = async (email) => {
 
 exports.getUserByUuid = async (req, res) => {
   try {
-    const user = await Users.findOne({ where: { uuid: req.params.uuid } })
+    const user = await Users.findOne({
+      where: { uuid: req.params.uuid },
+      include: {
+        model: Kbis,
+        as: 'kbis',
+      },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
+    if (user.kbis) {
+      user.kbis.dataValues.file = await getBase64FileFromPath(user?.kbis?.path)
+    }
+    return res.status(200).json(user)
+  } catch (e) {
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.getUserKbisByUuid = async (req, res) => {
+  try {
+    const user = await Kbis.findOne({ where: { uuid: req.params.uuid } })
     return res.status(200).json(user)
   } catch (e) {
     return res.status(500).json({ error: 'Internal error' })
@@ -41,7 +63,6 @@ exports.authentication = async (req, res) => {
       { uuid, isAdmin: false, firstname, email, lastname, appId, societyName, url, status },
       process.env.JWT_KEY,
     )
-
     return res.status(200).json({ token })
   } catch (e) {
     console.log(e)
@@ -49,7 +70,26 @@ exports.authentication = async (req, res) => {
   }
 }
 
-exports.registration = async (req, res) => {
+exports.getUserToken = async (req, res) => {
+  try {
+    const user = await Users.findOne({ where: { uuid: req.params.uuid } })
+    if (user === null) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const { uuid, email, firstname, lastname, appId, societyName, url, status } = user
+    const token = jwt.sign(
+      { uuid, isAdmin: false, firstname, email, lastname, appId, societyName, url, status },
+      process.env.JWT_KEY,
+    )
+    return res.status(200).json({ token })
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+
+exports.registration = async (req, res, next) => {
   const { email, password, confirmPassword, firstname, lastname, societyName, url } = req.body
   const { file } = req
 
@@ -67,6 +107,8 @@ exports.registration = async (req, res) => {
     if (doesUserAlreadyExists) {
       return res.status(422).json({ error: 'User already exists' })
     }
+
+    console.log('**** user uuid:', userUuid, ' ****')
 
     const newUser = await Users.create({
       uuid: userUuid,
@@ -86,22 +128,23 @@ exports.registration = async (req, res) => {
       path: file.path,
       name: file.originalname,
       type: file.mimetype,
+      userUuid,
     })
 
     await newUser.save()
     await newKbis.save()
 
-    // sendEmail({
-    //   to: email,
-    //   from: 'noreply@esgi-tracking.fr',
-    //   subject: 'Account activation',
-    //   text: 'Votre compte est en attente de validation par un administrateur'
-    // })
+    sendEmail({
+      to: email,
+      from: 'noreply@esgi-tracking.fr',
+      subject: 'Account activation',
+      text: 'Votre compte est en attente de validation par un administrateur',
+    })
 
     const response = { ...newUser.dataValues }
     delete response.password
 
-    return res.status(201).json(response)
+    return next()
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'Internal error' })
@@ -112,14 +155,16 @@ exports.updateUser = async (req, res) => {
   const { uuid } = req.params
 
   try {
-    const user = await Users.create({ uuid })
+    Users.update(
+      {
+        ...req.body,
+      },
+      { where: { uuid } },
+    )
 
-    user.update({
-      ...req.body,
-    })
-
-    return res.status(200).json(user)
+    return res.status(200).json({})
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: 'Internal error' })
   }
 }

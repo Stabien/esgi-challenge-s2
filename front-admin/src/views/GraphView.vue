@@ -1,109 +1,80 @@
 <script setup>
 import GraphChart from '@/components/GraphView/GraphChart.vue';
-import GraphBarIcon from '@/components/icons/GraphBarIcon.vue';
-import GraphDonutIcon from '@/components/icons/GraphDonutIcon.vue';
-import GraphScatterIcon from '@/components/icons/GraphScatterIcon.vue';
+import { useRoute } from 'vue-router';
+import { updateLocalStorage, findDifferentProperties } from '@/utils';
 import Button from '@/components/ui/Button.vue';
-import Input from '@/components/ui/Input.vue';
-import { BAR, DONUT } from '@/utils/graphConstant';
-import { userStatusWebmaster } from '@/utils/userConstant';
+// import Input from '@/components/ui/Input.vue';
 import { Chart, registerables } from 'chart.js';
 import { useToast } from 'vue-toastification';
-import { useRouter } from 'vue-router';
-import { ref, inject, watch, onMounted } from 'vue';
+import { ref, inject, onMounted, onUnmounted, provide, watch } from 'vue';
 
 Chart.register(...registerables);
+const route = useRoute();
+
 const toast = useToast();
 const { user } = inject('user');
+const { socket } = inject('socket');
 
-const router = useRouter();
+const userRequest = ref();
+const userGraphList = ref([]);
+const selectedUserGraphList = ref([]);
+const tagsList = ref([]);
+const isSettingsModalOpened = ref(false);
+const { graphSettings } = inject('graphSettings');
 
-const redirect = () => {
-  if (user.value.status !== userStatusWebmaster) {
-    router.push('/404');
+const updateSelectedGraph = (newSelectedGraph) => {
+  selectedUserGraphList.value = newSelectedGraph;
+};
+
+const handleSelectUserGraph = (graph) => {
+  if (selectedUserGraphList.value.some((selectedGraph) => selectedGraph === graph.uuid)) {
+    selectedUserGraphList.value = selectedUserGraphList.value.filter((item) => item !== graph.uuid);
     return;
   }
+  selectedUserGraphList.value.push(graph.uuid);
 };
-onMounted(() => {
-  redirect();
-});
-watch(user.value, () => {
-  redirect();
-});
-const graphTitle = ref('');
-const graphDataType = ref('');
-const dataType = ref('');
-const eventByPagesList = ref([]);
-const sessionByPagesList = ref([]);
-const sessionByTagsList = ref([]);
-const tagsList = ref([]);
-
-// const chartTypeList = [DONUT, BAR, SCATTER];
-const chartTypeList = [DONUT, BAR];
-const chartTypeIconList = [GraphDonutIcon, GraphBarIcon, GraphScatterIcon];
-
-const fetchEventByPages = async () => {
+const fetchUserGraphList = async () => {
   try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/eventByPages/${
-        user.value.decodedToken.appId
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
       }`,
-      requestOptions
+      {
+        method: 'GET'
+      }
     );
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    eventByPagesList.value = data;
+    userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
+    // [...new Set(firstArray.concat(secondArray))]
   } catch (error) {
     console.log(error);
-    toast.error(error.message);
   }
 };
-const fetchSessionByPages = async () => {
+
+const openSettingModal = (isOpen) => (isSettingsModalOpened.value = isOpen);
+
+const fetchUserRequest = async () => {
   try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/sessionByPages/${
-        user.value.decodedToken.appId
+      `${import.meta.env.VITE_PROD_API_URL}/api/user/${
+        route.params.uuid ? route.params.uuid : user.value.decodedToken.uuid
       }`,
-      requestOptions
+      {
+        method: 'GET',
+        headers
+      }
     );
     if (!response.ok) throw new Error('Something went wrong');
 
     const data = await response.json();
-    sessionByPagesList.value = data;
+    userRequest.value = data;
   } catch (error) {
     console.log(error);
-    toast.error(error.message);
-  }
-};
-const fetchSessionByTags = async () => {
-  try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/sessionByTags/${
-        user.value.decodedToken.appId
-      }`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    console.log(data);
-    sessionByTagsList.value = data;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
   }
 };
 
@@ -114,7 +85,9 @@ const fetchTags = async () => {
       redirect: 'follow'
     };
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/all/${user.value.decodedToken.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${
+        userRequest.value ? userRequest.value.uuid : user.value.decodedToken.uuid
+      }`,
       requestOptions
     );
     if (!response.ok) throw new Error('Something went wrong');
@@ -126,110 +99,78 @@ const fetchTags = async () => {
     toast.error(error.message);
   }
 };
-const checkExistingValueInEvent = (evenement) => {
-  return eventByPagesList.value.some((objet) => objet._id.event === evenement);
+provide('tagsList', { tagsList });
+
+const init = async () => {
+  await fetchUserRequest();
+  await fetchUserGraphList();
+  await fetchTags();
 };
-onMounted(() => {
-  fetchEventByPages();
-  fetchSessionByPages();
-  fetchSessionByTags();
-  fetchTags();
+
+watch(graphSettings, () => {
+  const denyFetch = ['graphSize'];
+  if (
+    !denyFetch.includes(
+      findDifferentProperties(
+        JSON.parse(localStorage.getItem('graphSettings') || '{}'),
+        graphSettings
+      )
+    )
+  ) {
+    // fetchAll();
+  }
+  updateLocalStorage('graphSettings', JSON.stringify(graphSettings));
 });
 
-const createTag = async () => {
-  if (!graphTitle.value) return;
-  try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    console.log(graphTitle.value);
-    var requestOptions = {
-      method: 'POST',
-      body: JSON.stringify({
-        name: graphTitle.value
-      }),
-      headers: {
-        headers
-      },
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/add/${user.value.decodedToken.uuid}`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-    fetchTags();
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
-  }
-};
+onMounted(() => {
+  fetchUserRequest();
+  init();
+
+  socket.on('newDataAdded', () => {
+    init();
+  });
+});
+
+onUnmounted(() => socket.removeAllListeners('newDataAdded'));
 </script>
 
 <template>
   <div
-    class="grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-4 px-4 pb-4 h-screen overflow-hidden"
+    class="grid overflow-y-scroll grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-4 px-4 pb-4 h-screen"
   >
     <div
       class="col-span-2 flex items-center justify-between dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4 h-fit"
     >
-      <form @submit.prevent="createTag" class="flex gap-2 items-center">
-        <Input
-          type="text"
-          label="Create your tags"
-          oneLine="true"
-          v-model="graphTitle"
-          class="w-fit"
-          required
-        />
-        <Button type="submit" @click="createTag">Create Tags</Button>
-      </form>
       <span> What do you want to see? </span>
-      <div class="flex gap-5">
-        <Button
-          :variant="dataType === 'click' ? 'default' : 'outline'"
-          @click="() => (dataType = 'click')"
-          v-if="checkExistingValueInEvent('click')"
-          >Clicks per pages</Button
-        >
-        <Button
-          :variant="dataType === 'sessionByPages' ? 'default' : 'outline'"
-          v-if="sessionByPagesList.length > 0"
-          @click="() => (dataType = 'sessionByPages')"
-          >Session by pages</Button
-        >
-        <Button
-          :variant="dataType === 'sessionByTags' ? 'default' : 'outline'"
-          v-if="sessionByTagsList.length > 0"
-          @click="() => (dataType = 'sessionByTags')"
-          >Clicks by tags</Button
-        >
+      <div class="relative">
+        <Button @click="openSettingModal(true)">Settings</Button>
+        <ModalGraphSettings
+          :fetchUserGraphList="fetchUserGraphList"
+          :fetchTags="fetchTags"
+          :toggle="openSettingModal"
+          v-if="isSettingsModalOpened"
+        />
       </div>
     </div>
-    <div class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50">
-      <div class="flex flex-col gap-2">
-        <Button
-          @click="() => (graphDataType = chartType)"
-          :key="chartType"
-          v-for="(chartType, index) in chartTypeList"
-          :variant="graphDataType === chartType ? 'default' : 'outline'"
-        >
-          <component :is="chartTypeIconList[index]" height="24" width="24" />
-        </Button>
-      </div>
-      <div class="flex flex-col gap-2 mt-2 h-[30rem] overflow-y-scroll">
-        <div v-for="tag in tagsList" :key="tag" class="bg-palette-primary-100 text-sm p-4 rounded">
-          {{ tag.name || 'empty tag' }}
-        </div>
-      </div>
+    <div
+      class="rounded-md h-fit p-4 dark:bg-palette-gray-800 bg-palette-gray-50 flex flex-col gap-4"
+    >
+      <GraphListItem
+        @update:childSelectedGraph="updateSelectedGraph"
+        :fetchGraphs="fetchUserGraphList"
+        :handleSelectUserGraph="handleSelectUserGraph"
+        :selectedUserGraphList="selectedUserGraphList"
+        :graph="graph"
+        v-for="graph in userGraphList"
+        :key="graph"
+      />
     </div>
-    <GraphChart
-      v-if="!!dataType"
-      :dataType="dataType"
-      class="dark:bg-palette-gray-800 bg-palette-gray-50 rounded-md p-4"
-      :graphDataType="graphDataType"
-      :eventByPagesList="eventByPagesList"
-      :sessionByPagesList="sessionByPagesList"
-      :sessionByTagsList="sessionByTagsList"
-    />
+    <div class="grid grid-cols-12 grid-flow-dense gap-4 h-min">
+      <GraphChart
+        v-for="graph in userGraphList.filter((item) => selectedUserGraphList.includes(item.uuid))"
+        :key="graph"
+        :graphSettings="graph"
+      />
+    </div>
   </div>
 </template>

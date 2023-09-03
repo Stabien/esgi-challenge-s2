@@ -1,4 +1,66 @@
 const Analytics = require('../models/analytics')
+const Tags = require('../models/tags')
+const Graphs = require('../models/graphs')
+const { getIsoDateFromTimestamp } = require('../helpers')
+
+exports.postGraphSettings = async (req, res) => {
+  try {
+    const { userUuid, event, graphPeriod, selectedTagUuid, name, dataType, graphType, graphSize } =
+      req.body
+    const graph = {
+      userUuid,
+      event,
+      name,
+      timeScale: graphPeriod,
+      tagUuid: selectedTagUuid,
+      data_type: dataType,
+      graph_type: graphType,
+      graph_size: graphSize,
+    }
+    const newGraphUser = await Graphs.create(graph)
+    await newGraphUser.save()
+    return res.status(200).json({ newGraphUser })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.getGraphSettings = async (req, res) => {
+  try {
+    const { params } = req
+
+    const graphs = await Graphs.findAll({ where: { userUuid: params.uuid } })
+    return res.status(200).json(graphs)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.putGraphSettings = async (req, res) => {
+  try {
+    const { uuid } = req.params
+
+    await Graphs.update(req.body, { where: { uuid } })
+    return res.send(200)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
+exports.deleteGraphSettings = async (req, res) => {
+  try {
+    const { uuid } = req.params
+    const tag = await Graphs.destroy({
+      where: {
+        uuid: uuid,
+      },
+    })
+    return res.status(201).json(tag)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: 'Internal error' })
+  }
+}
 
 exports.addAnalytics = async (req, res) => {
   const { body } = req
@@ -12,84 +74,130 @@ exports.addAnalytics = async (req, res) => {
     return res.status(500).json({ error: 'Internal error' })
   }
 }
-
 exports.getAnalyticsByAppId = async (req, res) => {
   try {
-    const analytics = await Analytics.find({ appId: req.params.appId })
-    return res.status(200).json(analytics)
-  } catch (e) {
-    console.log(e)
-    return res.status(500).json({ error: 'Internal error' })
-  }
-}
+    const graphSettings = JSON.parse(req.params.graphSettings)
+    const { appId, timeScale, tagUuid, event } = graphSettings
 
-exports.getEventByPages = async (req, res) => {
-  try {
-    const { appId } = req.params
-    const analytics = await Analytics.aggregate([
+    const { start, end } = getIsoDateFromTimestamp(timeScale)
+
+    const aggregateTunnel = [
       { $match: { appId } },
-      { $group: {
-          _id: { event: '$event', page: '$url' },
-          count: { $sum: 1 }
-        }
+      {
+        $match: {
+          timestamp: {
+            $gte: new Date(start),
+            $lt: new Date(end),
+          },
+        },
+      },
+    ]
+    if (event === 'CTR') {
+      aggregateTunnel.push({
+        $match: {
+          $or: [{ event: 'click' }, { event: 'print' }],
+        },
+      })
+    } else if (event === 'funnel') {
+    } else {
+      aggregateTunnel.push({ $match: { event } })
+    }
+    if (tagUuid > 0) {
+      const tagList = []
+      for (const tagUuidItem of tagUuid) {
+        const tags = await Tags.findOne({ where: { uuid: tagUuidItem } })
+        tagList.push(tags.dataValues)
       }
-    ])
-    return res.status(200).json(analytics)
+
+      aggregateTunnel.push({
+        $match: {
+          $or: tagList.map((t) => ({
+            directiveTag: t.name,
+          })),
+        },
+      })
+
+      // aggregateTunnel.push({ $match: { directiveTag: tags.dataValues.name } })
+    }
+
+    const analytics = await Analytics.aggregate(aggregateTunnel)
+    // console.log(analytics)
+    return res.status(200).json({ analytics, start, end })
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'Internal error' })
   }
 }
 
-exports.getSessionByPages = async (req, res) => {
+exports.getHeatmapPossibility = async (req, res) => {
   try {
-    const { appId } = req.params
-    const analytics = await Analytics.aggregate([
+    const graphSettings = JSON.parse(req.params.graphSettings)
+    const { appId, graphPeriod, selectedTags, event } = graphSettings
+    const { start, end } = getIsoDateFromTimestamp(graphPeriod)
+
+    const aggregateTunnel = [
       { $match: { appId } },
       {
-        $group: {
-          _id: { page: '$url', sessionId: '$sessionId' },
-          count: { $sum: 1 },
+        $match: {
+          timestamp: {
+            $gte: new Date(start),
+            $lt: new Date(end),
+          },
+        },
+      },
+      { $match: { event: 'click' } },
+      {
+        $match: {
+          x: { $exists: true },
+          y: { $exists: true },
         },
       },
       {
         $group: {
-          _id: '$_id.page',
-          uniqueVisitors: { $sum: 1 },
+          _id: null,
+          uniqueUrls: { $addToSet: '$url' },
         },
       },
       {
-        $sort: { uniqueVisitors: -1 },
+        $project: {
+          _id: 0,
+          uniqueUrls: 1,
+        },
       },
-    ])
+    ]
+    const analytics = await Analytics.aggregate(aggregateTunnel)
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'Internal error' })
   }
 }
-
-exports.getSessionByTags = async (req, res) => {
+exports.getHeatmapData = async (req, res) => {
   try {
-    const { appId } = req.params
-    const analytics = await Analytics.aggregate([
+    const graphSettings = JSON.parse(req.params.graphSettings)
+    const { appId, graphPeriod, selectedTags, event, url } = graphSettings
+    const { start, end } = getIsoDateFromTimestamp(graphPeriod)
+
+    const aggregateTunnel = [
       { $match: { appId } },
       {
-        $group: {
-          _id: { tag: '$directiveTag', sessionId: '$sessionId' },
-          count: { $sum: 1 },
+        $match: {
+          timestamp: {
+            $gte: new Date(start),
+            $lt: new Date(end),
+          },
         },
       },
+      { $match: { event: 'click' } },
+      { $match: { url: url } },
       {
-        $group: {
-          _id: '$_id.tag',
-          uniqueVisitors: { $sum: 1 },
+        $match: {
+          x: { $exists: true },
+          y: { $exists: true },
         },
       },
-      {
-        $sort: { uniqueVisitors: -1 },
-      },
-    ])
+    ]
+    const analytics = await Analytics.aggregate(aggregateTunnel)
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
