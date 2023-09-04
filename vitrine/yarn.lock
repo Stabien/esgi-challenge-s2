@@ -1495,10 +1495,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-tracker-vite@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/tracker-vite/-/tracker-vite-0.1.2.tgz#39f660ec69fb4beda313bb7c858fbf5020d512c0"
-  integrity sha512-clBWn5jpIvmGyAa0G1GZnjNtSlc8nzZefVBrg84Hf2VfVxkio/pJ3GAUNYjzJDU/01R/DHzZPk8kk8FDHGrRFw==
+tracker-vite@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/tracker-vite/-/tracker-vite-0.1.4.tgz#91cf2175a90a347e7fd0a268618d65328354e9eb"
+  integrity sha512-YIe/l1hlWguMp5i042l/EcSuIJ9Cy9+Ga5dfow9D8riQbEahLcbkkojGUPXIRWA+wWOJpfO82vuqC2yne7XE5A==
   dependencies:
     socket.io-client "^4.7.2"
     vue "^3.3.4"
