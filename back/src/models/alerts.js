@@ -11,8 +11,7 @@ module.exports = sequelize.define(
     },
     graphUuid:{
      type: Sequelize.DataTypes.UUID,
-
-   },
+    },
     type: {
       type: Sequelize.STRING,
     },

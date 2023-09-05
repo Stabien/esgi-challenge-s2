@@ -17,7 +17,6 @@ exports.addAlert = async (req, res) => {
   const uuid = randomUUID()
   const dataAlert = {
     uuid,
-    // ...body,
     app_id:body.app_id,
     graph_uuid: body.graphUuid,
     type:body.type,
@@ -27,7 +26,6 @@ exports.addAlert = async (req, res) => {
     timeBeforeNewAlert: body.time_before_new_alert,
     timeScale: body.time_scale,
     value_to_trigger:body.valueToTrigger
-    
   }
   try {
     const alert = await Alerts.create(dataAlert)

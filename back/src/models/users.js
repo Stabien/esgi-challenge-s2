@@ -64,6 +64,5 @@ const Users = sequelize.define(
 
 Users.hasOne(Kbis, { as: 'kbis', foreignKey: 'userUuid' })
 Users.hasMany(Graphs, { foreignKey: 'userUuid' })
-Users.hasMany(Alerts, { foreignKey: 'userUuid'})
 
 module.exports = Users
