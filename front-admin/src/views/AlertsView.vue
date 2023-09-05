@@ -12,18 +12,16 @@ const userRequest = ref();
 const isModalOpen = ref(false);
 const userAlerts = ref([]);
 const tagsList = ref([]);
+const userGraphList = ref([]);
 const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const alertSettings = ref({
   appId: user.value.decodedToken.appId,
-  data_type: 'quantity', //percentages or quantity
-  graph_type: 'BarChart', //list of selected Graphs
-  graphSize: 1, //size of graph: 1 to 10
-  timeScale: 'D', //D, W, M,Y day, week, month, year
-  tagUuid: [],
-  event: 'click',
+  // userUuid: user.value.decodedToken.uuid,
+  // data_type: 'quantity', //percentages or quantity
+  // graph_type: 'BarChart', //list of selected Graphs
+
   name: '',
-  userUuid: user.value.decodedToken.uuid,
   type: 'email', //email or http
   email: '',
   uri: '',
@@ -39,6 +37,24 @@ const updateParentObject = (newObject) => {
   alertSettings.value = newObject;
 };
 
+const fetchUserGraphList = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${
+        userRequest.value.decodedToken.uuid
+      }`,
+      {
+        method: 'GET'
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
+
+    const data = await response.json();
+    userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
+  } catch (error) {
+    console.log(error);
+  }
+};
 const fetchUserRequest = async () => {
   try {
     const headers = new Headers();
@@ -61,24 +77,24 @@ const fetchUserRequest = async () => {
     console.log(error);
   }
 };
-const fetchTags = async () => {
-  try {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/tag/${userRequest.value.uuid}`,
-      requestOptions
-    );
-    if (!response.ok) throw new Error('Something went wrong');
+// const fetchTags = async () => {
+//   try {
+//     var requestOptions = {
+//       method: 'GET',
+//       redirect: 'follow'
+//     };
+//     const response = await fetch(
+//       `${import.meta.env.VITE_PROD_API_URL}/api/tag/${userRequest.value.uuid}`,
+//       requestOptions
+//     );
+//     if (!response.ok) throw new Error('Something went wrong');
 
-    const data = await response.json();
-    tagsList.value = data;
-  } catch (error) {
-    console.log(error);
-  }
-};
+//     const data = await response.json();
+//     tagsList.value = data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 const fetchUsersAlerts = async () => {
   try {
@@ -142,7 +158,7 @@ const postUserAlerts = async () => {
 
 const init = async () => {
   await fetchUserRequest();
-  await fetchTags();
+  await fetchUserGraphList();
   await fetchUsersAlerts();
 };
 

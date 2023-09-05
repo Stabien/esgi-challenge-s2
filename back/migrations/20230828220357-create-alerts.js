@@ -11,11 +11,11 @@ module.exports = {
       app_id: {
         type: Sequelize.STRING,
       },
-      user_uuid: {
+      // user_uuid: {
+      //   type: Sequelize.DataTypes.UUID,
+      // },
+      graph_uuid: {
         type: Sequelize.DataTypes.UUID,
-      },
-      tag_uuid: {
-        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.UUID),
         allowNull: true,
       },
       type: {
@@ -33,22 +33,22 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      event: {
-        type: Sequelize.STRING,
-      },
-
       time_before_new_alert: {
         type: Sequelize.STRING,
       },
-      data_type: {
-        type: Sequelize.STRING,
-      },
-      time_scale: {
-        type: Sequelize.STRING,
-      },
-      value_to_trigger: {
-        type: Sequelize.STRING,
-      },
+      // event: {
+      //   type: Sequelize.STRING,
+      // },
+
+      // data_type: {
+      //   type: Sequelize.STRING,
+      // },
+      // time_scale: {
+      //   type: Sequelize.STRING,
+      // },
+      // value_to_trigger: {
+      //   type: Sequelize.STRING,
+      // },
     })
   },
   async down(queryInterface, Sequelize) {
