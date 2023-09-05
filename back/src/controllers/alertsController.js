@@ -2,9 +2,10 @@ const { randomUUID } = require('crypto')
 const Alerts = require('../models/alerts')
 
 exports.getAlertsByUserUuid = async (req, res) => {
-  const { userUuid } = req.params
+  const { appId } = req.params
+  console.log(appId);
   try {
-    const alert = await Alerts.findAll({ where: { userUuid } })
+    const alert = await Alerts.findAll({ where: { app_id:appId } })
     return res.status(200).json(alert)
   } catch (e) {
     console.log(e)
@@ -17,16 +18,17 @@ exports.addAlert = async (req, res) => {
   const uuid = randomUUID()
   const dataAlert = {
     uuid,
-    app_id:body.app_id,
-    graph_uuid: body.graphUuid,
+    appId:body.app_id,
+    graphUuid: body.graphUuid,
     type:body.type,
     email:body.email,
     uri:body.uri,
     name: body.name,
     timeBeforeNewAlert: body.time_before_new_alert,
     timeScale: body.time_scale,
-    value_to_trigger:body.valueToTrigger
+    valueToTrigger:body.valueToTrigger
   }
+  console.log(dataAlert);
   try {
     const alert = await Alerts.create(dataAlert)
     alert.save()
@@ -39,9 +41,9 @@ exports.addAlert = async (req, res) => {
 
 exports.putAlerts = async (req, res) => {
   try {
-    const { userUuid } = req.params
-
-    await Alerts.update(req.body, { where: { uuid: userUuid } })
+    const { uuid } = req.params
+console.log(req.body);
+    await Alerts.update({...req.body,timeScale:req.body.time_scale,timeBeforeNewAlert:req.body.time_before_new_alert }, { where: { uuid } })
     return res.send(200)
   } catch (error) {
     console.log(error)
@@ -51,11 +53,11 @@ exports.putAlerts = async (req, res) => {
 
 exports.deleteAlerts = async (req, res) => {
   try {
-    const { userUuid } = req.params
+    const { uuid } = req.params
 
     const tag = await Alerts.destroy({
       where: {
-        uuid: userUuid,
+        uuid,
       },
     })
     return res.status(201).json(tag)

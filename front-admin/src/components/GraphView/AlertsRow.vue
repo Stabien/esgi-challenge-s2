@@ -5,14 +5,13 @@ import { useToast } from 'vue-toastification';
 // eslint-disable-next-line vue/valid-define-emits
 const emit = defineEmits();
 const toast = useToast();
-const userGraphList = ref([]);
 
-const props = defineProps(['alert', 'fetchAlerts', 'fetchUserGraphList']);
+const props = defineProps(['alert', 'fetchAlerts', 'userGraphList']);
 const isModalOpen = ref(false);
 const { tagsList } = inject('tagsList');
 
 const alertClone = ref(props.alert);
-
+console.log(alertClone.value.appId);
 const openModal = (isOpen) => (isModalOpen.value = isOpen);
 const closeModal = () => {
   cancelChanges();
@@ -24,22 +23,6 @@ const updateParentObject = (newObject) => {
 };
 
 const cancelChanges = () => (alertClone.value = props.graph);
-const fetchUserGraphList = async () => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${userRequest.value.uuid}`,
-      {
-        method: 'GET'
-      }
-    );
-    if (!response.ok) throw new Error('Something went wrong');
-
-    const data = await response.json();
-    userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
-  } catch (error) {
-    console.log(error);
-  }
-};
 const isSame = () => {
   const keys1 = Object.keys(alertClone.value);
   const keys2 = Object.keys(props.alert);
@@ -68,6 +51,7 @@ const updateAlert = async () => {
     props.fetchAlerts();
 
     toast('Alert updated succesfully');
+    isModalOpen.value = false;
   } catch (error) {
     console.log(error);
   }
@@ -86,6 +70,7 @@ const deleteAlert = async () => {
     }
     props.fetchAlerts();
     toast('Alert delete successfully');
+    isModalOpen.value = false;
   } catch (error) {
     console.log(error);
   }
@@ -107,7 +92,7 @@ const deleteAlert = async () => {
     </div>
     <Modal :toggle="closeModal" v-if="isModalOpen" class="left-24 bg-white right-40 w-[500px]">
       <AlertsItem
-        :userGraphList="userGraphList"
+        :userGraphList="props.userGraphList"
         :tagsList="tagsList"
         @update:childObject="updateParentObject"
         :alertSettings="alertClone"

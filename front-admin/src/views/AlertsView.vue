@@ -17,6 +17,7 @@ const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const alertSettings = ref({
   appId: user.value.decodedToken.appId,
+  app_id: user.value.decodedToken.appId,
   graphUuid: '',
   // userUuid: user.value.decodedToken.uuid,
   // data_type: 'quantity', //percentages or quantity
@@ -79,11 +80,12 @@ const fetchUserRequest = async () => {
 
 const fetchUsersAlerts = async () => {
   try {
+    console.log(userRequest.value);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/alerts/${userRequest.value.uuid}`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/alerts/${userRequest.value.appId}`,
       {
         method: 'GET',
         headers,
@@ -159,31 +161,24 @@ onMounted(() => {
           @update:childObject="updateParentObject"
           :alertSettings="alertSettings"
         />
-        <!-- <GraphSettingsItem
-          :hideGraphData="true"
-          :hideSize="true"
-          :disable="true"
-          @update:childObject="updateParentObject"
-          :graphSettings="userGraphList.find((graph) => graph.uuid === alertSettings.graphUuid)"
-          :fetchTags="fetchTags"
-        /> -->
         <Button type="submit"> Save</Button>
       </form>
     </Modal>
     <AlertsRow
       v-for="alert in userAlerts.map(
-        ({ tag_uuid, timeBeforeNewAlert, timeScale, dataType, ...rest }) => ({
+        ({ tag_uuid, timeBeforeNewAlert, valueToTrigger, timeScale, dataType, ...rest }) => ({
           tagUuid: tag_uuid,
           data_type: dataType,
           time_scale: timeScale,
           time_before_new_alert: timeBeforeNewAlert,
+          value_to_trigger: valueToTrigger,
           ...rest
         })
       )"
       :key="alert.uuid"
       :alert="alert"
       :fetchAlerts="fetchUsersAlerts"
-      :fetchTags="fetchTags"
+      :userGraphList="userGraphList"
     />
   </main>
 </template>

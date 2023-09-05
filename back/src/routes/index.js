@@ -70,7 +70,8 @@ const routes = (app) => {
 
   // alerts
   app.route('/api/alerts').post(addAlert)
-  app.route('/api/alerts/:userUuid').get(getAlertsByUserUuid).put(putAlerts).delete(deleteAlerts)
+  app.route('/api/alerts/:appId').get(getAlertsByUserUuid)
+  app.route('/api/alerts/:uuid').put(putAlerts).delete(deleteAlerts)
   //for update and delete it's alert uuid for the front
 }
 
