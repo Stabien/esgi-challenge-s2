@@ -9,17 +9,10 @@ module.exports = sequelize.define(
       primaryKey: true,
       defaultValue: Sequelize.DataTypes.UUIDV4,
     },
-    user_uuid: {
-      type: Sequelize.DataTypes.UUID,
-      references: 'user',
-      referencesKey: 'uuid',
-    },
-    tag_uuid: {
-      type: Sequelize.DataTypes.UUID,
-      references: 'tags',
-      referencesKey: 'uuid',
-      allowNull: true,
-    },
+    graphUuid:{
+     type: Sequelize.DataTypes.UUID,
+
+   },
     type: {
       type: Sequelize.STRING,
     },
@@ -37,13 +30,7 @@ module.exports = sequelize.define(
     valueToTrigger: {
       type: Sequelize.STRING,
     },
-    dataType: {
-      type: Sequelize.STRING,
-    },
     timeScale: {
-      type: Sequelize.STRING,
-    },
-    event: {
       type: Sequelize.STRING,
     },
     name: {

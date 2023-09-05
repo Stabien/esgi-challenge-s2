@@ -7,13 +7,12 @@ const props = defineProps([
   'hideGraphData',
   'hideSize',
   'graphSettings',
-  'fetchTags'
+  'fetchTags',
+  'disable'
 ]);
 const toast = useToast();
 // eslint-disable-next-line vue/valid-define-emits
 const emit = defineEmits();
-
-// const { props.graphSettings } = inject('props.graphSettings');
 const tagNameInput = ref('');
 const { tagsList } = inject('tagsList');
 const { user } = inject('user');
@@ -24,14 +23,19 @@ const eventList = ['click', 'newSession', 'print', 'CTR', 'funnel'];
 const selectedGraphValue = ['BarChart', 'DoughnutChart', 'LineChart', 'PieChart', 'RadarChart'];
 
 const setGraphSize = (size) => {
+  if (props.disable) return;
   const updatedObject = { ...props.graphSettings, graph_size: size };
   emit('update:childObject', updatedObject);
 };
 const setGraphPeriod = (period) => {
+  if (props.disable) return;
+
   const updatedObject = { ...props.graphSettings, timeScale: period };
   emit('update:childObject', updatedObject);
 };
 const setGraphValue = (value) => {
+  if (props.disable) return;
+
   const updatedObject = { ...props.graphSettings };
   updatedObject.data_type = value;
 
@@ -45,6 +49,8 @@ const setGraphValue = (value) => {
   emit('update:childObject', updatedObject);
 };
 const handleSelectEvent = (event) => {
+  if (props.disable) return;
+
   const updatedObject = { ...props.graphSettings, event: event };
   if (event === 'newSession' || event === 'print' || event !== 'funnel') updatedObject.tagUuid = [];
   if (
@@ -57,6 +63,8 @@ const handleSelectEvent = (event) => {
   emit('update:childObject', updatedObject);
 };
 const handleSelectTag = (tag) => {
+  if (props.disable) return;
+
   const updatedObject = { ...props.graphSettings };
   if (updatedObject.event !== 'funnel') updatedObject.tagUuid = [];
   if (props.graphSettings.tagUuid.includes(tag.uuid)) {
@@ -74,6 +82,8 @@ const handleSelectTag = (tag) => {
   emit('update:childObject', updatedObject);
 };
 const handleSelectGraphList = (graph) => {
+  if (props.disable) return;
+
   const updatedObject = { ...props.graphSettings };
 
   if (props.graphSettings.selectedGraph === graph) {

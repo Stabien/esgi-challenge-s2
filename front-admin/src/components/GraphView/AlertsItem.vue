@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 
-const props = defineProps(['tagsList', 'alertSettings']);
+const props = defineProps(['tagsList', 'userGraphList', 'alertSettings']);
 console.log(props.alertSettings);
 console.log(props.tagsList);
 // eslint-disable-next-line vue/valid-define-emits
@@ -9,6 +9,10 @@ const emit = defineEmits();
 const alertType = ['email', 'http'];
 const time_scaleList = ['day', 'hours'];
 
+const setGraphUuid = (graph) => {
+  const updatedObject = { ...props.alertSettings, graphUuid: graph.uuid };
+  emitAlert(updatedObject);
+};
 const setAlertType = (type) => {
   const updatedObject = { ...props.alertSettings, type: type };
   emitAlert(updatedObject);
@@ -49,6 +53,21 @@ const emitAlert = (updatedObject) => emit('update:childObject', updatedObject);
 </script>
 
 <template>
+  <div class="flex justify-between gap-4">
+    <div
+      :class="
+        props.alertSettings.graphUuid === userGraph.uuid
+          ? 'text-palette-primary-500 border border-palette-primary-500 '
+          : 'text-palette-gray-300'
+      "
+      class="text-sm rounded p-1 cursor-pointer flex items-center justify-between dark:text-soft-black relative"
+      v-for="userGraph in userGraphList"
+      :key="userGraph"
+      @click="setGraphUuid(userGraph)"
+    >
+      {{ userGraph.name }}
+    </div>
+  </div>
   <div class="w-1/2 mx-auto flex justify-between gap-4">
     <div
       type="button"

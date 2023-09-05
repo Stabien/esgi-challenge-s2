@@ -17,15 +17,17 @@ exports.addAlert = async (req, res) => {
   const uuid = randomUUID()
   const dataAlert = {
     uuid,
-    ...body,
+    // ...body,
+    app_id:body.app_id,
+    graph_uuid: body.graphUuid,
+    type:body.type,
+    email:body.email,
+    uri:body.uri,
     name: body.name,
-    event: body.event,
-    dataType: body.data_type,
-    timeScale: body.time_scale,
     timeBeforeNewAlert: body.time_before_new_alert,
-    user_uuid: body.userUuid,
-    tag_uuid: body.tagUuid,
-    value_to_trigger: body.valueToTrigger,
+    timeScale: body.time_scale,
+    value_to_trigger:body.valueToTrigger
+    
   }
   try {
     const alert = await Alerts.create(dataAlert)

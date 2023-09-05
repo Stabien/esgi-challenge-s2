@@ -5,7 +5,9 @@ import { useToast } from 'vue-toastification';
 // eslint-disable-next-line vue/valid-define-emits
 const emit = defineEmits();
 const toast = useToast();
-const props = defineProps(['alert', 'fetchAlerts', 'fetchTags']);
+const userGraphList = ref([]);
+
+const props = defineProps(['alert', 'fetchAlerts', 'fetchUserGraphList']);
 const isModalOpen = ref(false);
 const { tagsList } = inject('tagsList');
 
@@ -22,7 +24,22 @@ const updateParentObject = (newObject) => {
 };
 
 const cancelChanges = () => (alertClone.value = props.graph);
+const fetchUserGraphList = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${userRequest.value.uuid}`,
+      {
+        method: 'GET'
+      }
+    );
+    if (!response.ok) throw new Error('Something went wrong');
 
+    const data = await response.json();
+    userGraphList.value = [...data.filter((item) => !userGraphList.value.includes(item))];
+  } catch (error) {
+    console.log(error);
+  }
+};
 const isSame = () => {
   const keys1 = Object.keys(alertClone.value);
   const keys2 = Object.keys(props.alert);
@@ -89,14 +106,8 @@ const deleteAlert = async () => {
       </div>
     </div>
     <Modal :toggle="closeModal" v-if="isModalOpen" class="left-24 bg-white right-40 w-[500px]">
-      <GraphSettingsItem
-        :hideGraphData="true"
-        :hideSize="true"
-        @update:childObject="updateParentObject"
-        :graphSettings="alertClone"
-        :fetchTags="props.fetchTags"
-      />
       <AlertsItem
+        :userGraphList="userGraphList"
         :tagsList="tagsList"
         @update:childObject="updateParentObject"
         :alertSettings="alertClone"

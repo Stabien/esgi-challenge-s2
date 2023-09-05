@@ -17,6 +17,7 @@ const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const alertSettings = ref({
   appId: user.value.decodedToken.appId,
+  graphUuid: '',
   // userUuid: user.value.decodedToken.uuid,
   // data_type: 'quantity', //percentages or quantity
   // graph_type: 'BarChart', //list of selected Graphs
@@ -40,9 +41,7 @@ const updateParentObject = (newObject) => {
 const fetchUserGraphList = async () => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${
-        userRequest.value.decodedToken.uuid
-      }`,
+      `${import.meta.env.VITE_PROD_API_URL}/api/analytics/GraphSettings/${userRequest.value.uuid}`,
       {
         method: 'GET'
       }
@@ -77,24 +76,6 @@ const fetchUserRequest = async () => {
     console.log(error);
   }
 };
-// const fetchTags = async () => {
-//   try {
-//     var requestOptions = {
-//       method: 'GET',
-//       redirect: 'follow'
-//     };
-//     const response = await fetch(
-//       `${import.meta.env.VITE_PROD_API_URL}/api/tag/${userRequest.value.uuid}`,
-//       requestOptions
-//     );
-//     if (!response.ok) throw new Error('Something went wrong');
-
-//     const data = await response.json();
-//     tagsList.value = data;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 const fetchUsersAlerts = async () => {
   try {
@@ -172,18 +153,20 @@ onMounted(() => {
     <Button @click="() => toggleModalOpen(!isModalOpen)"> Tooggle</Button>
     <Modal :toggle="() => toggleModalOpen(false)" v-if="isModalOpen">
       <form class="flex flex-col gap-2" @submit.prevent="postUserAlerts">
-        <GraphSettingsItem
-          :hideGraphData="true"
-          :hideSize="true"
-          @update:childObject="updateParentObject"
-          :graphSettings="alertSettings"
-          :fetchTags="fetchTags"
-        />
         <AlertsItem
           :tagsList="tagsList"
+          :userGraphList="userGraphList"
           @update:childObject="updateParentObject"
           :alertSettings="alertSettings"
         />
+        <!-- <GraphSettingsItem
+          :hideGraphData="true"
+          :hideSize="true"
+          :disable="true"
+          @update:childObject="updateParentObject"
+          :graphSettings="userGraphList.find((graph) => graph.uuid === alertSettings.graphUuid)"
+          :fetchTags="fetchTags"
+        /> -->
         <Button type="submit"> Save</Button>
       </form>
     </Modal>
