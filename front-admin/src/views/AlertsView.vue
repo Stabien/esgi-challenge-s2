@@ -152,7 +152,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <Button @click="() => toggleModalOpen(!isModalOpen)"> Tooggle</Button>
+    <Button @click="() => toggleModalOpen(!isModalOpen)"> Create Alerts</Button>
     <Modal :toggle="() => toggleModalOpen(false)" v-if="isModalOpen">
       <form class="flex flex-col gap-2" @submit.prevent="postUserAlerts">
         <AlertsItem
@@ -164,21 +164,23 @@ onMounted(() => {
         <Button type="submit"> Save</Button>
       </form>
     </Modal>
-    <AlertsRow
-      v-for="alert in userAlerts.map(
-        ({ tag_uuid, timeBeforeNewAlert, valueToTrigger, timeScale, dataType, ...rest }) => ({
-          tagUuid: tag_uuid,
-          data_type: dataType,
-          time_scale: timeScale,
-          time_before_new_alert: timeBeforeNewAlert,
-          value_to_trigger: valueToTrigger,
-          ...rest
-        })
-      )"
-      :key="alert.uuid"
-      :alert="alert"
-      :fetchAlerts="fetchUsersAlerts"
-      :userGraphList="userGraphList"
-    />
+    <div class="flex flex-col gap-4">
+      <AlertsRow
+        v-for="alert in userAlerts.map(
+          ({ tag_uuid, timeBeforeNewAlert, valueToTrigger, timeScale, dataType, ...rest }) => ({
+            tagUuid: tag_uuid,
+            data_type: dataType,
+            time_scale: timeScale,
+            time_before_new_alert: timeBeforeNewAlert,
+            value_to_trigger: valueToTrigger,
+            ...rest
+          })
+        )"
+        :key="alert.uuid"
+        :alert="alert"
+        :fetchAlerts="fetchUsersAlerts"
+        :userGraphList="userGraphList"
+      />
+    </div>
   </main>
 </template>

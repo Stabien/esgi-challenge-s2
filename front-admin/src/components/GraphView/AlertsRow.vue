@@ -6,12 +6,11 @@ import { useToast } from 'vue-toastification';
 const emit = defineEmits();
 const toast = useToast();
 
+const { tagsList } = inject('tagsList');
 const props = defineProps(['alert', 'fetchAlerts', 'userGraphList']);
 const isModalOpen = ref(false);
-const { tagsList } = inject('tagsList');
-
 const alertClone = ref(props.alert);
-console.log(alertClone.value.appId);
+
 const openModal = (isOpen) => (isModalOpen.value = isOpen);
 const closeModal = () => {
   cancelChanges();
@@ -22,7 +21,7 @@ const updateParentObject = (newObject) => {
   alertClone.value = newObject;
 };
 
-const cancelChanges = () => (alertClone.value = props.graph);
+const cancelChanges = () => (alertClone.value = props.alert);
 const isSame = () => {
   const keys1 = Object.keys(alertClone.value);
   const keys2 = Object.keys(props.alert);
@@ -78,19 +77,24 @@ const deleteAlert = async () => {
 </script>
 
 <template>
-  <div class="relative">
-    <div class="group grid grid-cols-graph gap-4">
-      <span class="text-start truncate">
+  <div class="relative mx-auto">
+    <div
+      :style="{
+        gridTemplateColumns: `1fr auto`
+      }"
+      class="group grid gap-4 shadow-xl shadow-palette-primary-500"
+    >
+      <div class="text-start truncate w-[10rem]">
         {{ props.alert.name }}
-      </span>
+      </div>
       <div
         @click.stop="openModal(!isModalOpen)"
-        class="hidden group-hover:inline-flex justify-center items-center hover:bg-palette-primary-100 px-2 relative"
+        class="justify-center w-min flex rounded cursor-pointer items-center hover:bg-palette-primary-100 px-2 z-10"
       >
         <DotsIcon width="16" height="16" />
       </div>
     </div>
-    <Modal :toggle="closeModal" v-if="isModalOpen" class="left-24 bg-white right-40 w-[500px]">
+    <Modal :toggle="closeModal" v-show="isModalOpen" class="left-24 bg-white right-40 w-[500px]">
       <AlertsItem
         :userGraphList="props.userGraphList"
         :tagsList="tagsList"
@@ -99,14 +103,17 @@ const deleteAlert = async () => {
       />
 
       <div class="grid grid-cols-3 gap-8">
-        <Button size="sm" variant="destructive" @click="deleteAlert">Delete</Button>
+        <Button type="button" size="sm" variant="destructive" @click="deleteAlert">Delete</Button>
         <div class="col-span-2 flex justify-end gap-2">
-          <Button size="sm" variant="outline" v-if="!isSame()" @click="cancelChanges"
+          <Button type="button" size="sm" variant="outline" v-if="!isSame()" @click="cancelChanges"
             >Cancel alert</Button
           >
-          <Button size="sm" v-if="!isSame()" @click="updateAlert">Update alert</Button>
+          <Button type="button" size="sm" v-if="!isSame()" @click="updateAlert"
+            >Update alert</Button
+          >
         </div>
       </div>
     </Modal>
   </div>
+  <hr class="w-[260px] mx-auto" />
 </template>
