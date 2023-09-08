@@ -1,6 +1,7 @@
 const Analytics = require('../models/analytics')
 const Tags = require('../models/tags')
 const Graphs = require('../models/graphs')
+const Alerts = require('../models/alerts')
 const { getIsoDateFromTimestamp } = require('../helpers')
 
 exports.postGraphSettings = async (req, res) => {
@@ -63,11 +64,11 @@ exports.deleteGraphSettings = async (req, res) => {
 }
 
 exports.addAnalytics = async (req, res) => {
-  const { body } = req
-  const analytics = new Analytics(body)
-
   try {
+    const { body } = req
+    const analytics = new Analytics(body)
     await analytics.save()
+    handleAlerts(body)
     return res.status(201).json(analytics)
   } catch (e) {
     console.log(e)
@@ -202,5 +203,100 @@ exports.getHeatmapData = async (req, res) => {
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'Internal error' })
+  }
+}
+
+const handleAlerts = async (body) => {
+  try {
+    //1-Fetch alerts by appId
+    const alertsList = await Alerts.findAll({ where: { appId: body.appId } })
+
+    //2-Fetch graphs that are associated to the alerts
+    let associedGraph = new Array(alertsList.length).fill(undefined)
+    for (const [index, alertsDoc] of alertsList.entries()) {
+      const graphUuid = alertsDoc.dataValues.graphUuid
+      const graph = await Graphs.findOne({ where: { uuid: graphUuid } })
+      associedGraph[index] = graph.dataValues
+    }
+    if (associedGraph.length <= 0) return
+
+    //3-For each associed Graph, get the data
+    let associedData = new Array(associedGraph.length).fill(undefined)
+    for (const [index, graphSettings] of associedGraph.entries()) {
+      const { timeScale, tagUuid, event } = graphSettings
+      const { appId } = body
+
+      const { start, end } = getIsoDateFromTimestamp(timeScale)
+
+      const aggregateTunnel = [
+        { $match: { appId } },
+        {
+          $match: {
+            timestamp: {
+              $gte: new Date(start),
+              $lt: new Date(end),
+            },
+          },
+        },
+      ]
+      if (event === 'CTR') {
+        aggregateTunnel.push({
+          $match: {
+            $or: [{ event: 'click' }, { event: 'print' }],
+          },
+        })
+      } else if (event === 'funnel') {
+      } else {
+        aggregateTunnel.push({ $match: { event } })
+      }
+      if (tagUuid > 0) {
+        const tagList = []
+        for (const tagUuidItem of tagUuid) {
+          const tags = await Tags.findOne({ where: { uuid: tagUuidItem } })
+          tagList.push(tags.dataValues)
+        }
+
+        aggregateTunnel.push({
+          $match: {
+            $or: tagList.map((t) => ({
+              directiveTag: t.name,
+            })),
+          },
+        })
+
+        // aggregateTunnel.push({ $match: { directiveTag: tags.dataValues.name } })
+      }
+
+      const analytics = await Analytics.aggregate(aggregateTunnel)
+      associedData[index] = analytics
+    }
+
+    //4-check if need to send alerts
+    associedGraph.forEach((graph, index) => {
+      console.log(graph.event)
+      switch (graph.event) {
+        case 'click':
+          return getClickByPage()
+
+        case 'newSession':
+          return getEventsByTimestamp()
+
+        case 'print':
+          return getPrintByPage()
+        case 'CTR':
+          return getCTRBy()
+        case 'funnel':
+          return getFunnel()
+
+        default:
+          return getClickByPage()
+      }
+    })
+
+    //X-Check if need to send alerts (too soon)
+
+    //X-Send the alerts
+  } catch (error) {
+    console.log(error)
   }
 }
