@@ -273,23 +273,24 @@ const handleAlerts = async (body) => {
 
     //4-check if need to send alerts
     associedGraph.forEach((graph, index) => {
-      console.log(graph.event)
+      console.log(graph)
+
       switch (graph.event) {
         case 'click':
-          return getClickByPage()
+          return getClickByPage(graph, associedData[index])
 
         case 'newSession':
-          return getEventsByTimestamp()
+          return getEventsByTimestamp(graph, associedData[index])
 
         case 'print':
-          return getPrintByPage()
+          return getPrintByPage(graph, associedData[index])
         case 'CTR':
-          return getCTRBy()
+          return getCTRBy(graph, associedData[index])
         case 'funnel':
-          return getFunnel()
+          return getFunnel(graph, associedData[index])
 
         default:
-          return getClickByPage()
+          return getClickByPage(graph, associedData[index])
       }
     })
 
@@ -300,3 +301,10 @@ const handleAlerts = async (body) => {
     console.log(error)
   }
 }
+
+//need to make the count for every function, but not by day
+const getClickByPage = (graphSettings, data) => {}
+const getEventsByTimestamp = (graphSettings, data) => {}
+const getPrintByPage = (graphSettings, data) => {}
+const getCTRBy = (graphSettings, data) => {}
+const getFunnel = (graphSettings, data) => {}
