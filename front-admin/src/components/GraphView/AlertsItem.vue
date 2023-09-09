@@ -124,9 +124,8 @@ const emitAlert = (updatedObject) => emit('update:childObject', updatedObject);
       {{ timeScale }}
     </div>
   </div>
-  <div class="flex items-center gap-4">
+  <div class="flex items-center gap-4" title="see your graph to check if quantity or percentages">
     Value to trigger: {{ props.alertSettings.valueToTrigger }}
-    {{ props.alertSettings.data_type === 'quantity' ? 'units' : '%' }}
     <input
       class="w-[80px]"
       type="number"

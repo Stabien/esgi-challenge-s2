@@ -2,7 +2,7 @@ const Analytics = require('../models/analytics')
 const Tags = require('../models/tags')
 const Graphs = require('../models/graphs')
 const Alerts = require('../models/alerts')
-const { sendAlrt } = require('../services')
+const { sendAlert } = require('../services')
 const { getIsoDateFromTimestamp } = require('../helpers')
 
 exports.postGraphSettings = async (req, res) => {
@@ -142,7 +142,8 @@ exports.getHeatmapPossibility = async (req, res) => {
     const graphSettings = JSON.parse(req.params.graphSettings)
     const { appId, graphPeriod, selectedTags, event } = graphSettings
     const { start, end } = getIsoDateFromTimestamp(graphPeriod)
-
+    console.log('start', start)
+    console.log('end', end)
     const aggregateTunnel = [
       { $match: { appId } },
       {
@@ -174,6 +175,7 @@ exports.getHeatmapPossibility = async (req, res) => {
       },
     ]
     const analytics = await Analytics.aggregate(aggregateTunnel)
+    console.log('analytics', analytics)
     return res.status(200).json(analytics)
   } catch (e) {
     console.log(e)
@@ -300,7 +302,6 @@ const handleAlerts = async (body) => {
         default:
           value = getLength(graph, associedData[index])
       }
-      console.log('value', value)
 
       const valueToTrigger = parseInt(alertsList[index].dataValues.valueToTrigger)
       if (value >= valueToTrigger) {

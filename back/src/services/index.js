@@ -16,10 +16,10 @@ exports.sendEmail = async (mailOptions) => {
 
 exports.sendHttpRequest = async (uri, body) => {
   const options = {
-    mode: "cors",
-    body: "Vous avez reçu une alerte",
+    mode: 'cors',
+    body: 'Vous avez reçu une alerte',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   }
 
@@ -31,13 +31,13 @@ exports.sendHttpRequest = async (uri, body) => {
 
 exports.sendAlert = async (alert) => {
   if (alert.uri) {
-    await sendHttpRequest(alert.uri)
+    await this.sendHttpRequest(alert.uri)
   } else {
-    await sendEmail({ 
-      from: "no-reply@esgi-challenge-s2.fr", 
-      to: alert.email, 
-      subject: "Nouvelle alerte sur votre dashboard", 
-      text: "Vous avez reçu une nouvelle alerte"
+    await this.sendEmail({
+      from: 'no-reply@esgi-challenge-s2.fr',
+      to: alert.email,
+      subject: 'Nouvelle alerte sur votre dashboard',
+      text: 'Vous avez reçu une nouvelle alerte',
     })
   }
 }
