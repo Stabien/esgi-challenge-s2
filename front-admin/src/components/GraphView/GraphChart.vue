@@ -176,7 +176,6 @@ const getCTRBy = () => {
   const dataGraphClone = [...dataGraph.value];
   const dataGraphClick = dataGraphClone.filter((data) => data.event === 'click');
   const dataGraphPrint = dataGraphClone.filter((data) => data.event === 'print');
-
   const startDate = new Date(dataGraphStart.value);
   const endDate = new Date(dataGraphEnd.value);
   const daysInRange = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
@@ -230,12 +229,14 @@ const getCTRBy = () => {
 
       const clickOccurrences = dataGraphClick.filter(
         (click) =>
-          click.timestamp.split('T')[0] === clickDate && click.directiveTag === 'CART_BUTTON'
+          click.timestamp.split('T')[0] === clickDate &&
+          click.directiveTag === dataSelectedTag.value[0]
       ).length; // Count occurrences manually
 
       const printOccurrences = dataGraphPrint.filter(
         (print) =>
-          print.timestamp.split('T')[0] === clickDate && print.directiveTag === 'CART_BUTTON'
+          print.timestamp.split('T')[0] === clickDate &&
+          print.directiveTag === dataSelectedTag.value[0]
       ).length; // Count occurrences manually
 
       clickCounts[clickDate] = clickOccurrences;

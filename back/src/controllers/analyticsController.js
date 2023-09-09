@@ -56,6 +56,12 @@ exports.deleteGraphSettings = async (req, res) => {
         uuid: uuid,
       },
     })
+    Alerts.destroy({
+      where: {
+        graphUuid: uuid,
+      },
+    })
+
     return res.status(201).json(tag)
   } catch (error) {
     console.log(error)
@@ -225,9 +231,7 @@ const handleAlerts = async (body) => {
     for (const [index, graphSettings] of associedGraph.entries()) {
       const { timeScale, tagUuid, event } = graphSettings
       const { appId } = body
-
       const { start, end } = getIsoDateFromTimestamp(timeScale)
-
       const aggregateTunnel = [
         { $match: { appId } },
         {
@@ -249,13 +253,12 @@ const handleAlerts = async (body) => {
       } else {
         aggregateTunnel.push({ $match: { event } })
       }
-      if (tagUuid > 0) {
+      if (tagUuid.length > 0) {
         const tagList = []
         for (const tagUuidItem of tagUuid) {
           const tags = await Tags.findOne({ where: { uuid: tagUuidItem } })
           tagList.push(tags.dataValues)
         }
-
         aggregateTunnel.push({
           $match: {
             $or: tagList.map((t) => ({
@@ -266,33 +269,43 @@ const handleAlerts = async (body) => {
 
         // aggregateTunnel.push({ $match: { directiveTag: tags.dataValues.name } })
       }
-
       const analytics = await Analytics.aggregate(aggregateTunnel)
       associedData[index] = analytics
     }
 
     //4-check if need to send alerts
-    associedGraph.forEach((graph, index) => {
-      console.log(graph)
-
+    for (const [index, graph] of associedGraph.entries()) {
+      let value = null
+      console.log(graph.event)
       switch (graph.event) {
         case 'click':
-          return getClickByPage(graph, associedData[index])
+          console.log('click')
+          value = getLength(graph, associedData[index])
 
         case 'newSession':
-          return getEventsByTimestamp(graph, associedData[index])
+          console.log('newMission')
+          value = getLength(graph, associedData[index])
 
         case 'print':
-          return getPrintByPage(graph, associedData[index])
+          console.log('print')
+          value = getLength(graph, associedData[index])
         case 'CTR':
-          return getCTRBy(graph, associedData[index])
+          console.log('CTR')
+          value = getCTRBy(graph, associedData[index])
         case 'funnel':
-          return getFunnel(graph, associedData[index])
+          console.log('funnel')
+          value = await getFunnel(graph, associedData[index])
 
         default:
-          return getClickByPage(graph, associedData[index])
+          value = getLength(graph, associedData[index])
       }
-    })
+      console.log('value', value)
+
+      const valueToTrigger = parseInt(alertsList[index].dataValues.valueToTrigger)
+      if (value >= valueToTrigger) {
+        console.log('GONNA SEND ALERTS')
+      }
+    }
 
     //X-Check if need to send alerts (too soon)
 
@@ -303,8 +316,37 @@ const handleAlerts = async (body) => {
 }
 
 //need to make the count for every function, but not by day
-const getClickByPage = (graphSettings, data) => {}
-const getEventsByTimestamp = (graphSettings, data) => {}
-const getPrintByPage = (graphSettings, data) => {}
-const getCTRBy = (graphSettings, data) => {}
-const getFunnel = (graphSettings, data) => {}
+const getLength = (graphSettings, data) => {
+  // console.log('length', data.length)
+  return data.length
+}
+const getCTRBy = (graphSettings, data) => {
+  const c = data.filter((d) => d.event === 'click').length
+  const p = data.filter((d) => d.event === 'print').length
+
+  //return ratios CTR
+  // console.log('c', c)
+  // console.log('p', p)
+  // console.log('ctr', (c * 100 + 1) / (p + 1))
+  return (c * 100 + 1) / (p + 1)
+}
+const getFunnel = async (graphSettings, data) => {
+  try {
+    let associedTags = new Array(graphSettings.tagUuid.length).fill(undefined)
+    let associedValues = new Array(graphSettings.tagUuid.length).fill(undefined)
+
+    for (const [index, tagUuid] of graphSettings.tagUuid.entries()) {
+      const graph = await Tags.findOne({ where: { uuid: tagUuid } })
+      associedTags[index] = graph.dataValues
+      associedValues[index] = data.filter((d) => d.directiveTag === graph.dataValues.name).length
+    }
+
+    const firstValue = associedValues[0]
+    const last = associedValues[associedValues.length - 1]
+    // console.log(firstValue)
+    // console.log('funnel', (last * 100 + 1) / (firstValue + 1))
+    return (last + 1) / (firstValue + 1)
+  } catch (error) {
+    console.log(error)
+  }
+}
