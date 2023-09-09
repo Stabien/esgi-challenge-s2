@@ -157,6 +157,18 @@ export default {
       event
     ) => {
       const htmlElement = element.tagName;
+      console.log("event", event);
+      console.log("body?", {
+        appId: APP_ID,
+        event: eventName,
+        url: getURL(),
+        sessionId: window.localStorage.getItem("Session_ID"),
+        htmlElement: htmlElement,
+        directiveTag: directiveBindingArgument,
+        timestamp: Date.now(),
+        x: eventName === "click" ? event.pageX : undefined,
+        y: eventName === "click" ? event.pageY : undefined,
+      });
       exportData(
         {
           appId: APP_ID,
