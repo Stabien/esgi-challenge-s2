@@ -1,4 +1,5 @@
 const transporter = require('../config/mail')
+const fetch = require('node-fetch')
 
 exports.sendEmail = async (mailOptions) => {
   return await new Promise((resolve, reject) => {
@@ -11,4 +12,34 @@ exports.sendEmail = async (mailOptions) => {
       }
     })
   })
+}
+
+exports.sendHttpRequest = async (uri, body) => {
+  const options = {
+    mode: "cors",
+    body: "Vous avez reçu une alerte",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+
+  const response = await fetch(uri, options)
+  const data = await response.json()
+
+  return data
+}
+
+exports.sendAlert = async (condition, alert) => {
+  if (condition) {
+    if (alert.uri) {
+      await sendHttpRequest(alert.uri)
+    } else {
+      await sendEmail({ 
+        from: "no-reply@esgi-challenge-s2.fr", 
+        to: alert.email, 
+        subject: "Nouvelle alerte sur votre dashboard", 
+        text: "Vous avez reçu une nouvelle alerte"
+      })
+    }
+  }
 }
