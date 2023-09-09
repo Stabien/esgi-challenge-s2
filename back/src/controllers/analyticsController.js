@@ -142,8 +142,6 @@ exports.getHeatmapPossibility = async (req, res) => {
     const graphSettings = JSON.parse(req.params.graphSettings)
     const { appId, graphPeriod, selectedTags, event } = graphSettings
     const { start, end } = getIsoDateFromTimestamp(graphPeriod)
-    console.log('start', start)
-    console.log('end', end)
     const aggregateTunnel = [
       { $match: { appId } },
       {

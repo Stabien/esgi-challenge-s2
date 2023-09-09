@@ -183,7 +183,34 @@ export default {
       mounted: (el, binding) => {
         Object.entries(binding.modifiers).forEach(function (modifier) {
           el.addEventListener(`${modifier[0]}`, (event) =>
-            handleEvent(el, modifier[0], binding.arg, APP_ID, socket, event)
+            // handleEvent(el, modifier[0], binding.arg, APP_ID, socket, event)
+            {
+              console.log({
+                appId: APP_ID,
+                event: eventName,
+                url: getURL(),
+                sessionId: window.localStorage.getItem("Session_ID"),
+                htmlElement: element.tagName,
+                directiveTag: directiveBindingArgument,
+                timestamp: Date.now(),
+                x: eventName === "click" ? event.pageX : undefined,
+                y: eventName === "click" ? event.pageY : undefined,
+              });
+              exportData(
+                {
+                  appId: APP_ID,
+                  event: eventName,
+                  url: getURL(),
+                  sessionId: window.localStorage.getItem("Session_ID"),
+                  htmlElement: element.tagName,
+                  directiveTag: directiveBindingArgument,
+                  timestamp: Date.now(),
+                  x: eventName === "click" ? event.pageX : undefined,
+                  y: eventName === "click" ? event.pageY : undefined,
+                },
+                socket
+              );
+            }
           );
         });
       },
