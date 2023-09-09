@@ -30,14 +30,18 @@ exports.sendHttpRequest = async (uri, body) => {
 }
 
 exports.sendAlert = async (alert) => {
-  if (alert.uri) {
-    await this.sendHttpRequest(alert.uri)
-  } else {
-    await this.sendEmail({
-      from: 'no-reply@esgi-challenge-s2.fr',
-      to: alert.email,
-      subject: 'Nouvelle alerte sur votre dashboard',
-      text: 'Vous avez reçu une nouvelle alerte',
-    })
+  try {
+    if (alert.uri) {
+      await sendHttpRequest(alert.uri)
+    } else {
+      await sendEmail({
+        from: "no-reply@esgi-challenge-s2.fr", 
+        to: alert.email, 
+        subject: "Nouvelle alerte sur votre dashboard", 
+        text: "Vous avez reçu une nouvelle alerte"
+      })
+    }
+  } catch {
+    console.log("error sending alerts")
   }
 }
