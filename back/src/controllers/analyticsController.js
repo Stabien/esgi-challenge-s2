@@ -2,6 +2,7 @@ const Analytics = require('../models/analytics')
 const Tags = require('../models/tags')
 const Graphs = require('../models/graphs')
 const Alerts = require('../models/alerts')
+const { sendAlrt } = require('../services')
 const { getIsoDateFromTimestamp } = require('../helpers')
 
 exports.postGraphSettings = async (req, res) => {
@@ -275,8 +276,8 @@ const handleAlerts = async (body) => {
 
     //4-check if need to send alerts
     for (const [index, graph] of associedGraph.entries()) {
+      //X-Check if need to send alerts (too soon)
       let value = null
-      console.log(graph.event)
       switch (graph.event) {
         case 'click':
           console.log('click')
@@ -304,12 +305,10 @@ const handleAlerts = async (body) => {
       const valueToTrigger = parseInt(alertsList[index].dataValues.valueToTrigger)
       if (value >= valueToTrigger) {
         console.log('GONNA SEND ALERTS')
+        //X-Send the alerts
+        sendAlert(alertsList[index].dataValues)
       }
     }
-
-    //X-Check if need to send alerts (too soon)
-
-    //X-Send the alerts
   } catch (error) {
     console.log(error)
   }
